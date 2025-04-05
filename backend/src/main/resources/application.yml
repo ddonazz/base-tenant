@@ -1,0 +1,108 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/basetenant
+    username: base-tenant
+    password: base-tenant
+  jpa:
+    open-in-view: false
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+  web:
+    resources:
+      chain:
+        enabled: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: andreadonadello@protonmail.com
+    password: Test123
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          from: andreadonadello@protonmail.com
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+        port: 587
+  quartz:
+    enabled: true
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+    wait-for-jobs-to-complete-on-shutdown: true
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: StartScheduler
+            instanceId: AUTO
+            instanceIdGenerator:
+              class: it.andrea.start.quartz.QuartzInstanceIdGenerator
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 20
+            threadPriority: 5
+            makeThreadsDaemons: true
+          jobStore:
+            misfireThreshold: 60000
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            useProperties: true
+            tablePrefix: public.qrtz_
+            isClustered: true
+            clusterCheckinInterval: 1000
+          plugin:
+            shutdownHook:
+              class: org.quartz.plugins.management.ShutdownHookPlugin
+              cleanShutdown: true
+server:
+  port: 8081
+  servlet:
+    context-path: /base-tenant
+logging:
+  level:
+    root: INFO
+    web: DEBUG
+    security: INFO
+jwt:
+  secret: 179069f5c6ee9380faefc1f6e233e0a99bd0ed03ff389829eb6bb6fa4c7a846c
+  expiration:
+    days: 1
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /api-docs/documentation.html
+    operationsSorter: method
+    display-request-duration: true
+app:
+  swagger:
+    baseurl: http://localhost:8081/base-tenant
+    baseurl-https: https://localhost:8081/base-tenant
+  static:
+    path: /opt/base-tenant/resource/initialize/
+  initialize:
+    file:
+      path: /opt/base-tenant/resource/initialize/
+  key:
+    offuscator:
+      path: /opt/base-tenant/key/
+  media:
+    path: /opt/base-tenant/resource/initialize/
+  template:
+    path: /opt/base-tenant/resource/initialize/
+  logs:
+    path: /opt/base-tenant/resource/initialize/
+  audit:
+    level: ALL
+    day: 10
