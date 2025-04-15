@@ -13,13 +13,17 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
     private final String staticPath;
 
     public StaticResourceConfiguration(Environment environment) {
-	staticPath = environment.getProperty("app.static.path");
+        staticPath = environment.getProperty("app.static.path");
     }
 
-    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { "classpath:/META_INF/resources/", "classpath:/resources/", "classpath:/static/", "classpath:/public/" };
+    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { //
+            "classpath:/META_INF/resources/", //
+            "classpath:/resources/", //
+            "classpath:/static/", //
+            "classpath:/public/" };
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	registry.addResourceHandler("/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS).addResourceLocations(staticPath);
+        registry.addResourceHandler("/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS).addResourceLocations(staticPath);
     }
 }

@@ -22,41 +22,41 @@ public class SchedulerConfig {
     private QuartzProperties quartzProperties;
 
     public SchedulerConfig(DataSource dataSource, ApplicationContext applicationContext, QuartzProperties quartzProperties) {
-	super();
-	this.dataSource = dataSource;
-	this.applicationContext = applicationContext;
-	this.quartzProperties = quartzProperties;
+        super();
+        this.dataSource = dataSource;
+        this.applicationContext = applicationContext;
+        this.quartzProperties = quartzProperties;
     }
 
     @Bean
     JobFactory jobFactory() {
-	SchedulerJobFactory jobFactory = new SchedulerJobFactory();
-	jobFactory.setApplicationContext(applicationContext);
-	return jobFactory;
+        SchedulerJobFactory jobFactory = new SchedulerJobFactory();
+        jobFactory.setApplicationContext(applicationContext);
+        return jobFactory;
     }
 
     @Bean
     SchedulerFactoryBean schedulerFactoryBean(JobFactory jobFactory) throws Exception {
-	Properties properties = new Properties();
-	properties.putAll(quartzProperties.getProperties());
+        Properties properties = new Properties();
+        properties.putAll(quartzProperties.getProperties());
 
-	SchedulerFactoryBean factory = new SchedulerFactoryBean();
-	factory.setOverwriteExistingJobs(true);
-	factory.setDataSource(dataSource);
-	factory.setJobFactory(jobFactory);
-	factory.setQuartzProperties(properties);
-	factory.afterPropertiesSet();
-	clearScheduler(factory);
+        SchedulerFactoryBean factory = new SchedulerFactoryBean();
+        factory.setOverwriteExistingJobs(true);
+        factory.setDataSource(dataSource);
+        factory.setJobFactory(jobFactory);
+        factory.setQuartzProperties(properties);
+        factory.afterPropertiesSet();
+        clearScheduler(factory);
 
-	return factory;
+        return factory;
     }
 
     private void clearScheduler(SchedulerFactoryBean factory) {
-	try {
-	    factory.getScheduler().clear();
-	} catch (SchedulerException e) {
-	    throw new IllegalStateException("Error while clearing scheduler", e);
-	}
+        try {
+            factory.getScheduler().clear();
+        } catch (SchedulerException e) {
+            throw new IllegalStateException("Error while clearing scheduler", e);
+        }
     }
 
 }

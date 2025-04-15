@@ -2,8 +2,8 @@ package it.andrea.start.models.audit;
 
 import java.time.LocalDateTime;
 
-import it.andrea.start.models.support.AuditActivity;
-import it.andrea.start.models.support.AuditTypeOperation;
+import it.andrea.start.constants.AuditActivity;
+import it.andrea.start.constants.AuditTypeOperation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,19 +16,19 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(
-	name = "audit_trace", 
-	indexes = { 
-		@Index(name = "IDX_AUDIT_USER_ID", columnList = "userId"), 
-		@Index(name = "IDX_AUDIT_USER_NAME", columnList = "userName"), 
-		@Index(name = "IDX_AUDIT_ACTIVITY", columnList = "activity"), 
-		@Index(name = "IDX_AUDIT_TYPE", columnList = "auditType") 
-		}
-	)
+@Table( //
+        name = "audit_trace", //
+        indexes = { //
+                @Index(name = "IDX_AUDIT_USER_ID", columnList = "userId"), //
+                @Index(name = "IDX_AUDIT_USER_NAME", columnList = "userName"), //
+                @Index(name = "IDX_AUDIT_ACTIVITY", columnList = "activity"), //
+                @Index(name = "IDX_AUDIT_TYPE", columnList = "auditType") //
+        } //
+) //
 public class AuditTrace {
 
     public AuditTrace() {
-	this.dateEvent = LocalDateTime.now();
+        this.dateEvent = LocalDateTime.now();
     }
 
     @Id
@@ -88,131 +88,131 @@ public class AuditTrace {
     private String exceptionTrace;
 
     public Long getId() {
-	return id;
+        return id;
     }
 
     public void setId(Long id) {
-	this.id = id;
+        this.id = id;
     }
 
     public AuditActivity getActivity() {
-	return activity;
+        return activity;
     }
 
     public void setActivity(AuditActivity activity) {
-	this.activity = activity;
+        this.activity = activity;
     }
 
     public Long getUserId() {
-	return userId;
+        return userId;
     }
 
     public void setUserId(Long userId) {
-	this.userId = userId;
+        this.userId = userId;
     }
 
     public String getUserName() {
-	return userName;
+        return userName;
     }
 
     public void setUserName(String userName) {
-	this.userName = userName;
+        this.userName = userName;
     }
 
     public AuditTypeOperation getAuditType() {
-	return auditType;
+        return auditType;
     }
 
     public void setAuditType(AuditTypeOperation auditType) {
-	this.auditType = auditType;
+        this.auditType = auditType;
     }
 
     public LocalDateTime getDateEvent() {
-	return dateEvent;
+        return dateEvent;
     }
 
     public void setDateEvent(LocalDateTime dateEvent) {
-	this.dateEvent = dateEvent;
+        this.dateEvent = dateEvent;
     }
 
     public String getControllerMethod() {
-	return controllerMethod;
+        return controllerMethod;
     }
 
     public void setControllerMethod(String controllerMethod) {
-	this.controllerMethod = controllerMethod;
+        this.controllerMethod = controllerMethod;
     }
 
     public String getEntityName() {
-	return entityName;
+        return entityName;
     }
 
     public void setEntityName(String entityName) {
-	this.entityName = entityName;
+        this.entityName = entityName;
     }
 
     public String getEntityKeyValue() {
-	return entityKeyValue;
+        return entityKeyValue;
     }
 
     public void setEntityKeyValue(String entityKeyValue) {
-	this.entityKeyValue = entityKeyValue;
+        this.entityKeyValue = entityKeyValue;
     }
 
     public String getEntityOldValue() {
-	return entityOldValue;
+        return entityOldValue;
     }
 
     public void setEntityOldValue(String entityOldValue) {
-	this.entityOldValue = entityOldValue;
+        this.entityOldValue = entityOldValue;
     }
 
     public String getEntityNewValue() {
-	return entityNewValue;
+        return entityNewValue;
     }
 
     public void setEntityNewValue(String entityNewValue) {
-	this.entityNewValue = entityNewValue;
+        this.entityNewValue = entityNewValue;
     }
 
     public String getMethod() {
-	return method;
+        return method;
     }
 
     public void setMethod(String method) {
-	this.method = method;
+        this.method = method;
     }
 
     public String getUrl() {
-	return url;
+        return url;
     }
 
     public void setUrl(String url) {
-	this.url = url;
+        this.url = url;
     }
 
     public String getHttpContextRequest() {
-	return httpContextRequest;
+        return httpContextRequest;
     }
 
     public void setHttpContextRequest(String httpContextRequest) {
-	this.httpContextRequest = httpContextRequest;
+        this.httpContextRequest = httpContextRequest;
     }
 
     public String getHttpContextResponse() {
-	return httpContextResponse;
+        return httpContextResponse;
     }
 
     public void setHttpContextResponse(String httpContextResponse) {
-	this.httpContextResponse = httpContextResponse;
+        this.httpContextResponse = httpContextResponse;
     }
 
     public String getExceptionTrace() {
-	return exceptionTrace;
+        return exceptionTrace;
     }
 
     public void setExceptionTrace(String exceptionTrace) {
-	this.exceptionTrace = exceptionTrace;
+        this.exceptionTrace = exceptionTrace;
     }
 
 }

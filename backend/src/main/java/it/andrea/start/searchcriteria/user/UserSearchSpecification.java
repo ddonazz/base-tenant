@@ -21,47 +21,47 @@ public class UserSearchSpecification implements Specification<User> {
     private UserSearchCriteria criteria;
 
     public UserSearchSpecification(UserSearchCriteria criteria) {
-	this.criteria = criteria;
+        this.criteria = criteria;
     }
 
     @Override
     public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-	List<Predicate> predicates = new ArrayList<>();
+        List<Predicate> predicates = new ArrayList<>();
 
-	if (criteria.getId() != null) {
-	    predicates.add(cb.equal(root.get("id"), criteria.getId()));
-	}
-	
-	if (StringUtils.isNotBlank(criteria.getUsername())) {
-	    predicates.add(cb.equal(root.get("username"), criteria.getUsername()));
-	}
-	
-	if (StringUtils.isNotBlank(criteria.getTextSearch())) {
-	    String pattern = "%" + criteria.getTextSearch().toUpperCase() + "%";
-	    Predicate usernamePredicate = cb.like(cb.upper(root.get("username")), pattern);
-	    Predicate emailPredicate = cb.like(cb.upper(root.get("email")), pattern);
-	    Predicate namePredicate = cb.like(cb.upper(root.get("name")), pattern);
-	    predicates.add(cb.or(usernamePredicate, emailPredicate, namePredicate));
-	}
-	
-	if (criteria.getUserStatus() != null) {
-	    predicates.add(cb.equal(root.get("userStatus"), criteria.getUserStatus()));
-	}
-	
-	boolean hasRoleFilter = criteria.getRoles() != null && !criteria.getRoles().isEmpty();
-	boolean hasRoleNotValidFilter = criteria.getRolesNotValid() != null && !criteria.getRolesNotValid().isEmpty();
-	if (hasRoleFilter || hasRoleNotValidFilter) {
-	    Join<User, UserRole> roleJoin = root.join("roles");
-	    query.distinct(true);
+        if (criteria.getId() != null) {
+            predicates.add(cb.equal(root.get("id"), criteria.getId()));
+        }
 
-	    if (hasRoleFilter) {
-		predicates.add(roleJoin.get("role").in(criteria.getRoles()));
-	    }
-	    if (hasRoleNotValidFilter) {
-		predicates.add(cb.not(roleJoin.get("role").in(criteria.getRolesNotValid())));
-	    }
-	}
+        if (StringUtils.isNotBlank(criteria.getUsername())) {
+            predicates.add(cb.equal(root.get("username"), criteria.getUsername()));
+        }
 
-	return cb.and(predicates.toArray(new Predicate[0]));
+        if (StringUtils.isNotBlank(criteria.getTextSearch())) {
+            String pattern = "%" + criteria.getTextSearch().toUpperCase() + "%";
+            Predicate usernamePredicate = cb.like(cb.upper(root.get("username")), pattern);
+            Predicate emailPredicate = cb.like(cb.upper(root.get("email")), pattern);
+            Predicate namePredicate = cb.like(cb.upper(root.get("name")), pattern);
+            predicates.add(cb.or(usernamePredicate, emailPredicate, namePredicate));
+        }
+
+        if (criteria.getUserStatus() != null) {
+            predicates.add(cb.equal(root.get("userStatus"), criteria.getUserStatus()));
+        }
+
+        boolean hasRoleFilter = criteria.getRoles() != null && !criteria.getRoles().isEmpty();
+        boolean hasRoleNotValidFilter = criteria.getRolesNotValid() != null && !criteria.getRolesNotValid().isEmpty();
+        if (hasRoleFilter || hasRoleNotValidFilter) {
+            Join<User, UserRole> roleJoin = root.join("roles");
+            query.distinct(true);
+
+            if (hasRoleFilter) {
+                predicates.add(roleJoin.get("role").in(criteria.getRoles()));
+            }
+            if (hasRoleNotValidFilter) {
+                predicates.add(cb.not(roleJoin.get("role").in(criteria.getRolesNotValid())));
+            }
+        }
+
+        return cb.and(predicates.toArray(new Predicate[0]));
     }
 }

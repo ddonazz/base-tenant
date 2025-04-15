@@ -15,16 +15,16 @@ public class GlobalConfig {
     private final int auditSavedDay;
 
     public GlobalConfig(Environment environment) {
-	auditLevel = AuditLevel.valueOf(environment.getProperty("app.audit.level"));
-	auditSavedDay = Integer.valueOf(environment.getProperty("app.audit.day"));
+        auditLevel = AuditLevel.valueOf(environment.getProperty("app.audit.level"));
+        auditSavedDay = Integer.valueOf(environment.getProperty("app.audit.day"));
     }
 
     public AuditLevel getAuditLevel() {
-	return auditLevel;
+        return auditLevel;
     }
 
     public int getAuditSavedDay() {
-	return auditSavedDay;
+        return auditSavedDay;
     }
 
 }

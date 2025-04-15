@@ -19,20 +19,20 @@ public class StartProjectApplication extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 
-	LOG.info("-----------------------------");
-	LOG.info("StartApplication->configure");
-	LOG.info("-----------------------------");
+        LOG.info("-----------------------------");
+        LOG.info("StartApplication->configure");
+        LOG.info("-----------------------------");
 
-	final SpringApplicationBuilder applicationBuilder = application.sources(StartProjectApplication.class);
-	ClassLoader loader = applicationBuilder.application().getClassLoader();
+        final SpringApplicationBuilder applicationBuilder = application.sources(StartProjectApplication.class);
+        ClassLoader loader = applicationBuilder.application().getClassLoader();
 
-	LOG.info("loader : {}", loader.getName());
+        LOG.info("loader : {}", loader.getName());
 
-	return application.sources(StartProjectApplication.class);
+        return application.sources(StartProjectApplication.class);
     }
 
     public static void main(String[] args) {
-	SpringApplication.run(StartProjectApplication.class, args);
+        SpringApplication.run(StartProjectApplication.class, args);
     }
 
 }

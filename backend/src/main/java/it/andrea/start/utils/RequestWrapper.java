@@ -16,56 +16,56 @@ public class RequestWrapper extends HttpServletRequestWrapper {
     private final String body;
 
     public RequestWrapper(HttpServletRequest request) throws IOException {
-	super(request);
+        super(request);
 
-	StringBuilder stringBuilder = new StringBuilder();
-	try (InputStream inputStream = request.getInputStream()) {
-	    if (inputStream != null) {
-		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-		    char[] charBuffer = new char[128];
-		    int bytesRead;
-		    while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-			stringBuilder.append(charBuffer, 0, bytesRead);
-		    }
-		}
-	    }
-	} catch (IOException ex) {
-	    throw ex;
-	}
-	body = stringBuilder.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        try (InputStream inputStream = request.getInputStream()) {
+            if (inputStream != null) {
+                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+                    char[] charBuffer = new char[128];
+                    int bytesRead;
+                    while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                        stringBuilder.append(charBuffer, 0, bytesRead);
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            throw ex;
+        }
+        body = stringBuilder.toString();
     }
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-	final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
-	return new ServletInputStream() {
-	    @Override
-	    public int read() throws IOException {
-		return byteArrayInputStream.read();
-	    }
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
+        return new ServletInputStream() {
+            @Override
+            public int read() throws IOException {
+                return byteArrayInputStream.read();
+            }
 
-	    @Override
-	    public boolean isFinished() {
-		return byteArrayInputStream.available() == 0;
-	    }
+            @Override
+            public boolean isFinished() {
+                return byteArrayInputStream.available() == 0;
+            }
 
-	    @Override
-	    public boolean isReady() {
-		return true;
-	    }
+            @Override
+            public boolean isReady() {
+                return true;
+            }
 
-	    @Override
-	    public void setReadListener(ReadListener listener) {
-	    }
-	};
+            @Override
+            public void setReadListener(ReadListener listener) {
+            }
+        };
     }
 
     @Override
     public BufferedReader getReader() throws IOException {
-	return new BufferedReader(new InputStreamReader(this.getInputStream()));
+        return new BufferedReader(new InputStreamReader(this.getInputStream()));
     }
 
     public String getBody() {
-	return this.body;
+        return this.body;
     }
 }

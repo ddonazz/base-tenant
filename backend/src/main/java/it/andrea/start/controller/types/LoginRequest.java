@@ -5,7 +5,6 @@ import java.io.Serializable;
 import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequest implements Serializable {
-
     private static final long serialVersionUID = 3903555349152727298L;
 
     @NotBlank(message = "L'username non può essere vuoto")
@@ -15,19 +14,19 @@ public class LoginRequest implements Serializable {
     private String password;
 
     public String getUsername() {
-	return username;
+        return username;
     }
 
     public void setUsername(String username) {
-	this.username = username;
+        this.username = username;
     }
 
     public String getPassword() {
-	return password;
+        return password;
     }
 
     public void setPassword(String password) {
-	this.password = password;
+        this.password = password;
     }
 
 }

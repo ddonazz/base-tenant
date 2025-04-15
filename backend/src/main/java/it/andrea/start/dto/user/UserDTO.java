@@ -47,43 +47,43 @@ public class UserDTO implements Serializable {
     private transient String password;
 
     public Long getId() {
-	return id;
+        return id;
     }
 
     public void setId(Long id) {
-	this.id = id;
+        this.id = id;
     }
 
     public String getUsername() {
-	return username;
+        return username;
     }
 
     public void setUsername(String username) {
-	this.username = username;
+        this.username = username;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public String getEmail() {
-	return email;
+        return email;
     }
 
     public void setEmail(String email) {
-	this.email = email;
+        this.email = email;
     }
 
     public UserStatus getUserStatus() {
-	return userStatus;
+        return userStatus;
     }
 
     public void setUserStatus(UserStatus userStatus) {
-	this.userStatus = userStatus;
+        this.userStatus = userStatus;
     }
 
     public Set<String> getRoles() {
@@ -95,34 +95,35 @@ public class UserDTO implements Serializable {
     }
 
     public String getLanguageDefault() {
-	return languageDefault;
+        return languageDefault;
     }
 
     public void setLanguageDefault(String languageDefault) {
-	this.languageDefault = languageDefault;
+        this.languageDefault = languageDefault;
     }
 
     public String getPassword() {
-	return password;
+        return password;
     }
 
     public void setPassword(String password) {
-	this.password = password;
+        this.password = password;
     }
 
     @Override
     public int hashCode() {
-	return Objects.hash(email, id, name, username);
+        return Objects.hash(email, id, name, username);
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (this == obj)
-	    return true;
-	if (!(obj instanceof UserDTO))
-	    return false;
-	UserDTO other = (UserDTO) obj;
-	return Objects.equals(email, other.email) && Objects.equals(id, other.id) && Objects.equals(name, other.name) && Objects.equals(username, other.username);
+        if (this == obj)
+            return true;
+        if (!(obj instanceof UserDTO))
+            return false;
+        UserDTO other = (UserDTO) obj;
+        return Objects.equals(email, other.email) && Objects.equals(id, other.id) && Objects.equals(name, other.name)
+                && Objects.equals(username, other.username);
     }
 
 }

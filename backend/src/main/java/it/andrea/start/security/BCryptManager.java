@@ -5,22 +5,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BCryptManager implements IEncrypterManager {
+public class BCryptManager implements EncrypterManager {
 
     private final PasswordEncoder passwordEncoder;
 
     public BCryptManager() {
-	this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @Override
     public String encode(CharSequence value) {
-	return passwordEncoder.encode(value);
+        return passwordEncoder.encode(value);
     }
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-	return passwordEncoder.matches(rawPassword, encodedPassword);
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
 }

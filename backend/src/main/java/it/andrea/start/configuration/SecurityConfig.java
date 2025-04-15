@@ -32,52 +32,52 @@ public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
 
     public SecurityConfig(AuthEntryPointJwt unauthorizedHandler, JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService) {
-	this.unauthorizedHandler = unauthorizedHandler;
-	this.jwtUtils = jwtUtils;
-	this.userDetailsService = userDetailsService;
+        this.unauthorizedHandler = unauthorizedHandler;
+        this.jwtUtils = jwtUtils;
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	return http
-		.csrf(AbstractHttpConfigurer::disable)
-		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-		.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
-		.authorizeHttpRequests(authorize -> authorize
-			.requestMatchers("/api/authorize/login").permitAll()
-			.requestMatchers("/api-docs/**").permitAll()
-			.requestMatchers("/v3/api-docs/**").permitAll()
-			.requestMatchers("/swagger-ui/**").permitAll()
-			.requestMatchers("/swagger-ui.html").permitAll()
-			.requestMatchers("/error/**").permitAll()
-			.anyRequest().authenticated())
-		.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
-		.addFilterAfter(corsFilter(), SessionManagementFilter.class).build();
+        return http //
+                .csrf(AbstractHttpConfigurer::disable) //
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //
+                .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler)) //
+                .authorizeHttpRequests(authorize -> authorize //
+                        .requestMatchers("/api/authorize/login").permitAll() //
+                        .requestMatchers("/api-docs/**").permitAll() //
+                        .requestMatchers("/v3/api-docs/**").permitAll() //
+                        .requestMatchers("/swagger-ui/**").permitAll() //
+                        .requestMatchers("/swagger-ui.html").permitAll() //
+                        .requestMatchers("/error/**").permitAll() //
+                        .anyRequest().authenticated()) //
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class) //
+                .addFilterAfter(corsFilter(), SessionManagementFilter.class).build();
     }
 
     @Bean
     InternalResourceViewResolver defaultViewResolver() {
-	return new InternalResourceViewResolver();
+        return new InternalResourceViewResolver();
     }
 
     @Bean
     AuthTokenFilter authenticationJwtTokenFilter() {
-	return new AuthTokenFilter(jwtUtils, userDetailsService);
+        return new AuthTokenFilter(jwtUtils, userDetailsService);
     }
 
     @Bean
     AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-	return authenticationConfiguration.getAuthenticationManager();
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     PasswordEncoder passwordEncoder() {
-	return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     CORSFilter corsFilter() {
-	return new CORSFilter();
+        return new CORSFilter();
     }
 
 }

@@ -5,8 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import it.andrea.start.models.support.AuditActivity;
-import it.andrea.start.models.support.AuditTypeOperation;
+import it.andrea.start.constants.AuditActivity;
+import it.andrea.start.constants.AuditTypeOperation;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

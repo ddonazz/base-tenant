@@ -68,131 +68,131 @@ public class Registry {
     private String companyRegistrationNumber;
 
     public TypeRegistry getTypeRegistry() {
-	return typeRegistry;
+        return typeRegistry;
     }
 
     public void setTypeRegistry(TypeRegistry typeRegistry) {
-	this.typeRegistry = typeRegistry;
+        this.typeRegistry = typeRegistry;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public String getSurname() {
-	return surname;
+        return surname;
     }
 
     public void setSurname(String surname) {
-	this.surname = surname;
+        this.surname = surname;
     }
 
     public String getBusinessName() {
-	return businessName;
+        return businessName;
     }
 
     public void setBusinessName(String businessName) {
-	this.businessName = businessName;
+        this.businessName = businessName;
     }
 
     public Gender getGender() {
-	return gender;
+        return gender;
     }
 
     public void setGender(Gender gender) {
-	this.gender = gender;
+        this.gender = gender;
     }
 
     public String getEmail() {
-	return email;
+        return email;
     }
 
     public void setEmail(String email) {
-	this.email = email;
+        this.email = email;
     }
 
     public String getTelephone() {
-	return telephone;
+        return telephone;
     }
 
     public void setTelephone(String telephone) {
-	this.telephone = telephone;
+        this.telephone = telephone;
     }
 
     public String getPec() {
-	return pec;
+        return pec;
     }
 
     public void setPec(String pec) {
-	this.pec = pec;
+        this.pec = pec;
     }
 
     public String getVatCode() {
-	return vatCode;
+        return vatCode;
     }
 
     public void setVatCode(String vatCode) {
-	this.vatCode = vatCode;
+        this.vatCode = vatCode;
     }
 
     public String getFiscalCode() {
-	return fiscalCode;
+        return fiscalCode;
     }
 
     public void setFiscalCode(String fiscalCode) {
-	this.fiscalCode = fiscalCode;
+        this.fiscalCode = fiscalCode;
     }
 
     public String getBirthCity() {
-	return birthCity;
+        return birthCity;
     }
 
     public void setBirthCity(String birthCity) {
-	this.birthCity = birthCity;
+        this.birthCity = birthCity;
     }
 
     public String getBirthState() {
-	return birthState;
+        return birthState;
     }
 
     public void setBirthState(String birthState) {
-	this.birthState = birthState;
+        this.birthState = birthState;
     }
 
     public Date getBirthDate() {
-	return birthDate;
+        return birthDate;
     }
 
     public void setBirthDate(Date birthDate) {
-	this.birthDate = birthDate;
+        this.birthDate = birthDate;
     }
 
     public DocumentType getDocumentType() {
-	return documentType;
+        return documentType;
     }
 
     public void setDocumentType(DocumentType documentType) {
-	this.documentType = documentType;
+        this.documentType = documentType;
     }
 
     public String getIdentityCardNumber() {
-	return identityCardNumber;
+        return identityCardNumber;
     }
 
     public void setIdentityCardNumber(String identityCardNumber) {
-	this.identityCardNumber = identityCardNumber;
+        this.identityCardNumber = identityCardNumber;
     }
 
     public String getCompanyRegistrationNumber() {
-	return companyRegistrationNumber;
+        return companyRegistrationNumber;
     }
 
     public void setCompanyRegistrationNumber(String companyRegistrationNumber) {
-	this.companyRegistrationNumber = companyRegistrationNumber;
+        this.companyRegistrationNumber = companyRegistrationNumber;
     }
 
 }

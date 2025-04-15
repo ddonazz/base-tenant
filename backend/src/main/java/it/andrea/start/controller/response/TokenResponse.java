@@ -9,25 +9,25 @@ public class TokenResponse implements Serializable {
     private String token;
 
     public TokenResponse() {
-	super();
+        super();
     }
 
     public TokenResponse(String token) {
-	super();
-	this.token = token;
+        super();
+        this.token = token;
     }
 
     public String getToken() {
-	return token;
+        return token;
     }
 
     public void setToken(String token) {
-	this.token = token;
+        this.token = token;
     }
 
     @Override
     public String toString() {
-	return "TokenResponse [token=" + this.token + "]";
+        return "TokenResponse [token=" + this.token + "]";
     }
 
 }

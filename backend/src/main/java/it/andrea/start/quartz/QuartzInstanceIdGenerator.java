@@ -9,11 +9,11 @@ public class QuartzInstanceIdGenerator implements InstanceIdGenerator {
 
     @Override
     public String generateInstanceId() throws SchedulerException {
-	try {
-	    return UUID.randomUUID().toString();
-	} catch (RuntimeException ex) {
-	    throw new SchedulerException("Unable to generate instance ID.", ex);
-	}
+        try {
+            return UUID.randomUUID().toString();
+        } catch (RuntimeException ex) {
+            throw new SchedulerException("Unable to generate instance ID.", ex);
+        }
     }
 
 }

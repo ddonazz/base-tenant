@@ -23,25 +23,25 @@ public class AuditDeleteJob extends QuartzJobBean {
     private AuditTraceService auditTraceService;
 
     public AuditDeleteJob() {
-	super();
+        super();
     }
 
     public AuditDeleteJob(GlobalConfig globalConfig, AuditTraceService auditTraceService) {
-	super();
-	this.globalConfig = globalConfig;
-	this.auditTraceService = auditTraceService;
+        super();
+        this.globalConfig = globalConfig;
+        this.auditTraceService = auditTraceService;
     }
 
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-	LOG.info("AuditDeleteJob inizio alle : {}", LocalDateTime.now());
+        LOG.info("AuditDeleteJob inizio alle : {}", LocalDateTime.now());
 
-	LocalDateTime dateCompare = LocalDateTime.now().minusDays(globalConfig.getAuditSavedDay());
-	LOG.info("AuditDeleteJob eliminazione audit prima di : {}", dateCompare);
+        LocalDateTime dateCompare = LocalDateTime.now().minusDays(globalConfig.getAuditSavedDay());
+        LOG.info("AuditDeleteJob eliminazione audit prima di : {}", dateCompare);
 
-	int rowDeleted = auditTraceService.deleteAuditTrace(dateCompare);
-	LOG.info("AuditDeleteJob numero audit eliminati : {}", rowDeleted);
+        int rowDeleted = auditTraceService.deleteAuditTrace(dateCompare);
+        LOG.info("AuditDeleteJob numero audit eliminati : {}", rowDeleted);
 
-	LOG.info("AuditDeleteJob finito alle : {}", LocalDateTime.now());
+        LOG.info("AuditDeleteJob finito alle : {}", LocalDateTime.now());
     }
 }

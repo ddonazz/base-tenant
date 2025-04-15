@@ -31,14 +31,15 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 
 @Entity
-@Table(
-	name = "users", 
-	uniqueConstraints = { @UniqueConstraint(columnNames = "username") }, 
-	indexes = { 
-		@Index(name = "IDX_USER_USERNAME", columnList = "username"), 
-		@Index(name = "IDX_USER_EMAIL", columnList = "email"), 
-		@Index(name = "IDX_USER_STATUS", columnList = "username, userStatus") 
-		})
+@Table( //
+        name = "users", //
+        uniqueConstraints = { @UniqueConstraint(columnNames = "username") }, //
+        indexes = { //
+                @Index(name = "IDX_USER_USERNAME", columnList = "username"), //
+                @Index(name = "IDX_USER_EMAIL", columnList = "email"), //
+                @Index(name = "IDX_USER_STATUS", columnList = "username, userStatus") //
+        }//
+)
 public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails {
     private static final long serialVersionUID = 8219540355116099903L;
 
@@ -66,71 +67,72 @@ public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails
 
     @Column
     private String languageDefault;
-    
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-               joinColumns = @JoinColumn(name = "user_id"),
-               inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<UserRole> roles = new HashSet<>(); 
-    
+    @JoinTable(name = "user_roles", //
+            joinColumns = @JoinColumn(name = "user_id"), //
+            inverseJoinColumns = @JoinColumn(name = "role_id") //
+    )
+    private Set<UserRole> roles = new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-            .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
-            .toList();
+        return this.roles.stream() //
+                .map(role -> new SimpleGrantedAuthority(role.getRole().name())) //
+                .toList(); //
     }
 
     public Long getId() {
-	return id;
+        return id;
     }
 
     public void setId(Long id) {
-	this.id = id;
+        this.id = id;
     }
 
     @Override
     public String getUsername() {
-	return username;
+        return username;
     }
 
     public void setUsername(String username) {
-	this.username = username;
+        this.username = username;
     }
 
     public String getPassword() {
-	return password;
+        return password;
     }
 
     public void setPassword(String password) {
-	this.password = password;
+        this.password = password;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public String getEmail() {
-	return email;
+        return email;
     }
 
     public void setEmail(String email) {
-	this.email = email;
+        this.email = email;
     }
 
     public UserStatus getUserStatus() {
-	return userStatus;
+        return userStatus;
     }
 
     public void setUserStatus(UserStatus userStatus) {
-	this.userStatus = userStatus;
+        this.userStatus = userStatus;
     }
 
     public Set<UserRole> getRoles() {
@@ -142,13 +144,13 @@ public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails
     }
 
     public String getLanguageDefault() {
-	return languageDefault;
+        return languageDefault;
     }
 
     public void setLanguageDefault(String languageDefault) {
-	this.languageDefault = languageDefault;
+        this.languageDefault = languageDefault;
     }
-    
+
     public Agency getAgency() {
         return agency;
     }
@@ -159,7 +161,7 @@ public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return userStatus != UserStatus.EXPIRED;
     }
 
     @Override

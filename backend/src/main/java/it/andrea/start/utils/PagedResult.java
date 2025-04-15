@@ -11,45 +11,46 @@ public class PagedResult<T extends Serializable> implements Serializable {
     private Integer pageNumber;
     private Integer pageSize;
 
-    public PagedResult() {}
+    public PagedResult() {
+    }
 
     public PagedResult(Collection<T> items, Integer totalElements, Integer pageNumber, Integer pageSize) {
-	this.items = items;
-	this.totalElements = totalElements;
-	this.pageNumber = pageNumber;
-	this.pageSize = pageSize;
+        this.items = items;
+        this.totalElements = totalElements;
+        this.pageNumber = pageNumber;
+        this.pageSize = pageSize;
     }
 
     public Collection<T> getItems() {
-	return items;
+        return items;
     }
 
     public void setItems(Collection<T> items) {
-	this.items = items;
+        this.items = items;
     }
 
     public Integer getTotalElements() {
-	return totalElements;
+        return totalElements;
     }
 
     public void setTotalElements(Integer totalElements) {
-	this.totalElements = totalElements;
+        this.totalElements = totalElements;
     }
 
     public Integer getPageNumber() {
-	return pageNumber;
+        return pageNumber;
     }
 
     public void setPageNumber(Integer pageNumber) {
-	this.pageNumber = pageNumber;
+        this.pageNumber = pageNumber;
     }
 
     public Integer getPageSize() {
-	return pageSize;
+        return pageSize;
     }
 
     public void setPageSize(Integer pageSize) {
-	this.pageSize = pageSize;
+        this.pageSize = pageSize;
     }
 
 }

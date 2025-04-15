@@ -7,16 +7,16 @@ public class ErrorResponse implements Serializable {
     private static final long serialVersionUID = 420009367930874140L;
 
     public ErrorResponse() {
-	this.message = "";
-	this.code = "";
-	this.details = null;
+        this.message = "";
+        this.code = "";
+        this.details = null;
     }
 
     public ErrorResponse(String message, String code, List<String> details) {
-	super();
-	this.message = message;
-	this.code = code;
-	this.details = details;
+        super();
+        this.message = message;
+        this.code = code;
+        this.details = details;
     }
 
     private String message;
@@ -25,27 +25,27 @@ public class ErrorResponse implements Serializable {
 
     // Getter and setters
     public String getMessage() {
-	return message;
+        return message;
     }
 
     public void setMessage(String message) {
-	this.message = message;
+        this.message = message;
     }
 
     public String getCode() {
-	return code;
+        return code;
     }
 
     public void setCode(String code) {
-	this.code = code;
+        this.code = code;
     }
 
     public List<String> getDetails() {
-	return details;
+        return details;
     }
 
     public void setDetails(List<String> details) {
-	this.details = details;
+        this.details = details;
     }
 
 }

@@ -7,23 +7,25 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(enumAsRef = true)
 public enum CustomerStatus {
 
-    PENDING("ATTESA"), ACTIVE("ATTIVO"), SUSPENDED("SOSPESO"), CANCELLED("CANCELLATO"), BLACKLIST("BLACKLIST");
+    PENDING("In attesa"), //
+    ACTIVE("Attivo"), //
+    SUSPENDED("Sospeso"), //
+    CANCELLED("Cancellato"), //
+    BLACKLIST("In blacklist");
 
-    // Member to hold the name
-    private String string;
+    private String status;
 
-    // constructor to set the string
     CustomerStatus(String name) {
-	string = name;
+        status = name;
     }
 
     @Override
     public String toString() {
-	return string;
+        return status;
     }
 
     public static Stream<CustomerStatus> stream() {
-	return Stream.of(CustomerStatus.values());
+        return Stream.of(CustomerStatus.values());
     }
 
 }

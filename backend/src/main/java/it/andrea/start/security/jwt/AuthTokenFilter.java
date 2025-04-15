@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
-import it.andrea.start.configuration.context.tenant.TenantContextHolder;
 import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.security.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
@@ -51,12 +50,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             logger.error("Cannot set user authentication: {}", e);
         }
 
-        try {
-            filterChain.doFilter(new ContentCachingRequestWrapper(wrappedRequest), response);
-        } finally {
-            TenantContextHolder.resetTenant();
-        }
-
+        filterChain.doFilter(new ContentCachingRequestWrapper(wrappedRequest), response);
     }
 
     private String parseJwt(HttpServletRequest request) {

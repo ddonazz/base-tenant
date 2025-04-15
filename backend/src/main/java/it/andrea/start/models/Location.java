@@ -28,59 +28,59 @@ public class Location {
     private String additionalInfo;
 
     public String getStreet() {
-	return street;
+        return street;
     }
 
     public void setStreet(String street) {
-	this.street = street;
+        this.street = street;
     }
 
     public String getNumber() {
-	return number;
+        return number;
     }
 
     public void setNumber(String number) {
-	this.number = number;
+        this.number = number;
     }
 
     public String getCity() {
-	return city;
+        return city;
     }
 
     public void setCity(String city) {
-	this.city = city;
+        this.city = city;
     }
 
     public String getZipCode() {
-	return zipCode;
+        return zipCode;
     }
 
     public void setZipCode(String zipCode) {
-	this.zipCode = zipCode;
+        this.zipCode = zipCode;
     }
 
     public String getCountry() {
-	return country;
+        return country;
     }
 
     public void setCountry(String country) {
-	this.country = country;
+        this.country = country;
     }
 
     public String getStateOrProvince() {
-	return stateOrProvince;
+        return stateOrProvince;
     }
 
     public void setStateOrProvince(String stateOrProvince) {
-	this.stateOrProvince = stateOrProvince;
+        this.stateOrProvince = stateOrProvince;
     }
 
     public String getAdditionalInfo() {
-	return additionalInfo;
+        return additionalInfo;
     }
 
     public void setAdditionalInfo(String additionalInfo) {
-	this.additionalInfo = additionalInfo;
+        this.additionalInfo = additionalInfo;
     }
 
 }

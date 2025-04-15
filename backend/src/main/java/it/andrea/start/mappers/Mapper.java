@@ -2,8 +2,8 @@ package it.andrea.start.mappers;
 
 import java.util.Collection;
 
-import it.andrea.start.exception.MappingToDtoException;
-import it.andrea.start.exception.MappingToEntityException;
+import it.andrea.start.error.exception.mapping.MappingToDtoException;
+import it.andrea.start.error.exception.mapping.MappingToEntityException;
 
 public interface Mapper<T, E> {
 

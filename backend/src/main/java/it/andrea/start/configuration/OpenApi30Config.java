@@ -26,16 +26,12 @@ public class OpenApi30Config {
 
     @Bean
     OpenAPI customOpenAPI() {
-	return new OpenAPI()
-		.servers(Arrays.asList(
-			createServer(baseUrl), 
-			createServer(baseUrlHttps)))
-		.addSecurityItem(new SecurityRequirement()
-			.addList("bearerAuth"))
-		.components(new Components()
-			.addSecuritySchemes("bearerAuth", new SecurityScheme().type(SecurityScheme.Type.HTTP)
-				.scheme("bearer").bearerFormat("JWT")))
-		.info(new Info().title("Base Tenant API Documentation").version("v1"));
+        return new OpenAPI() //
+                .servers(Arrays.asList(createServer(baseUrl), createServer(baseUrlHttps))) //
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth")) //
+                .components(new Components().addSecuritySchemes( //
+                        "bearerAuth", new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT"))) //
+                .info(new Info().title("Base Tenant API Documentation").version("v1")); //
     }
 
     private Server createServer(String url) {

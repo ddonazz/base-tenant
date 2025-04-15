@@ -9,14 +9,14 @@ public class UserRoleDTO implements Serializable {
     private String role;
 
     public UserRoleDTO() {
-	super();
+        super();
     }
 
     public UserRoleDTO(String role) {
-	super();
-	this.role = role;
+        super();
+        this.role = role;
     }
-    
+
     public String getRole() {
         return role;
     }
@@ -27,17 +27,17 @@ public class UserRoleDTO implements Serializable {
 
     @Override
     public int hashCode() {
-	return Objects.hash(role);
+        return Objects.hash(role);
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (this == obj)
-	    return true;
-	if (!(obj instanceof UserRoleDTO))
-	    return false;
-	UserRoleDTO other = (UserRoleDTO) obj;
-	return Objects.equals(role, other.role);
+        if (this == obj)
+            return true;
+        if (!(obj instanceof UserRoleDTO))
+            return false;
+        UserRoleDTO other = (UserRoleDTO) obj;
+        return Objects.equals(role, other.role);
     }
 
 }

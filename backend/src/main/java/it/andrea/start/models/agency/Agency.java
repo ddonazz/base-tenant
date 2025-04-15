@@ -60,13 +60,13 @@ public class Agency extends FirstBaseEntity implements BaseEntityLong, Serializa
 
     @Column(columnDefinition = "TEXT")
     private String notes;
-    
+
     @OneToMany(mappedBy = "agency")
     private Collection<User> users;
 
     @Override
     public Long getId() {
-	return this.id;
+        return this.id;
     }
 
 }

@@ -4,27 +4,27 @@ import java.util.stream.Stream;
 
 public enum UserStatus {
 
-    PENDING("PENDING"), 
-    ACTIVE("ACTIVE"), 
-    SUSPENDED("SUSPENDED"), 
-    DEACTIVE("DEACTIVE"), 
-    BLACKLIST("BLACKLIST"), 
-    LOCKED("LOCKED"), 
-    EXPIRED("EXPIRED");
+    PENDING("In attesa"), //
+    ACTIVE("Attivo"), //
+    SUSPENDED("Sospeso"), //
+    DEACTIVE("Disattivato"), //
+    BLACKLIST("In blacklist"), //
+    LOCKED("Bloccato"), //
+    EXPIRED("Scaduto");
 
-    private String string;
+    private String status;
 
     UserStatus(String name) {
-	string = name;
+        status = name;
     }
 
     @Override
     public String toString() {
-	return string;
+        return status;
     }
 
     public static Stream<UserStatus> stream() {
-	return Stream.of(UserStatus.values());
+        return Stream.of(UserStatus.values());
     }
 
 }

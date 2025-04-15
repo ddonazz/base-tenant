@@ -28,15 +28,15 @@ import jakarta.annotation.PostConstruct;
 
 @Component
 public class JwtUtils {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(JwtUtils.class);
-    
+
     @Value("${jwt.secret}")
     private String jwtSecret;
-    
+
     @Value("${jwt.expiration.days}")
     private int jwtExpirationDays;
-    
+
     private SecretKey secretKey;
 
     @PostConstruct
@@ -46,43 +46,43 @@ public class JwtUtils {
 
     public String generateToken(Authentication authentication) {
         JWTokenUserDetails userPrincipal = (JWTokenUserDetails) authentication.getPrincipal();
-        
+
         Instant now = Instant.now();
         Instant expiration = now.plus(jwtExpirationDays, ChronoUnit.DAYS);
-        
-        return Jwts.builder()
-                .subject(userPrincipal.getUsername())
-                .claim("authorities", userPrincipal.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .toList())
-                .claim("agency", userPrincipal.getAgency())
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expiration))
-                .signWith(secretKey)
+
+        return Jwts.builder() //
+                .subject(userPrincipal.getUsername()) //
+                .claim("authorities", userPrincipal.getAuthorities().stream() //
+                        .map(GrantedAuthority::getAuthority) //
+                        .toList()) //
+                .issuedAt(Date.from(now)) //
+                .expiration(Date.from(expiration)) //
+                .signWith(secretKey) //
                 .compact();
     }
 
     public Optional<JWTokenUserDetails> validateAndParseToken(String token) {
         try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+            Claims claims = Jwts.parser() //
+                    .verifyWith(secretKey) //
+                    .build() //
+                    .parseSignedClaims(token) //
+                    .getPayload(); //
 
             String username = claims.getSubject();
             List<?> rawAuthorities = claims.get("authorities", List.class);
-            List<String> authorities = rawAuthorities.stream()
-                    .map(String::valueOf)
-                    .toList();
+            List<String> authorities = rawAuthorities.stream() //
+                    .map(String::valueOf) //
+                    .toList(); //
 
-            return Optional.of(new JWTokenUserDetails.Builder()
-                    .username(username)
-                    .password("") 
-                    .authorities(authorities.stream()
-                            .map(SimpleGrantedAuthority::new)
-                            .toList())
-                    .build());
+            return Optional.of(new JWTokenUserDetails.Builder() //
+                    .username(username) //
+                    .password("") //
+                    .authorities(authorities.stream() //
+                            .map(SimpleGrantedAuthority::new) //
+                            .toList()) //
+                    .build()); //
+
         } catch (ExpiredJwtException ex) {
             LOG.warn("JWT expired: {}", ex.getMessage());
         } catch (MalformedJwtException ex) {
@@ -90,6 +90,7 @@ public class JwtUtils {
         } catch (JwtException | IllegalArgumentException ex) {
             LOG.warn("JWT error: {}", ex.getMessage());
         }
+
         return Optional.empty();
     }
 
