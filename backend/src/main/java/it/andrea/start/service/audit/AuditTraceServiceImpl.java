@@ -1,9 +1,6 @@
 package it.andrea.start.service.audit;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -35,26 +32,9 @@ public class AuditTraceServiceImpl implements AuditTraceService {
     }
 
     @Override
-    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public void saveAuditTrace(Collection<AuditTraceDTO> audits) {
-        if (audits == null || audits.isEmpty()) {
-            return;
-        }
-
-        List<AuditTrace> entities = new ArrayList<>();
-        for (AuditTraceDTO auditTraceDTO : audits) {
-            if (auditTraceDTO == null) {
-                continue;
-            }
-            AuditTrace auditTrace = new AuditTrace();
-            auditMapper.toEntity(auditTraceDTO, auditTrace);
-
-            entities.add(auditTrace);
-        }
-
-        if (!entities.isEmpty()) {
-            auditTraceRepository.saveAll(entities);
-        }
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveLog(AuditTrace auditTrace) {
+        auditTraceRepository.save(auditTrace);
     }
 
     @Override

@@ -81,7 +81,7 @@ public class UserController {
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
 
         userDTO.setId(id);
-        return ResponseEntity.ok(userService.updateUser(userDTO, userDetails).getLeft());
+        return ResponseEntity.ok(userService.updateUser(userDTO, userDetails));
     }
 
     @Operation( //

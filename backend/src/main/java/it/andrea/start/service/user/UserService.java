@@ -1,9 +1,7 @@
 package it.andrea.start.service.user;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Pageable;
 
-import it.andrea.start.dto.audit.AuditTraceDTO;
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.BusinessException;
 import it.andrea.start.error.exception.user.UserException;
@@ -21,7 +19,7 @@ public interface UserService {
 
     UserDTO createUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws BusinessException, UserException;
 
-    Pair<UserDTO, AuditTraceDTO> updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws UserException, BusinessException;
+    UserDTO updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws UserException, BusinessException;
 
     void deleteUser(Long id, JWTokenUserDetails userDetails) throws UserException, BusinessException;
 

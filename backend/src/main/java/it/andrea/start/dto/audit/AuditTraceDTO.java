@@ -2,29 +2,36 @@ package it.andrea.start.dto.audit;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditTypeOperation;
 
 public class AuditTraceDTO implements Serializable {
-    private static final long serialVersionUID = -3074992839717814645L;
+    private static final long serialVersionUID = 1L;
 
     private Long id;
-    private AuditActivity activity;
-    private Long userId;
-    private String userName;
-    private AuditTypeOperation auditType;
     private LocalDateTime dateEvent;
-    private String dateEventString;
+
+    private AuditActivity activity;
+    private AuditTypeOperation auditType;
+
+    private Long userId;
+    private String username;
+
+    private String className;
+    private String methodName;
     private String controllerMethod;
-    private String entityName;
-    private String entityKeyValue;
-    private String entityOldValue;
-    private String entityNewValue;
-    private String method;
-    private String url;
-    private String httpContextRequest;
-    private String httpContextResponse;
+    private String resourceId;
+
+    private String httpMethod;
+    private String requestUri;
+    private String clientIpAddress;
+    private String userAgent;
+    private String requestParams;
+    private String requestBody;
+
+    private Integer httpStatus;
+    private Boolean success;
+    private Long durationMs;
     private String exceptionTrace;
 
     public Long getId() {
@@ -35,28 +42,20 @@ public class AuditTraceDTO implements Serializable {
         this.id = id;
     }
 
+    public LocalDateTime getDateEvent() {
+        return dateEvent;
+    }
+
+    public void setDateEvent(LocalDateTime dateEvent) {
+        this.dateEvent = dateEvent;
+    }
+
     public AuditActivity getActivity() {
         return activity;
     }
 
     public void setActivity(AuditActivity activity) {
         this.activity = activity;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public AuditTypeOperation getAuditType() {
@@ -67,12 +66,36 @@ public class AuditTraceDTO implements Serializable {
         this.auditType = auditType;
     }
 
-    public LocalDateTime getDateEvent() {
-        return dateEvent;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setDateEvent(LocalDateTime dateEvent) {
-        this.dateEvent = dateEvent;
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
     public String getControllerMethod() {
@@ -83,68 +106,84 @@ public class AuditTraceDTO implements Serializable {
         this.controllerMethod = controllerMethod;
     }
 
-    public String getEntityName() {
-        return entityName;
+    public String getResourceId() {
+        return resourceId;
     }
 
-    public void setEntityName(String entityName) {
-        this.entityName = entityName;
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
-    public String getEntityKeyValue() {
-        return entityKeyValue;
+    public String getHttpMethod() {
+        return httpMethod;
     }
 
-    public void setEntityKeyValue(String entityKeyValue) {
-        this.entityKeyValue = entityKeyValue;
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
     }
 
-    public String getEntityOldValue() {
-        return entityOldValue;
+    public String getRequestUri() {
+        return requestUri;
     }
 
-    public void setEntityOldValue(String entityOldValue) {
-        this.entityOldValue = entityOldValue;
+    public void setRequestUri(String requestUri) {
+        this.requestUri = requestUri;
     }
 
-    public String getEntityNewValue() {
-        return entityNewValue;
+    public String getClientIpAddress() {
+        return clientIpAddress;
     }
 
-    public void setEntityNewValue(String entityNewValue) {
-        this.entityNewValue = entityNewValue;
+    public void setClientIpAddress(String clientIpAddress) {
+        this.clientIpAddress = clientIpAddress;
     }
 
-    public String getMethod() {
-        return method;
+    public String getUserAgent() {
+        return userAgent;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 
-    public String getUrl() {
-        return url;
+    public String getRequestParams() {
+        return requestParams;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setRequestParams(String requestParams) {
+        this.requestParams = requestParams;
     }
 
-    public String getHttpContextRequest() {
-        return httpContextRequest;
+    public String getRequestBody() {
+        return requestBody;
     }
 
-    public void setHttpContextRequest(String httpContextRequest) {
-        this.httpContextRequest = httpContextRequest;
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
     }
 
-    public String getHttpContextResponse() {
-        return httpContextResponse;
+    public Integer getHttpStatus() {
+        return httpStatus;
     }
 
-    public void setHttpContextResponse(String httpContextResponse) {
-        this.httpContextResponse = httpContextResponse;
+    public void setHttpStatus(Integer httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
+
+    public Long getDurationMs() {
+        return durationMs;
+    }
+
+    public void setDurationMs(Long durationMs) {
+        this.durationMs = durationMs;
     }
 
     public String getExceptionTrace() {
@@ -153,14 +192,6 @@ public class AuditTraceDTO implements Serializable {
 
     public void setExceptionTrace(String exceptionTrace) {
         this.exceptionTrace = exceptionTrace;
-    }
-
-    public String getDateEventString() {
-        return dateEventString;
-    }
-
-    public void setDateEventString(String dateEventString) {
-        this.dateEventString = dateEventString;
     }
 
 }

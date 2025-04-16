@@ -1,14 +1,14 @@
 package it.andrea.start.configuration;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.time.LocalDateTime;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -17,78 +17,127 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.andrea.start.annotation.Audit;
 import it.andrea.start.constants.AuditActivity;
-import it.andrea.start.dto.audit.AuditTraceDTO;
+import it.andrea.start.constants.AuditLevel;
+import it.andrea.start.models.BaseEntityLong;
+import it.andrea.start.models.BaseEntityString;
+import it.andrea.start.models.audit.AuditTrace;
 import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.service.audit.AuditTraceService;
 import it.andrea.start.utils.HelperAudit;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Aspect
 @Component
 public class AuditAspect {
 
+    private static final Logger log = LoggerFactory.getLogger(AuditAspect.class);
+
     private final AuditTraceService auditTraceService;
     private final GlobalConfig globalConfig;
+    private final HelperAudit helperAudit;
 
-    public AuditAspect(AuditTraceService auditTraceService, GlobalConfig globalConfig) {
+    public AuditAspect(AuditTraceService auditTraceService, GlobalConfig globalConfig, HelperAudit helperAudit) {
         this.auditTraceService = auditTraceService;
         this.globalConfig = globalConfig;
+        this.helperAudit = helperAudit;
     }
 
-    @Pointcut("@annotation(audit)")
-    public void auditPointcut(Audit audit) {
+    @Pointcut("@annotation(auditAnnotation)")
+    public void auditPointcut(Audit auditAnnotation) {
     }
 
-    @Around("auditPointcut(audit)")
-    public Object handleAudit(ProceedingJoinPoint joinPoint, Audit audit) throws Throwable {
+    @Around("auditPointcut(auditAnnotation)")
+    public Object handleAudit(ProceedingJoinPoint joinPoint, Audit auditAnnotation) throws Throwable {
+        long startTime = System.currentTimeMillis();
         HttpServletRequest request = getCurrentHttpRequest();
+        HttpServletResponse response = getCurrentHttpResponse();
+
+        AuditLevel currentLevel = globalConfig.getAuditLevel();
+        if (currentLevel == AuditLevel.NOTHING) {
+            return joinPoint.proceed();
+        }
+
+        AuditTrace auditTrace = new AuditTrace();
+        auditTrace.setDateEvent(LocalDateTime.now());
+        auditTrace.setActivity(auditAnnotation.activity());
+        auditTrace.setAuditType(auditAnnotation.type());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
+        if (authentication != null && authentication.getPrincipal() instanceof JWTokenUserDetails userDetails) {
+            auditTrace.setUsername(userDetails.getUsername());
+        } else {
+            auditTrace.setUsername("anonymous");
+        }
 
-        AuditTraceDTO auditAPICall = HelperAudit.getAuditControllerOperation(globalConfig.getAuditLevel(), //
-                audit.activity(), //
-                userDetails, //
-                audit.type(), //
-                request, //
-                joinPoint.getArgs(), //
-                joinPoint.getSignature().toShortString());
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        auditTrace.setClassName(signature.getDeclaringTypeName());
+        auditTrace.setMethodName(signature.getName());
+        auditTrace.setControllerMethod(signature.toShortString());
+
+        if (request != null) {
+            auditTrace.setHttpMethod(request.getMethod());
+            auditTrace.setRequestUri(request.getRequestURI());
+            auditTrace.setClientIpAddress(helperAudit.getClientIpAddress(request));
+            auditTrace.setUserAgent(helperAudit.getUserAgent(request));
+            auditTrace.setRequestParams(helperAudit.formatParameters(request.getParameterMap()));
+            auditTrace.setRequestBody(helperAudit.getSanitizedRequestBody(request, joinPoint.getArgs()));
+        } else {
+            log.warn("HttpServletRequest not available for audit trace on method: {}", signature.toShortString());
+            auditTrace.setHttpMethod("N/A");
+            auditTrace.setRequestUri("N/A");
+        }
+
+        Object result = null;
+        Throwable exception = null;
 
         try {
-            Object result = joinPoint.proceed();
-
-            if (result instanceof Pair<?, ?> pairResult) {
-                Object responsePayload = pairResult.getLeft();
-                Object serviceAudit = pairResult.getRight();
-
-                HelperAudit.auditControllerOperationAddResponseAndException(auditAPICall, responsePayload, null);
-
-                List<AuditTraceDTO> allAudits = new ArrayList<>();
-                allAudits.add(auditAPICall);
-                if (serviceAudit instanceof Collection<?> collection) {
-                    for (Object obj : collection) {
-                        if (obj instanceof AuditTraceDTO auditTrace) {
-                            allAudits.add(auditTrace);
-                        }
-                    }
-                }
-                auditTraceService.saveAuditTrace(allAudits);
-            } else {
-                HelperAudit.auditControllerOperationAddResponseAndException(auditAPICall, result, null);
-                auditTraceService.saveAuditTrace(List.of(auditAPICall));
-            }
-            return result;
-        } catch (Exception ex) {
-            auditAPICall.setActivity(AuditActivity.USER_OPERATION_EXCEPTION);
-            HelperAudit.auditControllerOperationAddResponseAndException(auditAPICall, null, ex);
-            auditTraceService.saveAuditTrace(List.of(auditAPICall));
+            result = joinPoint.proceed();
+            auditTrace.setSuccess(true);
+        } catch (Throwable ex) {
+            exception = ex;
+            auditTrace.setSuccess(false);
+            auditTrace.setActivity(AuditActivity.USER_OPERATION_EXCEPTION);
+            auditTrace.setExceptionTrace(helperAudit.getStackTrace(ex));
             throw ex;
+        } finally {
+            long duration = System.currentTimeMillis() - startTime;
+            auditTrace.setDurationMs(duration);
+
+            if (response != null) {
+                auditTrace.setHttpStatus(response.getStatus());
+                if (exception != null && response.getStatus() < 400) {
+                    auditTrace.setHttpStatus(500);
+                }
+            } else if (exception != null) {
+                auditTrace.setHttpStatus(500);
+            }
+
+            auditTrace.setResourceId(extractResourceId(result));
+
+            if (currentLevel == AuditLevel.ALL) {
+                auditTraceService.saveLog(auditTrace);
+            }
         }
+        return result;
     }
 
     private HttpServletRequest getCurrentHttpRequest() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        return attributes != null ? attributes.getRequest() : null;
+        return (attributes != null) ? attributes.getRequest() : null;
     }
 
+    private HttpServletResponse getCurrentHttpResponse() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        return (attributes != null) ? attributes.getResponse() : null;
+    }
+
+    private String extractResourceId(Object result) {
+        if (result instanceof BaseEntityLong baseEntityLong) {
+            return baseEntityLong.getId().toString();
+        } else if (result instanceof BaseEntityString baseEntityString) {
+            return baseEntityString.getId();
+        }
+        return null;
+    }
 }

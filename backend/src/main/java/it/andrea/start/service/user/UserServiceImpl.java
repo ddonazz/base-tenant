@@ -3,19 +3,15 @@ package it.andrea.start.service.user;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.andrea.start.configuration.GlobalConfig;
-import it.andrea.start.constants.AuditLevel;
 import it.andrea.start.constants.EntityType;
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
-import it.andrea.start.dto.audit.AuditTraceDTO;
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.BusinessException;
 import it.andrea.start.error.exception.ErrorCode;
@@ -28,9 +24,7 @@ import it.andrea.start.searchcriteria.user.UserSearchCriteria;
 import it.andrea.start.searchcriteria.user.UserSearchSpecification;
 import it.andrea.start.security.EncrypterManager;
 import it.andrea.start.security.service.JWTokenUserDetails;
-import it.andrea.start.utils.HelperAudit;
 import it.andrea.start.utils.HelperAuthorization;
-import it.andrea.start.utils.HelperString;
 import it.andrea.start.utils.PagedResult;
 import it.andrea.start.validator.user.UserValidator;
 
@@ -40,17 +34,14 @@ public class UserServiceImpl implements UserService {
 
     private static final String ENTITY = "User";
 
-    private final GlobalConfig globalConfig;
     private final EncrypterManager encrypterManager;
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UserValidator userValidator;
 
-    public UserServiceImpl(GlobalConfig globalConfig, EncrypterManager encrypterManager, UserRepository userRepository, UserMapper userMapper,
-            UserValidator userValidator) {
+    public UserServiceImpl(EncrypterManager encrypterManager, UserRepository userRepository, UserMapper userMapper, UserValidator userValidator) {
         super();
-        this.globalConfig = globalConfig;
         this.encrypterManager = encrypterManager;
         this.userRepository = userRepository;
         this.userMapper = userMapper;
@@ -119,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public Pair<UserDTO, AuditTraceDTO> updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws UserException, BusinessException {
+    public UserDTO updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws UserException, BusinessException {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
 
         String username = userDTO.getUsername();
@@ -128,12 +119,6 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(username);
         }
         User user = optionalUser.get();
-
-        AuditTraceDTO audit = new AuditTraceDTO();
-        String oldValue = null;
-        if (globalConfig.getAuditLevel() == AuditLevel.ALL || globalConfig.getAuditLevel() == AuditLevel.DATABASE) {
-            oldValue = HelperString.toJson(user);
-        }
 
         boolean isMyProfile = false;
         if (user.getUsername().compareTo(userDetails.getUsername()) == 0) {
@@ -145,10 +130,8 @@ public class UserServiceImpl implements UserService {
         userMapper.toEntity(userDTO, user);
         userRepository.save(user);
 
-        HelperAudit.generateAudit(audit, globalConfig, user, ENTITY, oldValue);
-
         userDTO = this.userMapper.toDto(user);
-        return Pair.of(userDTO, audit);
+        return userDTO;
     }
 
     @Override

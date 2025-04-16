@@ -7,7 +7,6 @@ import it.andrea.start.error.exception.mapping.MappingToDtoException;
 import it.andrea.start.error.exception.mapping.MappingToEntityException;
 import it.andrea.start.mappers.AbstractMapper;
 import it.andrea.start.models.audit.AuditTrace;
-import it.andrea.start.utils.HelperDate;
 import jakarta.persistence.EntityManager;
 
 @Component
@@ -19,23 +18,39 @@ public class AuditMapper extends AbstractMapper<AuditTraceDTO, AuditTrace> {
 
     @Override
     public AuditTraceDTO toDto(AuditTrace entity) throws MappingToDtoException {
+        if (entity == null) {
+            return null;
+        }
         AuditTraceDTO dto = new AuditTraceDTO();
+
+        // Mappatura campi base
         dto.setId(entity.getId());
-        dto.setActivity(entity.getActivity());
-        dto.setUserId(entity.getUserId());
-        dto.setUserName(entity.getUserName());
-        dto.setAuditType(entity.getAuditType());
         dto.setDateEvent(entity.getDateEvent());
-        dto.setDateEventString(HelperDate.dateToString(entity.getDateEvent(), HelperDate.TIMESTAMP_WITH_TIMEZONE_FORMAT));
+        dto.setActivity(entity.getActivity());
+        dto.setAuditType(entity.getAuditType());
+
+        // Mappatura utente
+        // dto.setUserId(entity.getUserId());
+        dto.setUsername(entity.getUsername());
+
+        // Mappatura contesto applicativo
+        dto.setClassName(entity.getClassName());
+        dto.setMethodName(entity.getMethodName());
         dto.setControllerMethod(entity.getControllerMethod());
-        dto.setEntityName(entity.getEntityName());
-        dto.setEntityKeyValue(entity.getEntityKeyValue());
-        dto.setEntityOldValue(entity.getEntityOldValue());
-        dto.setEntityNewValue(entity.getEntityNewValue());
-        dto.setMethod(entity.getMethod());
-        dto.setUrl(entity.getUrl());
-        dto.setHttpContextRequest(entity.getHttpContextRequest());
-        dto.setHttpContextResponse(entity.getHttpContextResponse());
+        dto.setResourceId(entity.getResourceId());
+
+        // Mappatura dettagli HTTP
+        dto.setHttpMethod(entity.getHttpMethod());
+        dto.setRequestUri(entity.getRequestUri());
+        dto.setClientIpAddress(entity.getClientIpAddress());
+        dto.setUserAgent(entity.getUserAgent());
+        dto.setRequestParams(entity.getRequestParams());
+        dto.setRequestBody(entity.getRequestBody());
+
+        // Mappatura esito
+        dto.setHttpStatus(entity.getHttpStatus());
+        dto.setSuccess(entity.getSuccess());
+        dto.setDurationMs(entity.getDurationMs());
         dto.setExceptionTrace(entity.getExceptionTrace());
 
         return dto;
@@ -43,21 +58,40 @@ public class AuditMapper extends AbstractMapper<AuditTraceDTO, AuditTrace> {
 
     @Override
     public void toEntity(AuditTraceDTO dto, AuditTrace entity) throws MappingToEntityException {
-        entity.setActivity(dto.getActivity());
-        entity.setUserId(dto.getUserId());
-        entity.setUserName(dto.getUserName());
-        entity.setAuditType(dto.getAuditType());
-        entity.setDateEvent(dto.getDateEvent());
-        entity.setControllerMethod(dto.getControllerMethod());
-        entity.setEntityName(dto.getEntityName());
-        entity.setEntityKeyValue(dto.getEntityKeyValue());
-        entity.setEntityOldValue(dto.getEntityOldValue());
-        entity.setEntityNewValue(dto.getEntityNewValue());
-        entity.setMethod(dto.getMethod());
-        entity.setUrl(dto.getUrl());
-        entity.setHttpContextRequest(dto.getHttpContextRequest());
-        entity.setHttpContextResponse(dto.getHttpContextResponse());
-        entity.setExceptionTrace(dto.getExceptionTrace());
-    }
+        if (dto == null || entity == null) {
+            return;
+        }
 
+        // Non mappare l'ID (generalmente gestito dalla persistenza)
+        // Non mappare dateEvent qui, di solito viene impostato alla creazione
+        // dell'entità
+
+        entity.setActivity(dto.getActivity());
+        entity.setAuditType(dto.getAuditType());
+
+        // Mappatura utente
+        // entity.setUserId(dto.getUserId()); // Decommenta se hai userId nell'entità
+        entity.setUsername(dto.getUsername());
+
+        // Mappatura contesto applicativo
+        entity.setClassName(dto.getClassName());
+        entity.setMethodName(dto.getMethodName());
+        entity.setControllerMethod(dto.getControllerMethod());
+        entity.setResourceId(dto.getResourceId());
+
+        // Mappatura dettagli HTTP
+        entity.setHttpMethod(dto.getHttpMethod());
+        entity.setRequestUri(dto.getRequestUri());
+        entity.setClientIpAddress(dto.getClientIpAddress());
+        entity.setUserAgent(dto.getUserAgent());
+        entity.setRequestParams(dto.getRequestParams());
+        entity.setRequestBody(dto.getRequestBody()); // **ATTENZIONE AI DATI SENSIBILI**
+
+        // Mappatura esito
+        entity.setHttpStatus(dto.getHttpStatus());
+        entity.setSuccess(dto.getSuccess());
+        entity.setDurationMs(dto.getDurationMs());
+        entity.setExceptionTrace(dto.getExceptionTrace());
+
+    }
 }

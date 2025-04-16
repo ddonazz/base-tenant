@@ -2,9 +2,6 @@ package it.andrea.start.constants;
 
 import java.util.stream.Stream;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-@Schema(enumAsRef = true)
 public enum CustomerStatus {
 
     PENDING("In attesa"), //

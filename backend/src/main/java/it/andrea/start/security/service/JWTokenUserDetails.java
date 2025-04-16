@@ -52,17 +52,17 @@ public class JWTokenUserDetails implements UserDetails {
         }
         
         public Builder accountNonExpired(boolean isAccountNonExpired) {
-            this.accountNonExpired = !isAccountNonExpired;
+            this.accountNonExpired = isAccountNonExpired;
             return this;
         }
         
         public Builder accountNonLocked(boolean isAccountNonLocked) {
-            this.accountNonLocked = !isAccountNonLocked;
+            this.accountNonLocked = isAccountNonLocked;
             return this;
         }
         
         public Builder enabled(boolean isAccountEnable) {
-            this.enabled = !isAccountEnable;
+            this.enabled = isAccountEnable;
             return this;
         }
 

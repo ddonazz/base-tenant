@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import it.andrea.start.annotation.Audit;
+import it.andrea.start.constants.AuditActivity;
+import it.andrea.start.constants.AuditTypeOperation;
 import it.andrea.start.controller.response.TokenResponse;
 import it.andrea.start.controller.types.ChangePassword;
 import it.andrea.start.controller.types.LoginRequest;
@@ -45,6 +48,7 @@ public class AuthorizeController {
             description = "Login user", //
             summary = "Login user" //
     ) //
+    @Audit(activity = AuditActivity.USER_OPERATION, type = AuditTypeOperation.LOGIN)
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> authorize( //
             HttpServletRequest httpServletRequest, //

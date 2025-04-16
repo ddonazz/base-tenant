@@ -3,194 +3,127 @@ package it.andrea.start.utils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import it.andrea.start.configuration.GlobalConfig;
-import it.andrea.start.constants.AuditActivity;
-import it.andrea.start.constants.AuditLevel;
-import it.andrea.start.constants.AuditTypeOperation;
-import it.andrea.start.dto.audit.AuditTraceDTO;
-import it.andrea.start.models.BaseEntityLong;
-import it.andrea.start.models.BaseEntityString;
-import it.andrea.start.security.service.JWTokenUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 
+@Component
 public class HelperAudit {
+
+    private static final Logger log = LoggerFactory.getLogger(HelperAudit.class);
+    private static final int MAX_BODY_LENGTH = 2048;
 
     private final ObjectMapper objectMapper;
 
     public HelperAudit(ObjectMapper objectMapper) {
-        super();
         this.objectMapper = objectMapper;
     }
 
-    public static AuditTraceDTO getAuditControllerOperation(AuditLevel auditLevel, AuditActivity auditActivity, JWTokenUserDetails jWTokenUserDetails,
-            AuditTypeOperation auditTypeOperation, HttpServletRequest httpServletRequest, Object body, String controllerMethod) {
-        if (auditLevel == AuditLevel.NOTHING || auditLevel == AuditLevel.DATABASE) {
+    public String getClientIpAddress(HttpServletRequest request) {
+        if (request == null) {
             return null;
         }
-
-        AuditTraceDTO auditTraceDTO = new AuditTraceDTO();
-        auditTraceDTO.setActivity(auditActivity);
-        auditTraceDTO.setDateEvent(LocalDateTime.now());
-        auditTraceDTO.setAuditType(auditTypeOperation);
-        auditTraceDTO.setControllerMethod(controllerMethod);
-
-        if (jWTokenUserDetails != null) {
-            auditTraceDTO.setUserName(jWTokenUserDetails.getUsername());
+        String ipAddress = request.getHeader("X-Forwarded-For");
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        } else {
+            ipAddress = ipAddress.split(",")[0].trim();
         }
-
-        setHttpRequestInfo(httpServletRequest, auditTraceDTO, body);
-
-        return auditTraceDTO;
+        return ipAddress;
     }
 
-    private static void setHttpRequestInfo(HttpServletRequest request, AuditTraceDTO auditTraceDTO, Object body) {
-        auditTraceDTO.setMethod(Optional.ofNullable(request.getMethod()).orElse(""));
-        auditTraceDTO.setUrl(request.getRequestURI());
-
-        Map<String, Object> parametersMap = new HashMap<>();
-
-        parametersMap.put("queryString", request.getQueryString());
-
-        Map<String, String[]> paramMap = request.getParameterMap();
-        parametersMap.put("parameterMap", paramMap.isEmpty() ? null : paramMap);
-
-        Map<String, String> headers = new HashMap<>();
-        Collections.list(request.getHeaderNames()).forEach(header -> headers.put(header, request.getHeader(header)));
-        parametersMap.put("headers", headers);
-
-        String ipCall = Optional.ofNullable(request.getHeader("X-Forwarded-For")).orElse(request.getRemoteAddr());
-        parametersMap.put("ipCall", ipCall);
-
-        String bodyContent = getRequestBody(request, body);
-        parametersMap.put("body", bodyContent);
-
-        auditTraceDTO.setHttpContextRequest(HelperString.toJson(parametersMap));
+    public String getUserAgent(HttpServletRequest request) {
+        if (request == null)
+            return null;
+        return request.getHeader("User-Agent");
     }
 
-    private static String getRequestBody(HttpServletRequest request, Object body) {
+    public String formatParameters(Map<String, String[]> parameterMap) {
+        if (parameterMap == null || parameterMap.isEmpty()) {
+            return null;
+        }
+        try {
+            Map<String, String> flattenedParams = parameterMap.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> String.join(",", entry.getValue())));
+            return objectMapper.writeValueAsString(flattenedParams);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to convert parameters to JSON", e);
+            return "{\"error\":\"Failed to serialize parameters\"}";
+        }
+    }
+
+    public String getSanitizedRequestBody(HttpServletRequest request, Object[] args) {
+        String bodyContent = null;
+
         if (request instanceof ContentCachingRequestWrapper cachingRequest) {
             byte[] content = cachingRequest.getContentAsByteArray();
             if (content.length > 0) {
                 try {
-                    return new String(content, request.getCharacterEncoding());
+                    bodyContent = new String(content, request.getCharacterEncoding());
                 } catch (UnsupportedEncodingException e) {
-                    return "Error reading request body: " + e.getMessage();
+                    log.error("Error reading cached request body encoding", e);
+                    bodyContent = "[Encoding Error]";
                 }
+            }
+        } else if (args != null) {
+            bodyContent = Arrays.stream(args).filter(Objects::nonNull).findFirst().map(this::convertObjectToJsonSafe).orElse(null);
+
+            if (bodyContent == null) {
+                log.warn("Request is not a ContentCachingRequestWrapper, consider adding the filter. Body might be missing from audit.");
             }
         }
 
-        if (body instanceof String stringBody) {
-            return stringBody;
-        } else if (body != null) {
-            return HelperString.toJson(body);
+        if (bodyContent != null) {
+            bodyContent = sanitize(bodyContent);
+            if (bodyContent.length() > MAX_BODY_LENGTH) {
+                bodyContent = bodyContent.substring(0, MAX_BODY_LENGTH) + "... [truncated]";
+            }
         }
 
-        return null;
+        return bodyContent;
     }
 
-    public static String getBody(HttpServletRequest request) throws UnsupportedEncodingException {
-        ContentCachingRequestWrapper wrappedRequest = (ContentCachingRequestWrapper) request;
-        byte[] content = wrappedRequest.getContentAsByteArray();
-        return new String(content, wrappedRequest.getCharacterEncoding());
-    }
-
-    public static void auditControllerOperationAddResponseAndException(AuditTraceDTO auditTraceDTO, Object response, Exception ex) {
-        if (auditTraceDTO == null) {
-            return;
-        }
-        auditTraceDTO.setHttpContextResponse(HelperString.toJson(response));
-
-        if (ex != null) {
-            auditTraceDTO.setExceptionTrace(getStackTrace(ex));
+    private String convertObjectToJsonSafe(Object obj) {
+        if (obj == null)
+            return null;
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to convert object to JSON for audit log: {}", e.getMessage());
+            return "[Serialization Error]";
         }
     }
 
-    private static String getStackTrace(Exception ex) {
+    private String sanitize(String content) {
+        if (content == null)
+            return null;
+        content = content.replaceAll("(\"password\"\\s*:\\s*\")[^\"]*(\")", "$1********$2");
+        content = content.replaceAll("(\"pass\"\\s*:\\s*\")[^\"]*(\")", "$1********$2");
+        content = content.replaceAll("(\"secret\"\\s*:\\s*\")[^\"]*(\")", "$1********$2");
+        return content;
+    }
+
+    public String getStackTrace(Throwable ex) {
+        if (ex == null)
+            return null;
         try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
             ex.printStackTrace(pw);
             return sw.toString();
         } catch (Exception e) {
-            return "Failed to capture stack trace";
+            log.error("Failed to capture stack trace", e);
+            return "Failed to capture stack trace: " + e.getMessage();
         }
-    }
-
-    public static void auditUnionsAndSettings(AuditTraceDTO auditTraceDTO, Collection<AuditTraceDTO> audits) {
-        for (AuditTraceDTO item : audits) {
-            item.setActivity(auditTraceDTO.getActivity());
-            item.setUserId(auditTraceDTO.getUserId());
-            item.setUserName(auditTraceDTO.getUserName());
-            item.setAuditType(auditTraceDTO.getAuditType());
-        }
-
-        audits.add(auditTraceDTO);
-    }
-
-    public String getKeyLongValue(Long id) {
-        ObjectNode rootNode = objectMapper.createObjectNode();
-        rootNode.put("key", id);
-
-        return HelperString.toJson(rootNode);
-    }
-
-    public String getKeyStringValue(String id) {
-        ObjectNode rootNode = objectMapper.createObjectNode();
-        rootNode.put("key", id);
-
-        return HelperString.toJson(rootNode);
-    }
-
-    public String getKeyStringValue(Object id) {
-        String jsonString = null;
-        String jsonObject = HelperString.toJson(id);
-
-        ObjectNode rootNode = objectMapper.createObjectNode();
-        rootNode.put("key", jsonObject);
-
-        jsonString = HelperString.toJson(rootNode);
-
-        return jsonString;
-    }
-
-    public static <T extends BaseEntityLong> AuditTraceDTO generateAudit(AuditTraceDTO audit, GlobalConfig globalConfig, T entity, String entityName,
-            String oldValue) {
-        if (globalConfig.getAuditLevel() == AuditLevel.ALL || globalConfig.getAuditLevel() == AuditLevel.DATABASE) {
-            audit.setDateEvent(LocalDateTime.now());
-            HelperAudit helperAudit = new HelperAudit(new ObjectMapper());
-            String keyValue = helperAudit.getKeyLongValue(entity.getId());
-            audit.setEntityName(entityName);
-            audit.setEntityKeyValue(keyValue);
-            audit.setEntityOldValue(oldValue);
-            audit.setEntityNewValue(HelperString.toJson(entity));
-        }
-
-        return audit;
-    }
-
-    public static <T extends BaseEntityString> AuditTraceDTO generateAudit(AuditTraceDTO audit, GlobalConfig globalConfig, T entity, String entityName,
-            String oldValue) {
-        if (globalConfig.getAuditLevel() == AuditLevel.ALL || globalConfig.getAuditLevel() == AuditLevel.DATABASE) {
-            audit.setDateEvent(LocalDateTime.now());
-            HelperAudit helperAudit = new HelperAudit(new ObjectMapper());
-            String keyValue = helperAudit.getKeyStringValue(entity.getId());
-            audit.setEntityName(entityName);
-            audit.setEntityKeyValue(keyValue);
-            audit.setEntityOldValue(oldValue);
-            audit.setEntityNewValue(HelperString.toJson(entity));
-        }
-
-        return audit;
     }
 
 }

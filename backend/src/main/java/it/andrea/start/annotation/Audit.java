@@ -15,4 +15,6 @@ public @interface Audit {
     AuditActivity activity();
 
     AuditTypeOperation type();
+    
+    String description() default "";
 }

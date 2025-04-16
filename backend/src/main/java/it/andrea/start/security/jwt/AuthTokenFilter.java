@@ -50,7 +50,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             logger.error("Cannot set user authentication: {}", e);
         }
 
-        filterChain.doFilter(new ContentCachingRequestWrapper(wrappedRequest), response);
+        filterChain.doFilter(wrappedRequest, response);
     }
 
     private String parseJwt(HttpServletRequest request) {

@@ -19,10 +19,11 @@ import jakarta.persistence.Table;
 @Table( //
         name = "audit_trace", //
         indexes = { //
-                @Index(name = "IDX_AUDIT_USER_ID", columnList = "userId"), //
-                @Index(name = "IDX_AUDIT_USER_NAME", columnList = "userName"), //
+                @Index(name = "IDX_AUDIT_USER_NAME", columnList = "username"), //
                 @Index(name = "IDX_AUDIT_ACTIVITY", columnList = "activity"), //
-                @Index(name = "IDX_AUDIT_TYPE", columnList = "auditType") //
+                @Index(name = "IDX_AUDIT_TYPE", columnList = "auditType"), //
+                @Index(name = "IDX_AUDIT_DATE_EVENT", columnList = "dateEvent"), // 
+                @Index(name = "IDX_AUDIT_RESOURCE_ID", columnList = "resourceId"), // 
         } //
 ) //
 public class AuditTrace {
@@ -35,57 +36,67 @@ public class AuditTrace {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column()
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private AuditActivity activity;
-
-    @Column()
-    private Long userId;
-
-    @Column()
-    private String userName;
+    private AuditActivity activity; // Cosa è stato fatto (es. LOGIN, CREATE_USER)
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private AuditTypeOperation auditType;
+    private AuditTypeOperation auditType; // Tipo di operazione (es. READ, WRITE, DELETE)
+
+    @Column(nullable = false)
+    private LocalDateTime dateEvent; 
+
+    @Column() 
+    private String username; 
+
+    // @Column()
+    // private Long userId;
 
     @Column()
-    private LocalDateTime dateEvent;
+    private String className; 
+
+    @Column()
+    private String methodName;
 
     @Column()
     private String controllerMethod;
 
     @Column()
-    private String entityName;
+    private String resourceId; 
 
     @Column()
-    private String entityKeyValue;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String entityOldValue;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String entityNewValue;
+    private String httpMethod;
 
     @Column()
-    private String method;
+    private String requestUri; 
 
     @Column()
-    private String url;
+    private String clientIpAddress; 
+
+    @Lob 
+    @Column(columnDefinition = "TEXT")
+    private String requestParams; 
+
+    @Lob 
+    @Column(columnDefinition = "TEXT")
+    private String requestBody; 
+
+    @Column() 
+    private String userAgent;
+
+    @Column()
+    private Integer httpStatus;
+
+    @Column(nullable = false)
+    private Boolean success; 
+
+    @Column()
+    private Long durationMs; 
 
     @Lob
     @Column(columnDefinition = "TEXT")
-    private String httpContextRequest;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String httpContextResponse;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String exceptionTrace;
+    private String exceptionTrace; 
 
     public Long getId() {
         return id;
@@ -101,22 +112,6 @@ public class AuditTrace {
 
     public void setActivity(AuditActivity activity) {
         this.activity = activity;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public AuditTypeOperation getAuditType() {
@@ -135,6 +130,30 @@ public class AuditTrace {
         this.dateEvent = dateEvent;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
     public String getControllerMethod() {
         return controllerMethod;
     }
@@ -143,68 +162,84 @@ public class AuditTrace {
         this.controllerMethod = controllerMethod;
     }
 
-    public String getEntityName() {
-        return entityName;
+    public String getResourceId() {
+        return resourceId;
     }
 
-    public void setEntityName(String entityName) {
-        this.entityName = entityName;
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
-    public String getEntityKeyValue() {
-        return entityKeyValue;
+    public String getHttpMethod() {
+        return httpMethod;
     }
 
-    public void setEntityKeyValue(String entityKeyValue) {
-        this.entityKeyValue = entityKeyValue;
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
     }
 
-    public String getEntityOldValue() {
-        return entityOldValue;
+    public String getRequestUri() {
+        return requestUri;
     }
 
-    public void setEntityOldValue(String entityOldValue) {
-        this.entityOldValue = entityOldValue;
+    public void setRequestUri(String requestUri) {
+        this.requestUri = requestUri;
     }
 
-    public String getEntityNewValue() {
-        return entityNewValue;
+    public String getClientIpAddress() {
+        return clientIpAddress;
     }
 
-    public void setEntityNewValue(String entityNewValue) {
-        this.entityNewValue = entityNewValue;
+    public void setClientIpAddress(String clientIpAddress) {
+        this.clientIpAddress = clientIpAddress;
     }
 
-    public String getMethod() {
-        return method;
+    public String getRequestParams() {
+        return requestParams;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
+    public void setRequestParams(String requestParams) {
+        this.requestParams = requestParams;
     }
 
-    public String getUrl() {
-        return url;
+    public String getRequestBody() {
+        return requestBody;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
     }
 
-    public String getHttpContextRequest() {
-        return httpContextRequest;
+    public String getUserAgent() {
+        return userAgent;
     }
 
-    public void setHttpContextRequest(String httpContextRequest) {
-        this.httpContextRequest = httpContextRequest;
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 
-    public String getHttpContextResponse() {
-        return httpContextResponse;
+    public Integer getHttpStatus() {
+        return httpStatus;
     }
 
-    public void setHttpContextResponse(String httpContextResponse) {
-        this.httpContextResponse = httpContextResponse;
+    public void setHttpStatus(Integer httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
+
+    public Long getDurationMs() {
+        return durationMs;
+    }
+
+    public void setDurationMs(Long durationMs) {
+        this.durationMs = durationMs;
     }
 
     public String getExceptionTrace() {
