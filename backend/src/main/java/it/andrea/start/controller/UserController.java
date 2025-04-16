@@ -27,7 +27,6 @@ import it.andrea.start.constants.UserStatus;
 import it.andrea.start.controller.types.ChangePassword;
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.BusinessException;
-import it.andrea.start.error.exception.mapping.MappingException;
 import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.searchcriteria.user.UserSearchCriteria;
 import it.andrea.start.security.service.JWTokenUserDetails;
@@ -56,7 +55,7 @@ public class UserController {
     @Audit(activity = AuditActivity.USER_OPERATION, type = AuditTypeOperation.CREATE)
     public ResponseEntity<UserDTO> createUser(HttpServletRequest httpServletRequest, //
             @RequestBody @Validated(OnCreate.class) UserDTO userDTO) //
-            throws BusinessException, MappingException, UserException {
+            throws BusinessException, UserException {
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
@@ -76,7 +75,7 @@ public class UserController {
             HttpServletRequest httpServletRequest, //
             @RequestBody UserDTO userDTO, //
             @PathVariable Long id) //
-            throws UserException, BusinessException, MappingException {
+            throws UserException, BusinessException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
@@ -110,7 +109,7 @@ public class UserController {
     ) //
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> infoUser(@PathVariable Long id) throws UserException, MappingException {
+    public ResponseEntity<UserDTO> infoUser(@PathVariable Long id) throws UserException {
         
         return ResponseEntity.ok(userService.getUser(id));
     }
@@ -129,7 +128,7 @@ public class UserController {
             @RequestParam(required = false) UserStatus userStatus, //
             @RequestParam(required = false) Collection<RoleType> roles, //
             @RequestParam(required = false) Collection<RoleType> rolesNotValid, //
-            Pageable pageable) throws MappingException {
+            Pageable pageable) {
 
         UserSearchCriteria criteria = new UserSearchCriteria();
         criteria.setId(id);

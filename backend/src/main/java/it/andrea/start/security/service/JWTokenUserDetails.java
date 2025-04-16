@@ -22,16 +22,19 @@ public class JWTokenUserDetails implements UserDetails {
         this.username = Objects.requireNonNull(builder.username);
         this.password = Objects.requireNonNull(builder.password);
         this.authorities = Collections.unmodifiableCollection(builder.authorities);
-        this.accountNonExpired = true;
-        this.accountNonLocked = true;
+        this.accountNonExpired = Objects.requireNonNull(builder.accountNonExpired);
+        this.accountNonLocked = Objects.requireNonNull(builder.accountNonLocked);
         this.credentialsNonExpired = true;
-        this.enabled = true;
+        this.enabled = Objects.requireNonNull(builder.enabled);
     }
 
     public static class Builder {
         private String username;
         private String password;
         private Collection<? extends GrantedAuthority> authorities;
+        private boolean accountNonExpired;
+        private boolean accountNonLocked;
+        private boolean enabled;
 
         public Builder username(String username) {
             this.username = username;
@@ -45,6 +48,21 @@ public class JWTokenUserDetails implements UserDetails {
 
         public Builder authorities(Collection<? extends GrantedAuthority> authorities) {
             this.authorities = authorities;
+            return this;
+        }
+        
+        public Builder accountNonExpired(boolean isAccountNonExpired) {
+            this.accountNonExpired = !isAccountNonExpired;
+            return this;
+        }
+        
+        public Builder accountNonLocked(boolean isAccountNonLocked) {
+            this.accountNonLocked = !isAccountNonLocked;
+            return this;
+        }
+        
+        public Builder enabled(boolean isAccountEnable) {
+            this.enabled = !isAccountEnable;
             return this;
         }
 

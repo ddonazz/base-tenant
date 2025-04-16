@@ -19,8 +19,6 @@ import it.andrea.start.dto.audit.AuditTraceDTO;
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.BusinessException;
 import it.andrea.start.error.exception.ErrorCode;
-import it.andrea.start.error.exception.mapping.MappingException;
-import it.andrea.start.error.exception.mapping.MappingToDtoException;
 import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.error.exception.user.UserNotFoundException;
 import it.andrea.start.mappers.user.UserMapper;
@@ -60,16 +58,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void requestPasswordReset(String email) throws UserException {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException(email);
-        }
-    }
-
-    @Override
     @Transactional(noRollbackFor = Exception.class, readOnly = true, propagation = Propagation.REQUIRED)
-    public UserDTO getUser(String username) throws UserNotFoundException, MappingException {
+    public UserDTO getUser(String username) throws UserException {
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException(username);
@@ -81,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-    public UserDTO getUser(Long id) throws UserException, MappingException {
+    public UserDTO getUser(Long id) throws UserException {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException(id.toString());
@@ -93,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-    public UserDTO whoami(JWTokenUserDetails jWTokenUserDetails) throws UserException, MappingException {
+    public UserDTO whoami(JWTokenUserDetails jWTokenUserDetails) throws UserException {
         String username = jWTokenUserDetails.getUsername();
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
@@ -106,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public UserDTO createUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws BusinessException, MappingException, UserException {
+    public UserDTO createUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws BusinessException, UserException {
         userValidator.validateUser(userDTO, HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN), true);
 
         User user = new User();
@@ -129,7 +119,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public Pair<UserDTO, AuditTraceDTO> updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws UserException, BusinessException, MappingException {
+    public Pair<UserDTO, AuditTraceDTO> updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws UserException, BusinessException {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
 
         String username = userDTO.getUsername();
@@ -188,16 +178,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = true, propagation = Propagation.REQUIRED)
-    public PagedResult<UserDTO> listUser(UserSearchCriteria criteria, Pageable pageable, JWTokenUserDetails userDetails) throws MappingException {
+    public PagedResult<UserDTO> listUser(UserSearchCriteria criteria, Pageable pageable, JWTokenUserDetails userDetails) {
         final Page<User> userPage = userRepository.findAll(new UserSearchSpecification(criteria), pageable);
-
-        final Page<UserDTO> dtoPage = userPage.map(user -> {
-            try {
-                return userMapper.toDto(user);
-            } catch (MappingToDtoException e) {
-                throw new RuntimeException("Errore durante il mapping dell'utente", e);
-            }
-        });
+        final Page<UserDTO> dtoPage = userPage.map(userMapper::toDto);
 
         final PagedResult<UserDTO> result = new PagedResult<>();
         result.setItems(dtoPage.getContent());

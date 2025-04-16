@@ -20,7 +20,7 @@ public enum ErrorCode {
     AUTHORIZEUSER_USERNAME_NULL("authorize.user.username.null"), //
     AUTHORIZEUSER_PASSWORD_NULL("authorize.user.password.null"), //
     AUTHORIZEUSER_USERNOTFOUND("authorize.user.usernotfound"), //
-    AUTHORIZEUSER_PASSWORDWRONG("authorize.user.passwordwrong"), //
+    AUTHORIZEUSER_PASSWORD_WRONG("authorize.user.passwordwrong"), //
 
     // --- User Management Errors ---
     USER_ID_NULL("error.user.id.null"), //

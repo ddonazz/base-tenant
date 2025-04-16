@@ -11,6 +11,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import it.andrea.start.controller.response.BadRequestResponse;
+import it.andrea.start.error.exception.ErrorCode;
 import it.andrea.start.utils.HelperString;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,8 +22,6 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
-    private static final String AUTH_ERROR = "error.authentication.userandpass";
-
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         logErrorDetails(request, authException);
@@ -32,7 +31,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
         ResourceBundle rb = ResourceBundle.getBundle("bundles.Messages", Locale.ITALIAN);
 
-        BadRequestResponse badRequestResponse = new BadRequestResponse("Unauthorized", authException.getMessage(), rb.getString(AUTH_ERROR));
+        BadRequestResponse badRequestResponse = new BadRequestResponse("Unauthorized", authException.getMessage(), rb.getString(ErrorCode.AUTHORIZEUSER_PASSWORD_WRONG.getCode()));
         response.getOutputStream().println(HelperString.toJson(badRequestResponse));
     }
 

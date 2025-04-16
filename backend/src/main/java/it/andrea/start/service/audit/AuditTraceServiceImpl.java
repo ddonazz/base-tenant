@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.andrea.start.dto.audit.AuditTraceDTO;
-import it.andrea.start.error.exception.mapping.MappingToDtoException;
-import it.andrea.start.error.exception.mapping.MappingToEntityException;
 import it.andrea.start.mappers.audit.AuditMapper;
 import it.andrea.start.models.audit.AuditTrace;
 import it.andrea.start.repository.audit.AuditTraceRepository;
@@ -31,14 +29,14 @@ public class AuditTraceServiceImpl implements AuditTraceService {
     private final AuditMapper auditMapper;
 
     public AuditTraceServiceImpl(AuditTraceRepository auditTraceRepository, AuditMapper auditMapper) {
-	super();
-	this.auditTraceRepository = auditTraceRepository;
-	this.auditMapper = auditMapper;
+        super();
+        this.auditTraceRepository = auditTraceRepository;
+        this.auditMapper = auditMapper;
     }
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public void saveAuditTrace(Collection<AuditTraceDTO> audits) throws MappingToEntityException {
+    public void saveAuditTrace(Collection<AuditTraceDTO> audits) {
         if (audits == null || audits.isEmpty()) {
             return;
         }
@@ -61,16 +59,9 @@ public class AuditTraceServiceImpl implements AuditTraceService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public PagedResult<AuditTraceDTO> searchAuditTrace(AuditTraceSearchCriteria criteria, Pageable pageable) throws MappingToDtoException {
-        Page<AuditTrace> auditPage = auditTraceRepository.findAll(new AuditTraceSearchSpecification(criteria), pageable);
-
-        final Page<AuditTraceDTO> dtoPage = auditPage.map(audit -> {
-            try {
-                return auditMapper.toDto(audit);
-            } catch (MappingToDtoException e) {
-                throw new RuntimeException("Errore durante il mapping dell'utente", e);
-            }
-        });
+    public PagedResult<AuditTraceDTO> searchAuditTrace(AuditTraceSearchCriteria criteria, Pageable pageable) {
+        final Page<AuditTrace> auditPage = auditTraceRepository.findAll(new AuditTraceSearchSpecification(criteria), pageable);
+        final Page<AuditTraceDTO> dtoPage = auditPage.map(auditMapper::toDto);
 
         final PagedResult<AuditTraceDTO> result = new PagedResult<>();
         result.setItems(dtoPage.getContent());
@@ -83,7 +74,7 @@ public class AuditTraceServiceImpl implements AuditTraceService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public AuditTraceDTO getAuditTrace(Long id) throws MappingToDtoException {
+    public AuditTraceDTO getAuditTrace(Long id) {
         Optional<AuditTrace> auditOpt = auditTraceRepository.findById(id);
         if (auditOpt.isEmpty()) {
             return null;

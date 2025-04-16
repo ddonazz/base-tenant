@@ -1,6 +1,8 @@
 package it.andrea.start.repository.user;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -13,5 +15,7 @@ public interface UserRoleRepository extends JpaRepository<UserRole, Long>, JpaSp
     public Optional<UserRole> findByRole(RoleType roleType);
 
     public boolean existsByRole(RoleType roleType);
+    
+    public List<UserRole> findByRoleIn(Set<RoleType> roleTypes);
 
 }

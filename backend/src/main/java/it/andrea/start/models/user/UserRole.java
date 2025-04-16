@@ -16,10 +16,10 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(
-	name = "user_role",
-	indexes = { @Index(name = "IDX_ROLE", columnList = "role") }
-	)
+@Table( //
+        name = "user_role", //
+        indexes = { @Index(name = "IDX_ROLE", columnList = "role") } //
+) //
 public class UserRole implements GrantedAuthority {
     private static final long serialVersionUID = 5841586043417823821L;
 
@@ -32,28 +32,28 @@ public class UserRole implements GrantedAuthority {
     private RoleType role;
 
     public UserRole() {
-	super();
+        super();
     }
 
     public UserRole(RoleType role) {
-	super();
-	this.role = role;
+        super();
+        this.role = role;
     }
 
     public Long getId() {
-	return id;
+        return id;
     }
 
     public void setId(Long id) {
-	this.id = id;
+        this.id = id;
     }
 
     public RoleType getRole() {
-	return role;
+        return role;
     }
 
     public void setRole(RoleType role) {
-	this.role = role;
+        this.role = role;
     }
 
     @Override
@@ -63,19 +63,19 @@ public class UserRole implements GrantedAuthority {
 
     @Override
     public int hashCode() {
-	return Objects.hash(role);
+        return Objects.hash(role);
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (this == obj)
-	    return true;
-	if (obj == null)
-	    return false;
-	if (getClass() != obj.getClass())
-	    return false;
-	UserRole other = (UserRole) obj;
-	return role == other.role;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        UserRole other = (UserRole) obj;
+        return role == other.role;
     }
-    
+
 }

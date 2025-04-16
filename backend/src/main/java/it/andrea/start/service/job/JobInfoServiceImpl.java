@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.quartz.CronExpression;
 import org.quartz.JobBuilder;
@@ -45,8 +46,8 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     private final JobInfoMapper jobInfoMapper;
 
-    public JobInfoServiceImpl(SchedulerFactoryBean schedulerFactoryBean, JobInfoRepository jobInfoRepository, ApplicationContext context,
-            JobSchedulerCreator schedulerCreator, JobInfoMapper jobInfoMapper) {
+    public JobInfoServiceImpl(SchedulerFactoryBean schedulerFactoryBean, JobInfoRepository jobInfoRepository, ApplicationContext context, JobSchedulerCreator schedulerCreator,
+            JobInfoMapper jobInfoMapper) {
         this.schedulerFactoryBean = schedulerFactoryBean;
         this.jobInfoRepository = jobInfoRepository;
         this.context = context;
@@ -74,49 +75,16 @@ public class JobInfoServiceImpl implements JobInfoService {
                 }
             }
         });
-
-    }
-
-    private void startJob(Scheduler scheduler, JobInfo jobInfo) throws ParseException {
-        try {
-            String cronExpression = jobInfo.getCronExpression();
-            Class<?> jobClass = Class.forName(jobInfo.getJobClass());
-            if (QuartzJobBean.class.isAssignableFrom(jobClass)) {
-                Class<? extends QuartzJobBean> quartzJobClass = jobClass.asSubclass(QuartzJobBean.class);
-                JobDetail jobDetail = JobBuilder.newJob(quartzJobClass).withIdentity(jobInfo.getJobName(), jobInfo.getJobGroup()).build();
-                if (!scheduler.checkExists(jobDetail.getKey())) {
-                    jobDetail = schedulerCreator.createJob(quartzJobClass, false, context, jobInfo.getJobName(), jobInfo.getJobGroup());
-                    Trigger trigger = createTrigger(jobInfo, cronExpression);
-                    if (trigger != null) {
-                        scheduler.scheduleJob(jobDetail, trigger);
-                        try {
-                            schedulerFactoryBean.afterPropertiesSet();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        } catch (ClassNotFoundException | SchedulerException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Trigger createTrigger(JobInfo jobInfo, String cronExpression) throws ParseException {
-        Trigger trigger = null;
-        if (Boolean.TRUE.equals(jobInfo.getCronJob()) && CronExpression.isValidExpression(cronExpression)) {
-            trigger = schedulerCreator.createCronTrigger(jobInfo.getJobName(), LocalDateTime.now(), cronExpression, SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW);
-        }
-        return trigger;
     }
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
     public void scheduleNewJob(String jobName) throws ParseException {
-        JobInfo jobInfo = jobInfoRepository.findByJobName(jobName);
-        if (jobInfo == null) {
+        Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
+        if (jobInfoOpt.isEmpty()) {
             return;
         }
+        JobInfo jobInfo = jobInfoOpt.get();
 
         String cronExpression = jobInfo.getCronExpression();
         try {
@@ -129,38 +97,31 @@ public class JobInfoServiceImpl implements JobInfoService {
                 if (!scheduler.checkExists(jobDetail.getKey())) {
                     jobDetail = schedulerCreator.createJob(quartzJobClass, false, context, jobInfo.getJobName(), jobInfo.getJobGroup());
 
-                    Trigger trigger = createTrigger(jobInfo, cronExpression);
-
-                    if (trigger != null) {
-                        scheduler.scheduleJob(jobDetail, trigger);
+                    Optional<Trigger> triggerOpt = createTrigger(jobInfo, cronExpression);
+                    if (triggerOpt.isPresent()) {
+                        scheduler.scheduleJob(jobDetail, triggerOpt.get());
                         jobInfo.setIsActive(true);
                         jobInfoRepository.save(jobInfo);
-                        try {
-                            schedulerFactoryBean.afterPropertiesSet();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        LOG.info("Nuovo job {} programmato con successo.", jobName);
+                        schedulerFactoryBean.afterPropertiesSet();
                     }
-                } else {
-                    LOG.warn("Il job {} è già stato programmato.", jobName);
                 }
             }
         } catch (ClassNotFoundException e) {
             LOG.error("Impossibile trovare la classe per il job {}. Classe non trovata: {}", jobName, jobInfo.getJobClass());
         } catch (SchedulerException e) {
             LOG.error("Errore durante la programmazione del job {}: {}", jobName, e.getMessage());
+        } catch (Exception e) {
+            LOG.error("Errore generico nella schedulazione del job {}: {}", jobName, e.getMessage());
         }
     }
 
     @Override
     public void updateScheduleJob(String jobName) throws ParseException {
-        JobInfo jobInfo = jobInfoRepository.findByJobName(jobName);
-        if (jobInfo == null) {
-            LOG.error("Il job con il nome {} non è stato trovato nel repository.", jobName);
+        Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
+        if (jobInfoOpt.isEmpty()) {
             return;
         }
+        JobInfo jobInfo = jobInfoOpt.get();
 
         String cronExpression = jobInfo.getCronExpression();
         Trigger newTrigger;
@@ -183,7 +144,6 @@ public class JobInfoServiceImpl implements JobInfoService {
             scheduler.rescheduleJob(TriggerKey.triggerKey(jobInfo.getJobName()), newTrigger);
             jobInfo.setIsActive(true);
             jobInfoRepository.save(jobInfo);
-            LOG.info("job {} aggiornato con successo nel programma.", jobName);
         } catch (SchedulerException e) {
             LOG.error("Errore durante l'aggiornamento del job {} nel programma: {}", jobName, e.getMessage());
         }
@@ -191,102 +151,117 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     public boolean unScheduleJob(String jobName) {
+        Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
+        if (jobInfoOpt.isEmpty()) {
+            return false;
+        }
+        JobInfo jobInfo = jobInfoOpt.get();
         try {
-            JobInfo jobInfo = jobInfoRepository.findByJobName(jobName);
-            if (jobInfo == null) {
-                return false;
-            }
             jobInfo.setIsActive(false);
             jobInfoRepository.save(jobInfo);
-            boolean isUnscheduled = schedulerFactoryBean.getScheduler().unscheduleJob(new TriggerKey(jobName));
-            if (isUnscheduled) {
-                LOG.info("Il job {} è stato rimosso dal programma con successo.", jobName);
-            } else {
-                LOG.error("Impossibile rimuovere il job {} dal programma.", jobName);
-            }
-            return isUnscheduled;
+            return schedulerFactoryBean.getScheduler().unscheduleJob(new TriggerKey(jobName));
         } catch (SchedulerException e) {
-            LOG.error("Errore durante la rimozione del job {} dal programma: {}", jobName, e.getMessage());
             return false;
         }
     }
 
     @Override
     public boolean deleteJob(String jobName) {
+        Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
+        if (jobInfoOpt.isEmpty()) {
+            return false;
+        }
+        JobInfo jobInfo = jobInfoOpt.get();
         try {
-            JobInfo jobInfo = jobInfoRepository.findByJobName(jobName);
-            if (jobInfo == null) {
-                LOG.error("Il job con il nome {} non è stato trovato nel repository.", jobName);
-                return false;
-            }
             jobInfo.setIsActive(false);
             jobInfoRepository.save(jobInfo);
-            boolean isDeleted = schedulerFactoryBean.getScheduler().deleteJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
-            if (isDeleted) {
-                LOG.info("Il job {} è stato eliminato dal programma con successo.", jobName);
-            } else {
-                LOG.error("Impossibile eliminare il job {} dal programma.", jobName);
-            }
-            return isDeleted;
+            return schedulerFactoryBean.getScheduler().deleteJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
         } catch (SchedulerException e) {
-            LOG.error("Errore durante l'eliminazione del job {} dal programma: {}", jobName, e.getMessage());
             return false;
         }
     }
 
     @Override
     public boolean pauseJob(String jobName) {
+        Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
+        if (jobInfoOpt.isEmpty()) {
+            return false;
+        }
+        JobInfo jobInfo = jobInfoOpt.get();
         try {
-            JobInfo jobInfo = jobInfoRepository.findByJobName(jobName);
-            if (jobInfo == null) {
-                LOG.error("Il job con il nome {} non è stato trovato nel repository.", jobName);
-                return false;
-            }
             jobInfo.setIsActive(false);
             jobInfoRepository.save(jobInfo);
             schedulerFactoryBean.getScheduler().pauseJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
-            LOG.info("Il job {} è stato messo in pausa con successo.", jobName);
             return true;
         } catch (SchedulerException e) {
-            LOG.error("Errore durante la messa in pausa del job {} nel programma: {}", jobName, e.getMessage());
             return false;
         }
     }
 
     @Override
     public boolean resumeJob(String jobName) {
+        Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
+        if (jobInfoOpt.isEmpty()) {
+            return false;
+        }
+        JobInfo jobInfo = jobInfoOpt.get();
         try {
-            JobInfo jobInfo = jobInfoRepository.findByJobName(jobName);
-            if (jobInfo == null) {
-                LOG.error("Il job con il nome {} non è stato trovato nel repository.", jobName);
-                return false;
-            }
             jobInfo.setIsActive(true);
             jobInfoRepository.save(jobInfo);
             schedulerFactoryBean.getScheduler().resumeJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
-            LOG.info("Il job {} è stato ripreso con successo.", jobName);
             return true;
         } catch (SchedulerException e) {
-            LOG.error("Errore durante il ripristino del job {} nel programma: {}", jobName, e.getMessage());
             return false;
         }
     }
 
     @Override
     public boolean startJobNow(String jobName) {
-        try {
-            JobInfo jobInfo = jobInfoRepository.findByJobName(jobName);
-            if (jobInfo == null) {
-                LOG.error("Il job con il nome {} non è stato trovato nel repository.", jobName);
-                return false;
-            }
-            schedulerFactoryBean.getScheduler().triggerJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
-            LOG.info("Il job {} è stato avviato immediatamente con successo.", jobName);
-            return true;
-        } catch (SchedulerException e) {
-            LOG.error("Errore durante l'avvio immediato del job {} nel programma: {}", jobName, e.getMessage());
+        Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
+        if (jobInfoOpt.isEmpty()) {
             return false;
         }
+        JobInfo jobInfo = jobInfoOpt.get();
+        try {
+            schedulerFactoryBean.getScheduler().triggerJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
+            return true;
+        } catch (SchedulerException e) {
+            return false;
+        }
+    }
+
+    private void startJob(Scheduler scheduler, JobInfo jobInfo) throws ParseException {
+        try {
+            String cronExpression = jobInfo.getCronExpression();
+            Class<?> jobClass = Class.forName(jobInfo.getJobClass());
+            if (QuartzJobBean.class.isAssignableFrom(jobClass)) {
+                Class<? extends QuartzJobBean> quartzJobClass = jobClass.asSubclass(QuartzJobBean.class);
+                JobDetail jobDetail = JobBuilder.newJob(quartzJobClass).withIdentity(jobInfo.getJobName(), jobInfo.getJobGroup()).build();
+                if (!scheduler.checkExists(jobDetail.getKey())) {
+                    jobDetail = schedulerCreator.createJob(quartzJobClass, false, context, jobInfo.getJobName(), jobInfo.getJobGroup());
+                    Optional<Trigger> triggerOpt = createTrigger(jobInfo, cronExpression);
+                    if (triggerOpt.isPresent()) {
+                        scheduler.scheduleJob(jobDetail, triggerOpt.get());
+                        schedulerFactoryBean.afterPropertiesSet();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Optional<Trigger> createTrigger(JobInfo jobInfo, String cronExpression) throws ParseException {
+        Optional<Trigger> trigger = Optional.empty();
+        if (Boolean.TRUE.equals(jobInfo.getCronJob()) && CronExpression.isValidExpression(cronExpression)) {
+            trigger = Optional.of(schedulerCreator.createCronTrigger( //
+                    jobInfo.getJobName(), //
+                    LocalDateTime.now(), //
+                    cronExpression, //
+                    SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW //
+            ));
+        }
+        return trigger;
     }
 
 }

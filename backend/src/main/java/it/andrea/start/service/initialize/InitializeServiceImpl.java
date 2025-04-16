@@ -26,9 +26,7 @@ import it.andrea.start.constants.EntityType;
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
 import it.andrea.start.error.exception.BusinessException;
-import it.andrea.start.error.exception.mapping.MappingToDtoException;
-import it.andrea.start.error.exception.mapping.MappingToEntityException;
-import it.andrea.start.error.exception.user.UserNotFoundException;
+import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.models.JobInfo;
 import it.andrea.start.models.user.User;
 import it.andrea.start.models.user.UserRole;
@@ -71,7 +69,7 @@ public class InitializeServiceImpl implements InitializeService {
     }
 
     @PostConstruct
-    public void executeStartOperation() throws UserNotFoundException, MappingToDtoException, MappingToEntityException, BusinessException {
+    public void executeStartOperation() throws UserException, BusinessException {
         initRoles();
         loadJobsUsersFromXML(appPath + USERS_FILE);
         loadJobsFromXML(appPath + JOBS_FILE);

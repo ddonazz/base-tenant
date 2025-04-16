@@ -1,10 +1,10 @@
 package it.andrea.start.mappers;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
-import it.andrea.start.error.exception.mapping.MappingToDtoException;
 import jakarta.persistence.EntityManager;
 
 public abstract class AbstractMapper<T, E> implements Mapper<T, E> {
@@ -16,18 +16,15 @@ public abstract class AbstractMapper<T, E> implements Mapper<T, E> {
         this.entityManager = entityManager;
     }
 
-    public final Collection<T> toDtos(final Collection<E> elements) throws MappingToDtoException {
-        if (elements == null) {
+    public final List<T> toDtos(final Collection<E> elements) {
+        if (elements == null || elements.isEmpty()) {
             return Collections.emptyList();
         }
 
-        Collection<T> dtos = new ArrayList<>(elements.size());
-        for (E element : elements) {
-            if (element != null) {
-                dtos.add(toDto(element));
-            }
-        }
-        return dtos;
+        return elements //
+                .stream() //
+                .filter(Objects::nonNull) //
+                .map(this::toDto).toList();
     }
 
     protected EntityManager getEntityManager() {
