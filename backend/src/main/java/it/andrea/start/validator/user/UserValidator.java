@@ -24,20 +24,18 @@ public class UserValidator {
         this.userRepository = userRepository;
     }
 
-    public static void checkPassword(User entity, String newPassword, String repeatPassword, boolean haveAdminRole, boolean haveManagerRole)
+    public static void checkPassword(String newPassword, String repeatPassword, boolean haveAdminRole, boolean haveManagerRole)
             throws BusinessException {
         if (haveAdminRole) {
-            throw new BusinessException(ENTITY, "Is not possible to change password to admin role user",
-                    ErrorCode.USER_ROLE_ADMIN_NOT_CHANGE_PASSWORD.getCode(), String.valueOf(entity.getId()));
+            throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_ADMIN_NOT_CHANGE_PASSWORD);
         }
 
         if (haveManagerRole) {
-            throw new BusinessException(ENTITY, "Is not possible to change password to manager role user if you not are admin user",
-                    ErrorCode.USER_ROLE_MANAGER_NOT_CHANGE_PASSWORD.getCode(), String.valueOf(entity.getId()));
+            throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_MANAGER_NOT_CHANGE_PASSWORD);
         }
 
         if (!newPassword.equals(repeatPassword)) {
-            throw new BusinessException(ENTITY, "New password and repeat password is not equal", ErrorCode.USER_REPEAT_PASSWORD_NOT_EQUAL.getCode());
+            throw new BusinessException(ENTITY, ErrorCode.USER_REPEAT_PASSWORD_NOT_EQUAL);
         }
     }
 
@@ -54,12 +52,12 @@ public class UserValidator {
 
         Collection<String> roles = dto.getRoles();
         if (checkAdmin && roles.stream().anyMatch(role -> role.equals(RoleType.ROLE_ADMIN.name()))) {
-            throw new BusinessException(ENTITY, "Role admin is not usable", ErrorCode.USER_ROLE_ADMIN_NOT_USABLE.getCode());
+            throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_ADMIN_NOT_USABLE);
         }
 
         String roleManager = roles.stream().filter(role -> role.equals(RoleType.ROLE_MANAGER.name())).findFirst().orElse(null);
         if (roleManager != null && !haveAdminRole) {
-            throw new BusinessException(ENTITY, "Role manager is not usable", ErrorCode.USER_ROLE_MANAGER_NOT_USABLE.getCode());
+            throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_MANAGER_NOT_USABLE);
         }
     }
 
@@ -72,13 +70,13 @@ public class UserValidator {
 
         Collection<String> roles = dto.getRoles();
         if (!isMyProfile && roles.stream().anyMatch(role -> role.equals(RoleType.ROLE_ADMIN.name()))) {
-            throw new BusinessException(ENTITY, "Role admin is not usable", ErrorCode.USER_ROLE_ADMIN_NOT_USABLE.getCode());
+            throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_ADMIN_NOT_USABLE);
         }
 
         if (!isMyProfile) {
             String roleManager = roles.stream().filter(role -> role.equals(RoleType.ROLE_MANAGER.name())).findFirst().orElse(null);
             if (roleManager != null && !haveAdminRole) {
-                throw new BusinessException(ENTITY, "Role manager is not usable", ErrorCode.USER_ROLE_MANAGER_NOT_USABLE.getCode());
+                throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_MANAGER_NOT_USABLE);
             }
         }
     }

@@ -1,13 +1,102 @@
-HELP.md
+# =========================================
+# Gitignore for Java / Maven / Spring Boot
+# =========================================
+
+# OS Generated Files
+# ==================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary Files / Backups
+# =========================
+*~
+*.swp
+*.bak
+*.tmp
+*.temp
+
+# IDE Files - IntelliJ IDEA
+# =========================
+# Project settings
+.idea/
+# Module files
+*.iml
+# Build output folder (if configured outside target)
+out/
+# Generated source folders (annotation processing, etc.)
+# Add specific folders if needed, e.g., target/generated-sources/
+
+# IDE Files - Eclipse
+# ===================
+.settings/
+.project
+.classpath
+.factorypath
+
+# IDE Files - NetBeans
+# ====================
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+# IDE Files - VS Code
+# ==================
+.vscode/
+
+# Maven Build Files / Output
+# ==========================
+# Maven build output directory
 target/
+
+# Maven Wrapper - ignore the directory but keep wrapper files
+.mvn/
 !.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+# Some wrappers might have these at the .mvn level too, uncomment if needed
+# !.mvn/maven-wrapper.jar
+# !.mvn/maven-wrapper.properties
+
+# Package Files (often in target/, but good practice)
+# *.jar # Commented out - may conflict with maven-wrapper.jar exception
+# *.war
+# *.ear
+# *.zip
+# *.tar.gz
+
+# Log Files
+# =========
+*.log
+logs/
+
+# Runtime Data
+# ============
+pids/
+*.pid
+*.seed
+*.out
+hs_err_pid*
+
+# User Specific Files (from your list)
+# ====================================
+HELP.md
+
+# User Specific Rules (unusual, check if really needed)
+# =====================================================
+# Do not ignore 'target' directories within src/main or src/test
+# This is generally not standard, target folders shouldn't be nested here.
+# Verify if these rules are necessary for your specific build plugins.
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-.settings/
-.project
-
-/target/
-/.classpath
-/.factorypath
-/.idea
+# Secrets / Sensitive Config (add your specific files)
+# ====================================================
+# application-secret.properties
+# credentials.json

@@ -1,46 +1,37 @@
 package it.andrea.start.error.handlers;
 
 import it.andrea.start.controller.response.BadRequestResponse;
-import it.andrea.start.error.exception.ErrorCode;
-import it.andrea.start.error.exception.user.UserAlreadyExistsException;
 import it.andrea.start.error.exception.user.UserException;
-import it.andrea.start.error.exception.user.UserNotFoundException;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 @ControllerAdvice
-public class UserExceptionHandler {
+public class UserExceptionHandler extends AbstractHandler {
 
-    private static final String ENTITY = "User";
-    private static final String MESSAGE_BUNDLE_PATH = "bundles.Messages";
+    private final MessageSource messageSource;
 
-    private static final Map<Class<? extends UserException>, ErrorCode> EXCEPTION_MESSAGE_KEYS = Map.of(
-            UserAlreadyExistsException.class, ErrorCode.USER_ALREADY_EXISTS,
-            UserNotFoundException.class, ErrorCode.USER_NOT_FOUND
-    );
+    public UserExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @ExceptionHandler(UserException.class)
-    public final ResponseEntity<Object> handleUserException(UserException userException, Locale locale) {
-        ResourceBundle rb = ResourceBundle.getBundle(MESSAGE_BUNDLE_PATH, locale);
-        ErrorCode errorCode = resolveMessageKey(userException);
-        String localizedMessage = rb.getString(errorCode.getCode());
+    public final ResponseEntity<Object> handleUserException(UserException userException) {
+        String errorMessage = messageSource.getMessage(
+                resolveMessageKey(userException).getCode(),
+                null,
+                "Generic error occurred",
+                LocaleContextHolder.getLocale()
+        );
 
-        BadRequestResponse response = createBadRequestResponse(userException, localizedMessage);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BadRequestResponse(getEntityType(), errorMessage));
     }
 
-    private ErrorCode resolveMessageKey(UserException userException) {
-        return EXCEPTION_MESSAGE_KEYS.getOrDefault(userException.getClass(), ErrorCode.ERROR_INTERNAL_SERVER_ERROR);
-    }
-
-    private BadRequestResponse createBadRequestResponse(UserException userException, String message) {
-        return new BadRequestResponse(ENTITY, userException.getMessage(), message);
+    @Override
+    public String getEntityType() {
+        return "User";
     }
 }

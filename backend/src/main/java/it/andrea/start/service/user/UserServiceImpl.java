@@ -143,10 +143,10 @@ public class UserServiceImpl implements UserService {
         User user = optionalUser.get();
 
         if (haveAdminRole) {
-            throw new BusinessException(ENTITY, "Admin not possible to delete", ErrorCode.USER_ROLE_ADMIN_NOT_DELETE.getCode(), String.valueOf(id));
+            throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_ADMIN_NOT_DELETE);
         }
         if (haveManagerRole) {
-            throw new BusinessException(ENTITY, "Only admin can delete a manager", ErrorCode.USER_ROLE_MANAGER_NOT_DELETE.getCode(), String.valueOf(id));
+            throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_MANAGER_NOT_DELETE);
         }
 
         user.setUserStatus(UserStatus.DEACTIVATE);
@@ -182,7 +182,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = optionalUser.get();
 
-        UserValidator.checkPassword(user, newPassword, repeatPassword, haveAdminRole, haveManagerRole);
+        UserValidator.checkPassword(newPassword, repeatPassword, haveAdminRole, haveManagerRole);
 
         String passwordCrypt = encrypterManager.encode(newPassword);
         user.setPassword(passwordCrypt);
@@ -204,7 +204,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = optionalUser.get();
 
-        UserValidator.checkPassword(user, newPassword, repeatPassword, haveAdminRole, haveManagerRole);
+        UserValidator.checkPassword(newPassword, repeatPassword, haveAdminRole, haveManagerRole);
 
         String passwordCrypt = encrypterManager.encode(newPassword);
         user.setPassword(passwordCrypt);

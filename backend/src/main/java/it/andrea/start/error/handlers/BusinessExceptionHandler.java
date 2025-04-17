@@ -2,44 +2,39 @@ package it.andrea.start.error.handlers;
 
 import it.andrea.start.controller.response.BadRequestResponse;
 import it.andrea.start.error.exception.BusinessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 @ControllerAdvice
-public class BusinessExceptionHandler {
+public class BusinessExceptionHandler extends AbstractHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BusinessExceptionHandler.class);
+    private final MessageSource messageSource;
+
+    public BusinessExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public final ResponseEntity<Object> toResponse(BusinessException businessException, Locale locale) {
-        LOG.error("Catch exception", businessException);
+    public final ResponseEntity<Object> toResponse(BusinessException businessException) {
+        String errorMessage = messageSource.getMessage(
+                resolveMessageKey(businessException).getCode(),
+                null,
+                "Generic error occurred",
+                LocaleContextHolder.getLocale()
+        );
 
-        ResourceBundle rb = ResourceBundle.getBundle("bundles.Messages", locale);
-        String message = mapMessage(businessException, rb);
-
-        BadRequestResponse response = new BadRequestResponse(businessException.getEntity(), businessException.getMessage(), message);
-
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.badRequest().body(new BadRequestResponse(businessException.getEntity(), errorMessage));
     }
 
-    private String mapMessage(BusinessException businessException, ResourceBundle rb) {
-        String errorCode = businessException.getCode();
-
-        try {
-            return rb.getString(errorCode);
-        } catch (MissingResourceException e) {
-            return businessException.getMessage();
-        }
+    @Override
+    public String getEntityType() {
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -5,7 +5,6 @@ import it.andrea.start.validator.OnCreate;
 import it.andrea.start.validator.OnUpdate;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.io.Serial;
@@ -14,35 +13,35 @@ import java.util.Objects;
 import java.util.Set;
 
 public class UserDTO implements Serializable {
-    
+
     @Serial
     private static final long serialVersionUID = -6705812365714677548L;
 
     private Long id;
 
-    @NotBlank(message = "L'username dell'utente non può essere vuoto", groups = {OnCreate.class})
-    @Size(min = 4, max = 30, message = "L'username deve avere almeno 4 e massimo 30 caratteri", groups = {OnCreate.class})
+    @NotBlank(message = "{error.user.username.null}", groups = {OnCreate.class})
+    @Size(min = 4, max = 30, message = "{error.user.username.wrong.length}", groups = {OnCreate.class})
     private String username;
 
-    @NotBlank(message = "Il nome dell'utente non può essere vuoto", groups = {OnCreate.class, OnUpdate.class})
-    @Size(min = 5, max = 255, message = "Il nome deve avere almeno 5 e massimo 255 caratteri", groups = {OnCreate.class, OnUpdate.class})
+    @NotBlank(message = "{error.user.name.null}", groups = {OnCreate.class, OnUpdate.class})
+    @Size(min = 5, max = 255, message = "{error.user.name.wrong.length}", groups = {OnCreate.class, OnUpdate.class})
     private String name;
 
-    @Email(message = "La mail non è valida", groups = {OnCreate.class, OnUpdate.class})
+    @NotBlank(message = "{error.user.email.null}", groups = {OnCreate.class, OnUpdate.class})
+    @Email(message = "{error.user.email.not.valid}", groups = {OnCreate.class, OnUpdate.class})
     private String email;
 
-    @NotNull(message = "Lo stato dell'utente non può essere vuoto", groups = {OnCreate.class, OnUpdate.class})
+    @NotNull(message = "{error.user.status.null}", groups = {OnCreate.class, OnUpdate.class})
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
-    @Valid
-    @NotEmpty(message = "I ruoli non possono essere vuoti", groups = {OnCreate.class, OnUpdate.class})
+    @NotEmpty(message = "{error.user.roles.empty}", groups = {OnCreate.class, OnUpdate.class})
     private Set<String> roles;
 
     private String languageDefault;
 
-    @NotBlank(message = "La password è vuota", groups = OnCreate.class)
-    @Size(min = 5, max = 30, message = "La password deve avere almeno 6 e massimo 30 caratteri", groups = OnCreate.class)
+    @NotBlank(message = "{error.user.password.null}", groups = OnCreate.class)
+    @Size(min = 5, max = 30, message = "{error.user.password.wrong.length}", groups = OnCreate.class)
     private transient String password;
 
     public Long getId() {
@@ -124,5 +123,4 @@ public class UserDTO implements Serializable {
         return Objects.equals(email, other.email) && Objects.equals(id, other.id) && Objects.equals(name, other.name)
                 && Objects.equals(username, other.username);
     }
-
 }

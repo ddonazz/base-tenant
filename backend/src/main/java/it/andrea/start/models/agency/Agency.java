@@ -2,12 +2,10 @@ package it.andrea.start.models.agency;
 
 import it.andrea.start.models.BaseEntityLong;
 import it.andrea.start.models.FirstBaseEntity;
-import it.andrea.start.models.user.User;
 import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Collection;
 
 @Entity
 @Table(name = "agency")
@@ -56,9 +54,6 @@ public class Agency extends FirstBaseEntity implements BaseEntityLong, Serializa
 
     @Column(columnDefinition = "TEXT")
     private String notes;
-
-    @OneToMany(mappedBy = "agency")
-    private Collection<User> users;
 
     @Override
     public Long getId() {

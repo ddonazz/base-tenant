@@ -7,28 +7,20 @@ public class BusinessException extends Exception {
     @Serial
     private static final long serialVersionUID = 3278937856043871034L;
 
-    private String entity;
-    private final String code;
-    private String[] messageSubString;
+    private final String entity;
+    private final ErrorCode code;
 
-    public BusinessException(String entity, String message, String code, String... messageComponent) {
-        super(message);
+    public BusinessException(String entity, ErrorCode errorCode) {
+        super();
         this.entity = entity;
-        this.code = code;
-        if (messageComponent != null && messageComponent.length > 0) {
-            this.messageSubString = messageComponent;
-        }
+        this.code = errorCode;
     }
 
     public String getEntity() {
         return entity;
     }
 
-    public void setEntity(String entity) {
-        this.entity = entity;
-    }
-
-    public String getCode() {
+    public ErrorCode getCode() {
         return code;
     }
 
