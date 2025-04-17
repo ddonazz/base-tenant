@@ -1,8 +1,8 @@
 package it.andrea.start.controller.types;
 
-import java.io.Serializable;
-
 import jakarta.validation.constraints.NotBlank;
+
+import java.io.Serializable;
 
 public class LoginRequest implements Serializable {
     private static final long serialVersionUID = 3903555349152727298L;

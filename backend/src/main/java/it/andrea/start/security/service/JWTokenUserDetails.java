@@ -1,11 +1,11 @@
 package it.andrea.start.security.service;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public class JWTokenUserDetails implements UserDetails {
     private static final long serialVersionUID = 7189533439229082332L;
@@ -26,49 +26,6 @@ public class JWTokenUserDetails implements UserDetails {
         this.accountNonLocked = Objects.requireNonNull(builder.accountNonLocked);
         this.credentialsNonExpired = true;
         this.enabled = Objects.requireNonNull(builder.enabled);
-    }
-
-    public static class Builder {
-        private String username;
-        private String password;
-        private Collection<? extends GrantedAuthority> authorities;
-        private boolean accountNonExpired;
-        private boolean accountNonLocked;
-        private boolean enabled;
-
-        public Builder username(String username) {
-            this.username = username;
-            return this;
-        }
-
-        public Builder password(String password) {
-            this.password = password;
-            return this;
-        }
-
-        public Builder authorities(Collection<? extends GrantedAuthority> authorities) {
-            this.authorities = authorities;
-            return this;
-        }
-        
-        public Builder accountNonExpired(boolean isAccountNonExpired) {
-            this.accountNonExpired = isAccountNonExpired;
-            return this;
-        }
-        
-        public Builder accountNonLocked(boolean isAccountNonLocked) {
-            this.accountNonLocked = isAccountNonLocked;
-            return this;
-        }
-        
-        public Builder enabled(boolean isAccountEnable) {
-            this.enabled = isAccountEnable;
-            return this;
-        }
-
-        public JWTokenUserDetails build() {
-            return new JWTokenUserDetails(this);
-        }
     }
 
     @Override
@@ -104,5 +61,48 @@ public class JWTokenUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public static class Builder {
+        private String username;
+        private String password;
+        private Collection<? extends GrantedAuthority> authorities;
+        private boolean accountNonExpired;
+        private boolean accountNonLocked;
+        private boolean enabled;
+
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder authorities(Collection<? extends GrantedAuthority> authorities) {
+            this.authorities = authorities;
+            return this;
+        }
+
+        public Builder accountNonExpired(boolean isAccountNonExpired) {
+            this.accountNonExpired = isAccountNonExpired;
+            return this;
+        }
+
+        public Builder accountNonLocked(boolean isAccountNonLocked) {
+            this.accountNonLocked = isAccountNonLocked;
+            return this;
+        }
+
+        public Builder enabled(boolean isAccountEnable) {
+            this.enabled = isAccountEnable;
+            return this;
+        }
+
+        public JWTokenUserDetails build() {
+            return new JWTokenUserDetails(this);
+        }
     }
 }

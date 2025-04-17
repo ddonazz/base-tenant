@@ -10,17 +10,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class StaticResourceConfiguration implements WebMvcConfigurer {
 
+    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
+            "classpath:/META_INF/resources/",
+            "classpath:/resources/",
+            "classpath:/static/",
+            "classpath:/public/"};
     private final String staticPath;
 
     public StaticResourceConfiguration(Environment environment) {
         staticPath = environment.getProperty("app.static.path");
     }
-
-    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { //
-            "classpath:/META_INF/resources/", //
-            "classpath:/resources/", //
-            "classpath:/static/", //
-            "classpath:/public/" };
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

@@ -1,14 +1,5 @@
 package it.andrea.start.service.user;
 
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import it.andrea.start.constants.EntityType;
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
@@ -27,6 +18,14 @@ import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.utils.HelperAuthorization;
 import it.andrea.start.utils.PagedResult;
 import it.andrea.start.validator.user.UserValidator;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -197,14 +196,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public void changePassword(String username, String newPassword, String repeatPassword, JWTokenUserDetails userDetails)
+    public void changePassword(String newPassword, String repeatPassword, JWTokenUserDetails userDetails)
             throws UserException, BusinessException {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
         boolean haveManagerRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_MANAGER);
 
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+        Optional<User> optionalUser = userRepository.findByUsername(userDetails.getUsername());
         if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException(username);
+            throw new UserNotFoundException(userDetails.getUsername());
         }
         User user = optionalUser.get();
 

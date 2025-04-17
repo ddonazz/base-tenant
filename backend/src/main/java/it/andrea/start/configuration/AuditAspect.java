@@ -1,7 +1,16 @@
 package it.andrea.start.configuration;
 
-import java.time.LocalDateTime;
-
+import it.andrea.start.annotation.Audit;
+import it.andrea.start.constants.AuditActivity;
+import it.andrea.start.constants.AuditLevel;
+import it.andrea.start.models.BaseEntityLong;
+import it.andrea.start.models.BaseEntityString;
+import it.andrea.start.models.audit.AuditTrace;
+import it.andrea.start.security.service.JWTokenUserDetails;
+import it.andrea.start.service.audit.AuditTraceService;
+import it.andrea.start.utils.HelperAudit;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,17 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import it.andrea.start.annotation.Audit;
-import it.andrea.start.constants.AuditActivity;
-import it.andrea.start.constants.AuditLevel;
-import it.andrea.start.models.BaseEntityLong;
-import it.andrea.start.models.BaseEntityString;
-import it.andrea.start.models.audit.AuditTrace;
-import it.andrea.start.security.service.JWTokenUserDetails;
-import it.andrea.start.service.audit.AuditTraceService;
-import it.andrea.start.utils.HelperAudit;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 
 @Aspect
 @Component

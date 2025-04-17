@@ -1,11 +1,10 @@
 package it.andrea.start.configuration;
 
+import it.andrea.start.constants.AuditLevel;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import it.andrea.start.constants.AuditLevel;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)

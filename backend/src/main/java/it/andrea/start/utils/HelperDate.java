@@ -1,5 +1,9 @@
 package it.andrea.start.utils;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,23 +15,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class HelperDate {
-
-    private HelperDate() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
-    }
-
-    private static final Logger LOG = LoggerFactory.getLogger(HelperDate.class);
 
     public static final String TIMESTAMP_WITH_TIMEZONE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     public static final String TIMESTAMP_WITHOUT_TIMEZONE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String DATE_FORMAT_LINE = "yyyy-MM-dd";
     public static final String DATE_FORMAT_SLASH = "dd/MM/yyyy";
     public static final String DATE_FORMAT_DAY = "dd-MM-yyyy";
+    private static final Logger LOG = LoggerFactory.getLogger(HelperDate.class);
+    private HelperDate() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
 
     public static LocalDateTime parseDate(String dateStr, String format, boolean returnNullOnException) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);

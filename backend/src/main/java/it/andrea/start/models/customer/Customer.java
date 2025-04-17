@@ -5,15 +5,7 @@ import it.andrea.start.models.BaseEntityLong;
 import it.andrea.start.models.Location;
 import it.andrea.start.models.Registry;
 import it.andrea.start.models.SecondBaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.*;
 
 public class Customer extends SecondBaseEntity implements BaseEntityLong {
 
@@ -39,51 +31,51 @@ public class Customer extends SecondBaseEntity implements BaseEntityLong {
     private String note;
 
     public Long getId() {
-	return id;
+        return id;
     }
 
     public void setId(Long id) {
-	this.id = id;
+        this.id = id;
     }
 
     public String getCode() {
-	return code;
+        return code;
     }
 
     public void setCode(String code) {
-	this.code = code;
+        this.code = code;
     }
 
     public CustomerStatus getCustomerStatus() {
-	return customerStatus;
+        return customerStatus;
     }
 
     public void setCustomerStatus(CustomerStatus customerStatus) {
-	this.customerStatus = customerStatus;
+        this.customerStatus = customerStatus;
     }
 
     public Registry getRegistry() {
-	return registry;
+        return registry;
     }
 
     public void setRegistry(Registry registry) {
-	this.registry = registry;
+        this.registry = registry;
     }
 
     public Location getLocation() {
-	return location;
+        return location;
     }
 
     public void setLocation(Location location) {
-	this.location = location;
+        this.location = location;
     }
 
     public String getNote() {
-	return note;
+        return note;
     }
 
     public void setNote(String note) {
-	this.note = note;
+        this.note = note;
     }
 
 }

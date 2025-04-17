@@ -2,12 +2,12 @@ package it.andrea.start.constants;
 
 public enum AuditTypeOperation {
 
-    INITIALIZE, 
-    LOGIN, 
-    LOGIN_API_WEB, 
+    INITIALIZE,
+    LOGIN,
+    LOGIN_API_WEB,
     API_WEB,
     GET_INFO,
-    QUARTZ, 
+    QUARTZ,
     CREATE,
     UPDATE,
     DELETE,

@@ -1,9 +1,9 @@
 package it.andrea.start.error.handlers;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
+import it.andrea.start.controller.response.InternalServerErrorResponse;
+import it.andrea.start.error.exception.ErrorCode;
+import jakarta.persistence.PersistenceException;
+import jakarta.transaction.RollbackException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,28 +13,27 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import it.andrea.start.controller.response.InternalServerErrorResponse;
-import it.andrea.start.error.exception.ErrorCode;
-import jakarta.persistence.PersistenceException;
-import jakarta.transaction.RollbackException;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 @ControllerAdvice
 public class GenericExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenericExceptionHandler.class);
 
-    private static final Map<Class<? extends Exception>, ErrorCode> EXCEPTION_MESSAGE_KEYS = Map.of( //
-            RollbackException.class, ErrorCode.ERROR_TRANSACTION_ROLLED_BACK, //
-            PersistenceException.class, ErrorCode.ERROR_PERSISTENCE_EXCEPTION, //
-            ConstraintViolationException.class, ErrorCode.ERROR_CONSTRAINT_VIOLATION, //
-            NullPointerException.class, ErrorCode.ERROR_NULL_POINTER //
-    ); //
+    private static final Map<Class<? extends Exception>, ErrorCode> EXCEPTION_MESSAGE_KEYS = Map.of(
+            RollbackException.class, ErrorCode.ERROR_TRANSACTION_ROLLED_BACK,
+            PersistenceException.class, ErrorCode.ERROR_PERSISTENCE_EXCEPTION,
+            ConstraintViolationException.class, ErrorCode.ERROR_CONSTRAINT_VIOLATION,
+            NullPointerException.class, ErrorCode.ERROR_NULL_POINTER
+    );
 
-    @ExceptionHandler({ //
-            RollbackException.class, //
-            PersistenceException.class, //
-            ConstraintViolationException.class, //
-            NullPointerException.class //
+    @ExceptionHandler({
+            RollbackException.class,
+            PersistenceException.class,
+            ConstraintViolationException.class,
+            NullPointerException.class
     })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public final ResponseEntity<Object> toResponse(Exception exception, Locale locale) {

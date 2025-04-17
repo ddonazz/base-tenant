@@ -1,10 +1,4 @@
-
 package it.andrea.start.validator.user;
-
-import java.util.Collection;
-import java.util.Optional;
-
-import org.springframework.stereotype.Component;
 
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.dto.user.UserDTO;
@@ -13,6 +7,10 @@ import it.andrea.start.error.exception.ErrorCode;
 import it.andrea.start.error.exception.user.UserAlreadyExistsException;
 import it.andrea.start.models.user.User;
 import it.andrea.start.repository.user.UserRepository;
+import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+import java.util.Optional;
 
 @Component
 public class UserValidator {
@@ -24,6 +22,23 @@ public class UserValidator {
     public UserValidator(UserRepository userRepository) {
         super();
         this.userRepository = userRepository;
+    }
+
+    public static void checkPassword(User entity, String newPassword, String repeatPassword, boolean haveAdminRole, boolean haveManagerRole)
+            throws BusinessException {
+        if (haveAdminRole) {
+            throw new BusinessException(ENTITY, "Is not possible to change password to admin role user",
+                    ErrorCode.USER_ROLE_ADMIN_NOT_CHANGE_PASSWORD.getCode(), String.valueOf(entity.getId()));
+        }
+
+        if (haveManagerRole) {
+            throw new BusinessException(ENTITY, "Is not possible to change password to manager role user if you not are admin user",
+                    ErrorCode.USER_ROLE_MANAGER_NOT_CHANGE_PASSWORD.getCode(), String.valueOf(entity.getId()));
+        }
+
+        if (!newPassword.equals(repeatPassword)) {
+            throw new BusinessException(ENTITY, "New password and repeat password is not equal", ErrorCode.USER_REPEAT_PASSWORD_NOT_EQUAL.getCode());
+        }
     }
 
     public void validateUser(UserDTO dto, boolean haveAdminRole, boolean checkAdmin) throws BusinessException, UserAlreadyExistsException {
@@ -65,23 +80,6 @@ public class UserValidator {
             if (roleManager != null && !haveAdminRole) {
                 throw new BusinessException(ENTITY, "Role manager is not usable", ErrorCode.USER_ROLE_MANAGER_NOT_USABLE.getCode());
             }
-        }
-    }
-
-    public static void checkPassword(User entity, String newPassword, String repeatPassword, boolean haveAdminRole, boolean haveManagerRole)
-            throws BusinessException {
-        if (haveAdminRole) {
-            throw new BusinessException(ENTITY, "Is not possible to change password to admin role user",
-                    ErrorCode.USER_ROLE_ADMIN_NOT_CHANGE_PASSWORD.getCode(), String.valueOf(entity.getId()));
-        }
-
-        if (haveManagerRole) {
-            throw new BusinessException(ENTITY, "Is not possible to change password to manager role user if you not are admin user",
-                    ErrorCode.USER_ROLE_MANAGER_NOT_CHANGE_PASSWORD.getCode(), String.valueOf(entity.getId()));
-        }
-
-        if (!newPassword.equals(repeatPassword)) {
-            throw new BusinessException(ENTITY, "New password and repeat password is not equal", ErrorCode.USER_REPEAT_PASSWORD_NOT_EQUAL.getCode());
         }
     }
 

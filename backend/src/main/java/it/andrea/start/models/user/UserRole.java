@@ -1,25 +1,16 @@
 package it.andrea.start.models.user;
 
-import java.util.Objects;
-
+import it.andrea.start.constants.RoleType;
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
-import it.andrea.start.constants.RoleType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import java.util.Objects;
 
 @Entity
-@Table( //
-        name = "user_role", //
-        indexes = { @Index(name = "IDX_ROLE", columnList = "role") } //
-) //
+@Table(
+        name = "user_role",
+        indexes = {@Index(name = "IDX_ROLE", columnList = "role")}
+)
 public class UserRole implements GrantedAuthority {
     private static final long serialVersionUID = 5841586043417823821L;
 

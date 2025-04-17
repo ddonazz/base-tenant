@@ -25,6 +25,29 @@ public enum Language {
         }
     }
 
+    public static Optional<Language> fromTag(String tag) {
+        if (tag == null || tag.trim().isEmpty()) {
+            return Optional.empty();
+        }
+        for (Language lang : values()) {
+            if (lang.bcp47Tag.equalsIgnoreCase(tag)) {
+                return Optional.of(lang);
+            }
+        }
+        String langPart = tag.split("-")[0];
+        for (Language lang : values()) {
+            if (lang.languageCode.equalsIgnoreCase(langPart)) {
+                return Optional.of(lang);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public static Language getDefault() {
+        return ITALIAN;
+    }
+
     public String getLanguageCode() {
         return languageCode;
     }
@@ -39,28 +62,5 @@ public enum Language {
 
     public String getBcp47Tag() {
         return bcp47Tag;
-    }
-
-    public static Optional<Language> fromTag(String tag) {
-        if (tag == null || tag.trim().isEmpty()) {
-            return Optional.empty();
-        }
-        for (Language lang : values()) {
-            if (lang.bcp47Tag.equalsIgnoreCase(tag)) {
-                return Optional.of(lang);
-            }
-        }
-        String langPart = tag.split("-")[0];
-        for (Language lang : values()) {
-            if (lang.languageCode.equalsIgnoreCase(langPart)) {
-                 return Optional.of(lang); 
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    public static Language getDefault() {
-        return ITALIAN;
     }
 }

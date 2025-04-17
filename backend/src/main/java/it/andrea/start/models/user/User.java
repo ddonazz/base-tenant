@@ -1,44 +1,28 @@
 package it.andrea.start.models.user;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import it.andrea.start.constants.UserStatus;
 import it.andrea.start.models.BaseEntityLong;
 import it.andrea.start.models.FirstBaseEntity;
 import it.andrea.start.models.agency.Agency;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table( //
-        name = "users", //
-        uniqueConstraints = { @UniqueConstraint(columnNames = "username") }, //
-        indexes = { //
-                @Index(name = "IDX_USER_USERNAME", columnList = "username"), //
-                @Index(name = "IDX_USER_EMAIL", columnList = "email"), //
-                @Index(name = "IDX_USER_STATUS", columnList = "username, userStatus") //
-        }//
+@Table(
+        name = "users",
+        uniqueConstraints = {@UniqueConstraint(columnNames = "username")},
+        indexes = {
+                @Index(name = "IDX_USER_USERNAME", columnList = "username"),
+                @Index(name = "IDX_USER_EMAIL", columnList = "email"),
+                @Index(name = "IDX_USER_STATUS", columnList = "username, userStatus")
+        }
 )
 public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails {
     private static final long serialVersionUID = 8219540355116099903L;
@@ -73,17 +57,17 @@ public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails
     private Agency agency;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles", //
-            joinColumns = @JoinColumn(name = "user_id"), //
-            inverseJoinColumns = @JoinColumn(name = "role_id") //
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<UserRole> roles = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream() //
-                .map(role -> new SimpleGrantedAuthority(role.getRole().name())) //
-                .toList(); //
+        return this.roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
+                .toList();
     }
 
     public Long getId() {

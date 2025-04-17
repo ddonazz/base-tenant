@@ -1,27 +1,5 @@
 package it.andrea.start.service.initialize;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import it.andrea.start.constants.EntityType;
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
@@ -35,20 +13,36 @@ import it.andrea.start.repository.user.UserRepository;
 import it.andrea.start.repository.user.UserRoleRepository;
 import it.andrea.start.security.EncrypterManager;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @Component
 @Transactional
 public class InitializeServiceImpl implements InitializeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(InitializeServiceImpl.class);
-
-    private final String appPath;
-
     private static final String XML_FILE = ".xml";
-
     private static final String JOBS_FILE = "jobs" + XML_FILE;
     private static final String USERS_FILE = "users" + XML_FILE;
-
+    private final String appPath;
     private final EncrypterManager encrypterManager;
 
     private final DocumentBuilderFactory documentBuilderFactory;

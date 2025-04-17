@@ -4,22 +4,21 @@ import java.util.stream.Stream;
 
 public enum TypeRegistry {
 
-    BUSINESS("BUSINESS"), //
-    PRIVATE("PRIVATE"); //
-
+    BUSINESS("BUSINESS"),
+    PRIVATE("PRIVATE");
     private String string;
 
     TypeRegistry(String name) {
         string = name;
     }
 
+    public static Stream<TypeRegistry> stream() {
+        return Stream.of(TypeRegistry.values());
+    }
+
     @Override
     public String toString() {
         return string;
-    }
-
-    public static Stream<TypeRegistry> stream() {
-        return Stream.of(TypeRegistry.values());
     }
 
 }

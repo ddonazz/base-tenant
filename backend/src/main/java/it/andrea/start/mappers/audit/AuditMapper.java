@@ -1,13 +1,12 @@
 package it.andrea.start.mappers.audit;
 
-import org.springframework.stereotype.Component;
-
 import it.andrea.start.dto.audit.AuditTraceDTO;
 import it.andrea.start.error.exception.mapping.MappingToDtoException;
 import it.andrea.start.error.exception.mapping.MappingToEntityException;
 import it.andrea.start.mappers.AbstractMapper;
 import it.andrea.start.models.audit.AuditTrace;
 import jakarta.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AuditMapper extends AbstractMapper<AuditTraceDTO, AuditTrace> {

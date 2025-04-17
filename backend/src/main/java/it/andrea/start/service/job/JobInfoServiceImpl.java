@@ -1,20 +1,12 @@
 package it.andrea.start.service.job;
 
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
-import org.quartz.CronExpression;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
+import it.andrea.start.dto.JobInfoDTO;
+import it.andrea.start.error.exception.mapping.MappingToDtoException;
+import it.andrea.start.mappers.job.JobInfoMapper;
+import it.andrea.start.models.JobInfo;
+import it.andrea.start.quartz.JobSchedulerCreator;
+import it.andrea.start.repository.JobInfoRepository;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -24,12 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.andrea.start.dto.JobInfoDTO;
-import it.andrea.start.error.exception.mapping.MappingToDtoException;
-import it.andrea.start.mappers.job.JobInfoMapper;
-import it.andrea.start.models.JobInfo;
-import it.andrea.start.quartz.JobSchedulerCreator;
-import it.andrea.start.repository.JobInfoRepository;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JobInfoServiceImpl implements JobInfoService {
@@ -126,16 +117,16 @@ public class JobInfoServiceImpl implements JobInfoService {
         String cronExpression = jobInfo.getCronExpression();
         Trigger newTrigger;
         if (Boolean.TRUE.equals(jobInfo.getCronJob())) {
-            newTrigger = schedulerCreator.createCronTrigger(jobInfo.getJobName(), //
-                    LocalDateTime.now(), //
-                    cronExpression, //
+            newTrigger = schedulerCreator.createCronTrigger(jobInfo.getJobName(),
+                    LocalDateTime.now(),
+                    cronExpression,
                     SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW);
         } else {
-            newTrigger = schedulerCreator.createSimpleTrigger(jobInfo.getJobName(), //
-                    LocalDateTime.now(), //
-                    SECOND_STANDARD_DELAY_START_TRIGGER, //
-                    jobInfo.getRepeatTime(), //
-                    jobInfo.getRepeatCount(), //
+            newTrigger = schedulerCreator.createSimpleTrigger(jobInfo.getJobName(),
+                    LocalDateTime.now(),
+                    SECOND_STANDARD_DELAY_START_TRIGGER,
+                    jobInfo.getRepeatTime(),
+                    jobInfo.getRepeatCount(),
                     SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW);
         }
 
@@ -254,11 +245,11 @@ public class JobInfoServiceImpl implements JobInfoService {
     private Optional<Trigger> createTrigger(JobInfo jobInfo, String cronExpression) throws ParseException {
         Optional<Trigger> trigger = Optional.empty();
         if (Boolean.TRUE.equals(jobInfo.getCronJob()) && CronExpression.isValidExpression(cronExpression)) {
-            trigger = Optional.of(schedulerCreator.createCronTrigger( //
-                    jobInfo.getJobName(), //
-                    LocalDateTime.now(), //
-                    cronExpression, //
-                    SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW //
+            trigger = Optional.of(schedulerCreator.createCronTrigger(
+                    jobInfo.getJobName(),
+                    LocalDateTime.now(),
+                    cronExpression,
+                    SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW
             ));
         }
         return trigger;

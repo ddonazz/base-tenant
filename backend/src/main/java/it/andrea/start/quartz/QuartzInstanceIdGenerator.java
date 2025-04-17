@@ -1,9 +1,9 @@
 package it.andrea.start.quartz;
 
-import java.util.UUID;
-
 import org.quartz.SchedulerException;
 import org.quartz.spi.InstanceIdGenerator;
+
+import java.util.UUID;
 
 public class QuartzInstanceIdGenerator implements InstanceIdGenerator {
 

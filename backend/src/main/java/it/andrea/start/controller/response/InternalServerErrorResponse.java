@@ -10,22 +10,22 @@ public class InternalServerErrorResponse implements Serializable {
     private final String message;
 
     public InternalServerErrorResponse(String exceptionMessage, String message) {
-	super();
-	this.exceptionMessage = exceptionMessage;
-	this.message = message;
+        super();
+        this.exceptionMessage = exceptionMessage;
+        this.message = message;
     }
 
     public String getExceptionMessage() {
-	return exceptionMessage;
+        return exceptionMessage;
     }
 
     public String getMessage() {
-	return message;
+        return message;
     }
 
     @Override
     public String toString() {
-	return "InternalServerErrorResponse [exceptionMessage=" + exceptionMessage + ", message=" + message + "]";
+        return "InternalServerErrorResponse [exceptionMessage=" + exceptionMessage + ", message=" + message + "]";
     }
 
 }

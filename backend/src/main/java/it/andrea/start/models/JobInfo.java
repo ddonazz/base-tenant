@@ -1,11 +1,10 @@
 package it.andrea.start.models;
 
-import org.quartz.SimpleTrigger;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.quartz.SimpleTrigger;
 
 @Entity
 @Table(name = "job_info")

@@ -16,6 +16,10 @@ public class StartProjectApplication extends SpringBootServletInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(StartProjectApplication.class);
 
+    public static void main(String[] args) {
+        SpringApplication.run(StartProjectApplication.class, args);
+    }
+
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 
@@ -29,10 +33,6 @@ public class StartProjectApplication extends SpringBootServletInitializer {
         LOG.info("loader : {}", loader.getName());
 
         return application.sources(StartProjectApplication.class);
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(StartProjectApplication.class, args);
     }
 
 }

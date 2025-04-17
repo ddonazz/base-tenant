@@ -1,10 +1,10 @@
 package it.andrea.start.service.job;
 
-import java.text.ParseException;
-import java.util.Collection;
-
 import it.andrea.start.dto.JobInfoDTO;
 import it.andrea.start.error.exception.mapping.MappingToDtoException;
+
+import java.text.ParseException;
+import java.util.Collection;
 
 public interface JobInfoService {
 
@@ -12,7 +12,7 @@ public interface JobInfoService {
 
     void startAllSchedulers();
 
-    void scheduleNewJob(String jobName) throws ParseException ;
+    void scheduleNewJob(String jobName) throws ParseException;
 
     void updateScheduleJob(String jobName) throws ParseException;
 

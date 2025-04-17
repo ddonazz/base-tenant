@@ -8,11 +8,11 @@ public abstract class SecondBaseEntity extends FirstBaseEntity {
     private boolean deleted = Boolean.FALSE;
 
     public boolean isDeleted() {
-	return deleted;
+        return deleted;
     }
 
     public void setDeleted(boolean deleted) {
-	this.deleted = deleted;
+        this.deleted = deleted;
     }
 
 }

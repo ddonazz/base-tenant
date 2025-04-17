@@ -1,9 +1,9 @@
 package it.andrea.start.filters;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.stereotype.Component;
 
 @Component
 public class CORSFilter extends CorsFilter {

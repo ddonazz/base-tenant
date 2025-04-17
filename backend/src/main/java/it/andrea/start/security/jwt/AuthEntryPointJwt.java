@@ -1,21 +1,20 @@
 package it.andrea.start.security.jwt;
 
-import java.io.IOException;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.stereotype.Component;
-
 import it.andrea.start.controller.response.BadRequestResponse;
 import it.andrea.start.error.exception.ErrorCode;
 import it.andrea.start.utils.HelperString;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {

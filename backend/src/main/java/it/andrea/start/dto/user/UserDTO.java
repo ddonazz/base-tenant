@@ -1,43 +1,39 @@
 package it.andrea.start.dto.user;
 
-import java.io.Serializable;
-import java.util.Objects;
-import java.util.Set;
-
 import it.andrea.start.constants.UserStatus;
 import it.andrea.start.validator.OnCreate;
 import it.andrea.start.validator.OnUpdate;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.Set;
 
 public class UserDTO implements Serializable {
     private static final long serialVersionUID = -6705812365714677548L;
 
     private Long id;
 
-    @NotBlank(message = "L'username dell'utente non può essere vuoto", groups = { OnCreate.class })
-    @Size(min = 4, max = 30, message = "L'username deve avere almeno 4 e massimo 30 caratteri", groups = { OnCreate.class })
+    @NotBlank(message = "L'username dell'utente non può essere vuoto", groups = {OnCreate.class})
+    @Size(min = 4, max = 30, message = "L'username deve avere almeno 4 e massimo 30 caratteri", groups = {OnCreate.class})
     private String username;
 
-    @NotBlank(message = "Il nome dell'utente non può essere vuoto", groups = { OnCreate.class, OnUpdate.class })
-    @Size(min = 5, max = 255, message = "Il nome deve avere almeno 5 e massimo 255 caratteri", groups = { OnCreate.class, OnUpdate.class })
+    @NotBlank(message = "Il nome dell'utente non può essere vuoto", groups = {OnCreate.class, OnUpdate.class})
+    @Size(min = 5, max = 255, message = "Il nome deve avere almeno 5 e massimo 255 caratteri", groups = {OnCreate.class, OnUpdate.class})
     private String name;
 
-    @Email(message = "La mail non è valida", groups = { OnCreate.class, OnUpdate.class })
+    @Email(message = "La mail non è valida", groups = {OnCreate.class, OnUpdate.class})
     private String email;
 
-    @NotNull(message = "Lo stato dell'utente non può essere vuoto", groups = { OnCreate.class, OnUpdate.class })
+    @NotNull(message = "Lo stato dell'utente non può essere vuoto", groups = {OnCreate.class, OnUpdate.class})
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
     @Valid
-    @NotEmpty(message = "I ruoli non possono essere vuoti", groups = { OnCreate.class, OnUpdate.class })
+    @NotEmpty(message = "I ruoli non possono essere vuoti", groups = {OnCreate.class, OnUpdate.class})
     private Set<String> roles;
 
     private String languageDefault;

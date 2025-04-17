@@ -1,21 +1,15 @@
 package it.andrea.start.controller;
 
-import java.text.ParseException;
-import java.util.Collection;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.v3.oas.annotations.Operation;
 import it.andrea.start.dto.JobInfoDTO;
 import it.andrea.start.error.exception.mapping.MappingToDtoException;
 import it.andrea.start.service.job.JobInfoService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/api/job")
@@ -29,21 +23,21 @@ public class JobController {
         this.jobInfoService = jobInfoService;
     }
 
-    @Operation( //
-            method = "GET", //
-            description = "Lista dei job definiti", //
-            summary = "Lista dei job definiti" //
-    ) //
+    @Operation(
+            method = "GET",
+            description = "Lista dei job definiti",
+            summary = "Lista dei job definiti"
+    )
     @GetMapping("/list")
     public ResponseEntity<Collection<JobInfoDTO>> listJobs() throws MappingToDtoException {
         return ResponseEntity.ok(jobInfoService.listJobs());
     }
 
-    @Operation( //
-            method = "PUT", //
-            description = "Pianifica un job non in esecuzione", //
-            summary = "Pianifica un job non in esecuzione" //
-    ) //
+    @Operation(
+            method = "PUT",
+            description = "Pianifica un job non in esecuzione",
+            summary = "Pianifica un job non in esecuzione"
+    )
     @PutMapping("/schedule-new-job/{jobName}")
     public ResponseEntity<Void> scheduleNewJob(@PathVariable String jobName) throws Exception {
         jobInfoService.scheduleNewJob(jobName);
@@ -51,10 +45,10 @@ public class JobController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation( //
-            method = "PUT", //
-            description = "Update di un job in esecuzione", //
-            summary = "Update di un job in esecuzione" //
+    @Operation(
+            method = "PUT",
+            description = "Update di un job in esecuzione",
+            summary = "Update di un job in esecuzione"
     )
     @PutMapping("/update-schedule-job/{jobName}")
     public ResponseEntity<Void> updateScheduleJob(@PathVariable String jobName) throws ParseException {
@@ -63,11 +57,11 @@ public class JobController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation( //
-            method = "PUT", //
-            description = "Disattiva un job dal programma", //
-            summary = "Disattiva un job dal programma" //
-    ) //
+    @Operation(
+            method = "PUT",
+            description = "Disattiva un job dal programma",
+            summary = "Disattiva un job dal programma"
+    )
     @PutMapping("/unschedule-job/{jobName}")
     public ResponseEntity<Void> unScheduleJob(@PathVariable String jobName) {
         jobInfoService.unScheduleJob(jobName);
@@ -75,10 +69,10 @@ public class JobController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation( //
-            method = "DELETE", //
-            description = "Elimina un job dal programma", //
-            summary = "Elimina un job dal programma" //
+    @Operation(
+            method = "DELETE",
+            description = "Elimina un job dal programma",
+            summary = "Elimina un job dal programma"
     )
     @DeleteMapping("/delete-job/{jobName}")
     public ResponseEntity<Void> deleteJob(@PathVariable String jobName) {
@@ -87,10 +81,10 @@ public class JobController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation( //
-            method = "PUT", //
-            description = "Metti in pausa un job", //
-            summary = "Metti in pausa un job" //
+    @Operation(
+            method = "PUT",
+            description = "Metti in pausa un job",
+            summary = "Metti in pausa un job"
     )
     @PutMapping("/pause-job/{jobName}")
     public ResponseEntity<Void> pauseJob(@PathVariable String jobName) {
@@ -99,10 +93,10 @@ public class JobController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation( //
-            method = "PUT", //
-            description = "Riprendi un job messo in pausa", //
-            summary = "Riprendi un job messo in pausa" //
+    @Operation(
+            method = "PUT",
+            description = "Riprendi un job messo in pausa",
+            summary = "Riprendi un job messo in pausa"
     )
     @PutMapping("/resume-job/{jobName}")
     public ResponseEntity<Void> resumeJob(@PathVariable String jobName) {
@@ -111,11 +105,11 @@ public class JobController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation( //
-            method = "PUT", //
-            description = "Avvia un job", //
-            summary = "Avvia un job" //
-    ) //
+    @Operation(
+            method = "PUT",
+            description = "Avvia un job",
+            summary = "Avvia un job"
+    )
     @PutMapping("/start-job/{jobName}")
     public ResponseEntity<Void> startJob(@PathVariable String jobName) {
         jobInfoService.startJobNow(jobName);

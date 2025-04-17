@@ -1,12 +1,11 @@
 package it.andrea.start.interceptor;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
-
 import it.andrea.start.constants.Language;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 public class LanguageInterceptor implements HandlerInterceptor {
@@ -19,7 +18,7 @@ public class LanguageInterceptor implements HandlerInterceptor {
         } else {
             LocaleContextHolder.setLocale(Language.getDefault().getLocale());
         }
-        
+
         return true;
     }
 

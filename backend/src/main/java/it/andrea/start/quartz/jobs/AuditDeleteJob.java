@@ -1,7 +1,7 @@
 package it.andrea.start.quartz.jobs;
 
-import java.time.LocalDateTime;
-
+import it.andrea.start.configuration.GlobalConfig;
+import it.andrea.start.service.audit.AuditTraceService;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -10,8 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-import it.andrea.start.configuration.GlobalConfig;
-import it.andrea.start.service.audit.AuditTraceService;
+import java.time.LocalDateTime;
 
 @ComponentScan
 @DisallowConcurrentExecution

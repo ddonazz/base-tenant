@@ -1,10 +1,10 @@
 package it.andrea.start.searchcriteria.user;
 
-import java.io.Serializable;
-import java.util.Collection;
-
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
+
+import java.io.Serializable;
+import java.util.Collection;
 
 public class UserSearchCriteria implements Serializable {
     private static final long serialVersionUID = -1762776686343092190L;
