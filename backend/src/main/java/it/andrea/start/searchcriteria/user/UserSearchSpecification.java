@@ -5,22 +5,25 @@ import it.andrea.start.models.user.UserRole;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserSearchSpecification implements Specification<User> {
 
+    @Serial
     private static final long serialVersionUID = -1987604702637357646L;
 
-    private UserSearchCriteria criteria;
+    private final UserSearchCriteria criteria;
 
     public UserSearchSpecification(UserSearchCriteria criteria) {
         this.criteria = criteria;
     }
 
     @Override
-    public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+    public Predicate toPredicate(@NonNull Root<User> root, CriteriaQuery<?> query, @NonNull CriteriaBuilder cb) {
         List<Predicate> predicates = new ArrayList<>();
 
         if (criteria.getId() != null) {

@@ -11,10 +11,10 @@ import java.util.Set;
 
 public interface UserRoleRepository extends JpaRepository<UserRole, Long>, JpaSpecificationExecutor<UserRole> {
 
-    public Optional<UserRole> findByRole(RoleType roleType);
+    Optional<UserRole> findByRole(RoleType roleType);
 
-    public boolean existsByRole(RoleType roleType);
+    boolean existsByRole(RoleType roleType);
 
-    public List<UserRole> findByRoleIn(Set<RoleType> roleTypes);
+    List<UserRole> findByRoleIn(Set<RoleType> roleTypes);
 
 }

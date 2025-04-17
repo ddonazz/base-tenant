@@ -119,10 +119,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = optionalUser.get();
 
-        boolean isMyProfile = false;
-        if (user.getUsername().compareTo(userDetails.getUsername()) == 0) {
-            isMyProfile = true;
-        }
+        boolean isMyProfile = user.getUsername().compareTo(userDetails.getUsername()) == 0;
 
         userValidator.validateUserUpdate(userDTO, user, haveAdminRole, isMyProfile);
 
@@ -152,7 +149,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(ENTITY, "Only admin can delete a manager", ErrorCode.USER_ROLE_MANAGER_NOT_DELETE.getCode(), String.valueOf(id));
         }
 
-        user.setUserStatus(UserStatus.DEACTIVE);
+        user.setUserStatus(UserStatus.DEACTIVATE);
         user.setLastModifiedBy(userDetails.getUsername());
 
         userRepository.save(user);

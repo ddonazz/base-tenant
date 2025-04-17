@@ -33,7 +33,7 @@ public class BusinessExceptionHandler {
     }
 
     private String mapMessage(BusinessException businessException, ResourceBundle rb) {
-        String errorCode = businessException.getCodice();
+        String errorCode = businessException.getCode();
 
         try {
             return rb.getString(errorCode);

@@ -8,11 +8,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
 public class UserDTO implements Serializable {
+    
+    @Serial
     private static final long serialVersionUID = -6705812365714677548L;
 
     private Long id;

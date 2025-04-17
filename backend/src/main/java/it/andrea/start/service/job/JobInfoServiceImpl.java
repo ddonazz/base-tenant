@@ -61,8 +61,7 @@ public class JobInfoServiceImpl implements JobInfoService {
             if (Boolean.TRUE.equals(jobInfo.getIsActive())) {
                 try {
                     startJob(scheduler, jobInfo);
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                } catch (ParseException ignored) {
                 }
             }
         });
@@ -70,7 +69,7 @@ public class JobInfoServiceImpl implements JobInfoService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public void scheduleNewJob(String jobName) throws ParseException {
+    public void scheduleNewJob(String jobName) {
         Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
         if (jobInfoOpt.isEmpty()) {
             return;
@@ -141,83 +140,75 @@ public class JobInfoServiceImpl implements JobInfoService {
     }
 
     @Override
-    public boolean unScheduleJob(String jobName) {
+    public void unScheduleJob(String jobName) {
         Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
         if (jobInfoOpt.isEmpty()) {
-            return false;
+            return;
         }
         JobInfo jobInfo = jobInfoOpt.get();
         try {
             jobInfo.setIsActive(false);
             jobInfoRepository.save(jobInfo);
-            return schedulerFactoryBean.getScheduler().unscheduleJob(new TriggerKey(jobName));
-        } catch (SchedulerException e) {
-            return false;
+            schedulerFactoryBean.getScheduler().unscheduleJob(new TriggerKey(jobName));
+        } catch (SchedulerException ignored) {
         }
     }
 
     @Override
-    public boolean deleteJob(String jobName) {
+    public void deleteJob(String jobName) {
         Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
         if (jobInfoOpt.isEmpty()) {
-            return false;
+            return;
         }
         JobInfo jobInfo = jobInfoOpt.get();
         try {
             jobInfo.setIsActive(false);
             jobInfoRepository.save(jobInfo);
-            return schedulerFactoryBean.getScheduler().deleteJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
-        } catch (SchedulerException e) {
-            return false;
+            schedulerFactoryBean.getScheduler().deleteJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
+        } catch (SchedulerException ignored) {
         }
     }
 
     @Override
-    public boolean pauseJob(String jobName) {
+    public void pauseJob(String jobName) {
         Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
         if (jobInfoOpt.isEmpty()) {
-            return false;
+            return;
         }
         JobInfo jobInfo = jobInfoOpt.get();
         try {
             jobInfo.setIsActive(false);
             jobInfoRepository.save(jobInfo);
             schedulerFactoryBean.getScheduler().pauseJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
-            return true;
-        } catch (SchedulerException e) {
-            return false;
+        } catch (SchedulerException ignored) {
         }
     }
 
     @Override
-    public boolean resumeJob(String jobName) {
+    public void resumeJob(String jobName) {
         Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
         if (jobInfoOpt.isEmpty()) {
-            return false;
+            return;
         }
         JobInfo jobInfo = jobInfoOpt.get();
         try {
             jobInfo.setIsActive(true);
             jobInfoRepository.save(jobInfo);
             schedulerFactoryBean.getScheduler().resumeJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
-            return true;
-        } catch (SchedulerException e) {
-            return false;
+        } catch (SchedulerException ignored) {
         }
     }
 
     @Override
-    public boolean startJobNow(String jobName) {
+    public void startJobNow(String jobName) {
         Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobName(jobName);
         if (jobInfoOpt.isEmpty()) {
-            return false;
+            return;
         }
         JobInfo jobInfo = jobInfoOpt.get();
         try {
             schedulerFactoryBean.getScheduler().triggerJob(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
-            return true;
-        } catch (SchedulerException e) {
-            return false;
+        } catch (SchedulerException ignored) {
         }
     }
 
@@ -237,8 +228,7 @@ public class JobInfoServiceImpl implements JobInfoService {
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 

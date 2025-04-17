@@ -22,47 +22,65 @@ public class AuditTrace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private AuditActivity activity; // Cosa è stato fatto (es. LOGIN, CREATE_USER)
+    private AuditActivity activity;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private AuditTypeOperation auditType; // Tipo di operazione (es. READ, WRITE, DELETE)
+    private AuditTypeOperation auditType;
+
     @Column(nullable = false)
     private LocalDateTime dateEvent;
+
     @Column()
     private String username;
+
     @Column()
     private String className;
 
     // @Column()
     // private Long userId;
+
     @Column()
     private String methodName;
+
     @Column()
     private String controllerMethod;
+
     @Column()
     private String resourceId;
+
     @Column()
     private String httpMethod;
+
     @Column()
     private String requestUri;
+
     @Column()
     private String clientIpAddress;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String requestParams;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String requestBody;
+
     @Column()
     private String userAgent;
+
     @Column()
     private Integer httpStatus;
+
     @Column(nullable = false)
     private Boolean success;
+
     @Column()
     private Long durationMs;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String exceptionTrace;

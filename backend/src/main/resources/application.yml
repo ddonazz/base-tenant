@@ -45,8 +45,6 @@ spring:
           scheduler:
             instanceName: StartScheduler
             instanceId: AUTO
-            instanceIdGenerator:
-              class: it.andrea.start.quartz.QuartzInstanceIdGenerator
           threadPool:
             class: org.quartz.simpl.SimpleThreadPool
             threadCount: 20
@@ -90,19 +88,10 @@ app:
     baseurl: http://localhost:8081/base-tenant
     baseurl-https: https://localhost:8081/base-tenant
   static:
-    path: /opt/base-tenant/resource/initialize/
+    path: /opt/base-tenant/resource/
   initialize:
     file:
       path: /opt/base-tenant/resource/initialize/
-  key:
-    offuscator:
-      path: /opt/base-tenant/key/
-  media:
-    path: /opt/base-tenant/resource/initialize/
-  template:
-    path: /opt/base-tenant/resource/initialize/
-  logs:
-    path: /opt/base-tenant/resource/initialize/
   audit:
     level: ALL
     day: 10

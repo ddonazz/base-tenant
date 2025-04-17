@@ -9,34 +9,37 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuditTraceSearchSpecification implements Specification<AuditTrace> {
 
+    @Serial
     private static final long serialVersionUID = -6128605859804781607L;
 
-    private AuditTraceSearchCriteria criterias;
+    private final AuditTraceSearchCriteria criteria;
 
-    public AuditTraceSearchSpecification(AuditTraceSearchCriteria criterias) {
-        this.criterias = criterias;
+    public AuditTraceSearchSpecification(AuditTraceSearchCriteria criteria) {
+        this.criteria = criteria;
     }
 
     @Override
-    public Predicate toPredicate(Root<AuditTrace> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(@NonNull Root<AuditTrace> root, CriteriaQuery<?> query, @NonNull CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicatesAnd = new ArrayList<>();
 
-        Long id = criterias.getId();
-        String sessionId = criterias.getSessionId();
-        AuditActivity activity = criterias.getActivity();
-        Long userId = criterias.getUserId();
-        String userName = criterias.getUserName();
-        AuditTypeOperation auditType = criterias.getAuditType();
-        String textSearch = criterias.getTextSearch();
-        LocalDateTime dateFrom = criterias.getDateFrom();
-        LocalDateTime dateTo = criterias.getDateTo();
+        Long id = criteria.getId();
+        String sessionId = criteria.getSessionId();
+        AuditActivity activity = criteria.getActivity();
+        Long userId = criteria.getUserId();
+        String userName = criteria.getUserName();
+        AuditTypeOperation auditType = criteria.getAuditType();
+        String textSearch = criteria.getTextSearch();
+        LocalDateTime dateFrom = criteria.getDateFrom();
+        LocalDateTime dateTo = criteria.getDateTo();
 
         if (id != null) {
             predicatesAnd.add(criteriaBuilder.equal(root.get("id"), id));

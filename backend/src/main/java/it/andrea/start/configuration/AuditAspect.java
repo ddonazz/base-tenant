@@ -46,7 +46,7 @@ public class AuditAspect {
     public void auditPointcut(Audit auditAnnotation) {
     }
 
-    @Around("auditPointcut(auditAnnotation)")
+    @Around(value = "auditPointcut(auditAnnotation)", argNames = "joinPoint,auditAnnotation")
     public Object handleAudit(ProceedingJoinPoint joinPoint, Audit auditAnnotation) throws Throwable {
         long startTime = System.currentTimeMillis();
         HttpServletRequest request = getCurrentHttpRequest();

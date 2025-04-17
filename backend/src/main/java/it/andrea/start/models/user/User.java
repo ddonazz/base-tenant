@@ -3,7 +3,6 @@ package it.andrea.start.models.user;
 import it.andrea.start.constants.UserStatus;
 import it.andrea.start.models.BaseEntityLong;
 import it.andrea.start.models.FirstBaseEntity;
-import it.andrea.start.models.agency.Agency;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import org.springframework.security.core.GrantedAuthority;
@@ -51,10 +50,6 @@ public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails
 
     @Column
     private String languageDefault;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "agency_id")
-    private Agency agency;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
@@ -133,14 +128,6 @@ public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails
 
     public void setLanguageDefault(String languageDefault) {
         this.languageDefault = languageDefault;
-    }
-
-    public Agency getAgency() {
-        return agency;
-    }
-
-    public void setAgency(Agency agency) {
-        this.agency = agency;
     }
 
     @Override

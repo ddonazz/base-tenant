@@ -1,18 +1,18 @@
 package it.andrea.start.controller.response;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
 public class ErrorResponse implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 420009367930874140L;
+
     private String message;
-    private String code;
-    private List<String> details;
-    public ErrorResponse() {
-        this.message = "";
-        this.code = "";
-        this.details = null;
-    }
+    private final String code;
+    private final List<String> details;
+
     public ErrorResponse(String message, String code, List<String> details) {
         super();
         this.message = message;
@@ -20,29 +20,12 @@ public class ErrorResponse implements Serializable {
         this.details = details;
     }
 
-    // Getter and setters
     public String getMessage() {
         return message;
     }
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public List<String> getDetails() {
-        return details;
-    }
-
-    public void setDetails(List<String> details) {
-        this.details = details;
     }
 
 }

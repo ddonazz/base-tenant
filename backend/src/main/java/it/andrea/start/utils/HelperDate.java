@@ -22,7 +22,9 @@ public class HelperDate {
     public static final String DATE_FORMAT_LINE = "yyyy-MM-dd";
     public static final String DATE_FORMAT_SLASH = "dd/MM/yyyy";
     public static final String DATE_FORMAT_DAY = "dd-MM-yyyy";
+
     private static final Logger LOG = LoggerFactory.getLogger(HelperDate.class);
+
     private HelperDate() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }

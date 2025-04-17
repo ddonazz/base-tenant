@@ -22,7 +22,7 @@ public class CORSFilter extends CorsFilter {
         config.addAllowedMethod("PUT");
         config.addAllowedMethod("OPTIONS");
         config.addAllowedMethod("DELETE");
-        config.setMaxAge(86400L); // 24 ore
+        config.setMaxAge(86400L); // 24 hours
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

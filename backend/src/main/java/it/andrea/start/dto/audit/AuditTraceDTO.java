@@ -3,10 +3,13 @@ package it.andrea.start.dto.audit;
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditTypeOperation;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class AuditTraceDTO implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;

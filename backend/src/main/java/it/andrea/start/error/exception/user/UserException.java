@@ -1,6 +1,10 @@
 package it.andrea.start.error.exception.user;
 
+import java.io.Serial;
+
 public abstract class UserException extends Exception {
+
+    @Serial
     private static final long serialVersionUID = 7266304103349392966L;
 
     private final String userId;

@@ -3,10 +3,13 @@ package it.andrea.start.searchcriteria.audit;
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditTypeOperation;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class AuditTraceSearchCriteria implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 369313118430341308L;
 
     private Long id;

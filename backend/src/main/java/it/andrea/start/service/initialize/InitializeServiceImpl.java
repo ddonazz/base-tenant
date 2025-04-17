@@ -3,8 +3,6 @@ package it.andrea.start.service.initialize;
 import it.andrea.start.constants.EntityType;
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
-import it.andrea.start.error.exception.BusinessException;
-import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.models.JobInfo;
 import it.andrea.start.models.user.User;
 import it.andrea.start.models.user.UserRole;
@@ -15,7 +13,7 @@ import it.andrea.start.security.EncrypterManager;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -36,25 +34,26 @@ import java.util.Set;
 
 @Component
 @Transactional
-public class InitializeServiceImpl implements InitializeService {
+public class InitializeServiceImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(InitializeServiceImpl.class);
     private static final String XML_FILE = ".xml";
     private static final String JOBS_FILE = "jobs" + XML_FILE;
     private static final String USERS_FILE = "users" + XML_FILE;
-    private final String appPath;
+
     private final EncrypterManager encrypterManager;
-
     private final DocumentBuilderFactory documentBuilderFactory;
-
+    
     private final JobInfoRepository jobInfoRepository;
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
 
-    public InitializeServiceImpl(Environment environment, EncrypterManager encrypterManager, JobInfoRepository jobInfoRepository, UserRepository userRepository,
+    @Value("${app.initialize.file.path}")
+    private String appPath;
+
+    public InitializeServiceImpl(EncrypterManager encrypterManager, JobInfoRepository jobInfoRepository, UserRepository userRepository,
             UserRoleRepository userRoleRepository, DocumentBuilderFactory documentBuilderFactory) {
         super();
-        this.appPath = environment.getProperty("app.initialize.file.path");
         this.encrypterManager = encrypterManager;
         this.jobInfoRepository = jobInfoRepository;
         this.userRepository = userRepository;
@@ -63,7 +62,7 @@ public class InitializeServiceImpl implements InitializeService {
     }
 
     @PostConstruct
-    public void executeStartOperation() throws UserException, BusinessException {
+    public void executeStartOperation() {
         initRoles();
         loadJobsUsersFromXML(appPath + USERS_FILE);
         loadJobsFromXML(appPath + JOBS_FILE);
@@ -122,9 +121,7 @@ public class InitializeServiceImpl implements InitializeService {
                 Element roleElement = (Element) roleNode;
                 String roleName = getTagValue("roleName", roleElement);
                 Optional<UserRole> userRoleOpt = userRoleRepository.findByRole(RoleType.valueOf(roleName));
-                if (userRoleOpt.isPresent()) {
-                    userRoles.add(userRoleOpt.get());
-                }
+                userRoleOpt.ifPresent(userRoles::add);
             }
         }
         user.setRoles(userRoles);
@@ -166,10 +163,10 @@ public class InitializeServiceImpl implements InitializeService {
         jobInfo.setJobGroup(getTagValue("group", element));
         jobInfo.setJobClass(getTagValue("class", element));
         jobInfo.setCronExpression(getTagValue("cronExpression", element));
-        jobInfo.setRepeatTime(parseLongOrDefault(getTagValue("repeatTime", element), 0L));
-        jobInfo.setRepeatCount(parseIntOrDefault(getTagValue("repeatCount", element), 0));
-        jobInfo.setCronJob(parseBooleanOrDefault(getTagValue("cronJob", element), false));
-        jobInfo.setIsActive(parseBooleanOrDefault(getTagValue("isActive", element), false));
+        jobInfo.setRepeatTime(parseLongOrDefault(getTagValue("repeatTime", element)));
+        jobInfo.setRepeatCount(parseIntOrDefault(getTagValue("repeatCount", element)));
+        jobInfo.setCronJob(parseBooleanOrDefault(getTagValue("cronJob", element)));
+        jobInfo.setIsActive(parseBooleanOrDefault(getTagValue("isActive", element)));
         return jobInfo;
     }
 
@@ -178,26 +175,26 @@ public class InitializeServiceImpl implements InitializeService {
         return nodeList.getLength() > 0 ? nodeList.item(0).getTextContent() : null;
     }
 
-    private Long parseLongOrDefault(String value, Long defaultValue) {
+    private Long parseLongOrDefault(String value) {
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException e) {
             logNumberFormatError("long", value, e);
-            return defaultValue;
+            return 0L;
         }
     }
 
-    private Integer parseIntOrDefault(String value, Integer defaultValue) {
+    private Integer parseIntOrDefault(String value) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
             logNumberFormatError("int", value, e);
-            return defaultValue;
+            return 0;
         }
     }
 
-    private Boolean parseBooleanOrDefault(String value, Boolean defaultValue) {
-        return value != null ? Boolean.parseBoolean(value) : defaultValue;
+    private Boolean parseBooleanOrDefault(String value) {
+        return Boolean.parseBoolean(value);
     }
 
     private void logXmlError(Exception e) {

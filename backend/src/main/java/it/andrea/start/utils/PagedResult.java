@@ -1,12 +1,15 @@
 package it.andrea.start.utils;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 
 public class PagedResult<T extends Serializable> implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = -8138842272681687945L;
 
-    private Collection<T> items;
+    private List<T> items;
     private Integer totalElements;
     private Integer pageNumber;
     private Integer pageSize;
@@ -14,18 +17,18 @@ public class PagedResult<T extends Serializable> implements Serializable {
     public PagedResult() {
     }
 
-    public PagedResult(Collection<T> items, Integer totalElements, Integer pageNumber, Integer pageSize) {
+    public PagedResult(List<T> items, Integer totalElements, Integer pageNumber, Integer pageSize) {
         this.items = items;
         this.totalElements = totalElements;
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
     }
 
-    public Collection<T> getItems() {
+    public List<T> getItems() {
         return items;
     }
 
-    public void setItems(Collection<T> items) {
+    public void setItems(List<T> items) {
         this.items = items;
     }
 

@@ -16,14 +16,14 @@ public interface JobInfoService {
 
     void updateScheduleJob(String jobName) throws ParseException;
 
-    boolean unScheduleJob(String jobName);
+    void unScheduleJob(String jobName);
 
-    boolean deleteJob(String jobName);
+    void deleteJob(String jobName);
 
-    boolean pauseJob(String jobName);
+    void pauseJob(String jobName);
 
-    boolean resumeJob(String jobName);
+    void resumeJob(String jobName);
 
-    boolean startJobNow(String jobName);
+    void startJobNow(String jobName);
 
 }

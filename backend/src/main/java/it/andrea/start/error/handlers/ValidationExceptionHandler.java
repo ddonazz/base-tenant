@@ -34,10 +34,12 @@ public class ValidationExceptionHandler {
                 : DEFAULT_ERROR_MESSAGE;
 
         if (ex.getBindingResult().hasFieldErrors()) {
-            Map<String, String> fieldErrors = ex.getBindingResult().getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, fieldError -> {
-                String fieldMessageKey = "error." + fieldError.getField();
-                return resourceBundle.containsKey(fieldMessageKey) ? resourceBundle.getString(fieldMessageKey) : fieldError.getDefaultMessage();
-            }));
+            Map<String, String> fieldErrors = ex.getBindingResult().getFieldErrors()
+                    .stream()
+                    .collect(Collectors.toMap(FieldError::getField, fieldError -> {
+                        String fieldMessageKey = "error." + fieldError.getField();
+                        return resourceBundle.containsKey(fieldMessageKey) ? resourceBundle.getString(fieldMessageKey) : fieldError.getDefaultMessage();}
+                    ));
 
             ErrorResponse response = new ErrorResponse(validationFailedMessage, DEFAULT_ERROR_MESSAGE, new ArrayList<>(fieldErrors.values()));
 

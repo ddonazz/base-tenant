@@ -12,7 +12,6 @@ import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.security.jwt.JwtUtils;
 import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.service.user.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,9 +24,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/authorize")
 public class AuthorizeController {
 
-    private UserService userService;
-    private AuthenticationManager authenticationManager;
-    private JwtUtils jwtUtils;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
     public AuthorizeController(UserService userService, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         super();
@@ -43,15 +42,13 @@ public class AuthorizeController {
     )
     @Audit(activity = AuditActivity.USER_OPERATION, type = AuditTypeOperation.LOGIN)
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> authorize(
-            HttpServletRequest httpServletRequest,
-            @RequestBody @Validated LoginRequest userAndPassword) {
+    public ResponseEntity<TokenResponse> authorize(@RequestBody @Validated LoginRequest userAndPassword) {
 
-        Authentication auth = new UsernamePasswordAuthenticationToken(userAndPassword.getUsername(), userAndPassword.getPassword());
-        auth = authenticationManager.authenticate(auth);
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userAndPassword.getUsername(), userAndPassword.getPassword());
+        authentication = authenticationManager.authenticate(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = jwtUtils.generateToken(auth);
+        String jwt = jwtUtils.generateToken(authentication);
 
         return ResponseEntity.ok(new TokenResponse(jwt));
     }

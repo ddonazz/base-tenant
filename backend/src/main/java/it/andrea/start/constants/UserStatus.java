@@ -7,12 +7,12 @@ public enum UserStatus {
     PENDING("In attesa"),
     ACTIVE("Attivo"),
     SUSPENDED("Sospeso"),
-    DEACTIVE("Disattivato"),
+    DEACTIVATE("Disattivato"),
     BLACKLIST("In blacklist"),
     LOCKED("Bloccato"),
     EXPIRED("Scaduto");
 
-    private String status;
+    private final String status;
 
     UserStatus(String name) {
         status = name;

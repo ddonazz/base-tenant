@@ -25,14 +25,12 @@ public class RequestWrapper extends HttpServletRequestWrapper {
                     }
                 }
             }
-        } catch (IOException ex) {
-            throw ex;
         }
         body = stringBuilder.toString();
     }
 
     @Override
-    public ServletInputStream getInputStream() throws IOException {
+    public ServletInputStream getInputStream() {
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
         return new ServletInputStream() {
             @Override

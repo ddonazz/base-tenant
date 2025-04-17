@@ -25,10 +25,10 @@ public class JwtUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${jwt.secret}")
+    @Value(value = "${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration.days}")
+    @Value(value = "${jwt.expiration.days}")
     private int jwtExpirationDays;
 
     private SecretKey secretKey;

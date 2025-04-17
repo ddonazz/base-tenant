@@ -13,12 +13,12 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ConditionalOnProperty(name = "quartz.enabled")
+@ConditionalOnProperty(name = "spring.quartz.enabled")
 public class SchedulerConfig {
 
-    private DataSource dataSource;
-    private ApplicationContext applicationContext;
-    private QuartzProperties quartzProperties;
+    private final DataSource dataSource;
+    private final ApplicationContext applicationContext;
+    private final QuartzProperties quartzProperties;
 
     public SchedulerConfig(DataSource dataSource, ApplicationContext applicationContext, QuartzProperties quartzProperties) {
         super();

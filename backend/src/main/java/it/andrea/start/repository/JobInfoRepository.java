@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface JobInfoRepository extends JpaRepository<JobInfo, String>, JpaSpecificationExecutor<JobInfo> {
 
-    public Optional<JobInfo> findByJobName(String jobName);
+    Optional<JobInfo> findByJobName(String jobName);
 
 }

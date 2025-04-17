@@ -3,11 +3,14 @@ package it.andrea.start.security.service;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
 public class JWTokenUserDetails implements UserDetails {
+
+    @Serial
     private static final long serialVersionUID = 7189533439229082332L;
 
     private final String username;
@@ -22,10 +25,10 @@ public class JWTokenUserDetails implements UserDetails {
         this.username = Objects.requireNonNull(builder.username);
         this.password = Objects.requireNonNull(builder.password);
         this.authorities = Collections.unmodifiableCollection(builder.authorities);
-        this.accountNonExpired = Objects.requireNonNull(builder.accountNonExpired);
-        this.accountNonLocked = Objects.requireNonNull(builder.accountNonLocked);
+        this.accountNonExpired = builder.accountNonExpired;
+        this.accountNonLocked = builder.accountNonLocked;
         this.credentialsNonExpired = true;
-        this.enabled = Objects.requireNonNull(builder.enabled);
+        this.enabled = builder.enabled;
     }
 
     @Override

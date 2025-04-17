@@ -2,12 +2,14 @@ package it.andrea.start.quartz.jobs;
 
 import it.andrea.start.configuration.GlobalConfig;
 import it.andrea.start.service.audit.AuditTraceService;
+import jakarta.validation.constraints.NotNull;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import java.time.LocalDateTime;
@@ -32,15 +34,15 @@ public class AuditDeleteJob extends QuartzJobBean {
     }
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        LOG.info("AuditDeleteJob inizio alle : {}", LocalDateTime.now());
+    protected void executeInternal(@NonNull JobExecutionContext context) {
+        LOG.info("AuditDeleteJob start at : {}", LocalDateTime.now());
 
         LocalDateTime dateCompare = LocalDateTime.now().minusDays(globalConfig.getAuditSavedDay());
-        LOG.info("AuditDeleteJob eliminazione audit prima di : {}", dateCompare);
+        LOG.info("AuditDeleteJob delete audits before of : {}", dateCompare);
 
         int rowDeleted = auditTraceService.deleteAuditTrace(dateCompare);
-        LOG.info("AuditDeleteJob numero audit eliminati : {}", rowDeleted);
+        LOG.info("AuditDeleteJob deleted audits : {}", rowDeleted);
 
-        LOG.info("AuditDeleteJob finito alle : {}", LocalDateTime.now());
+        LOG.info("AuditDeleteJob ending at : {}", LocalDateTime.now());
     }
 }

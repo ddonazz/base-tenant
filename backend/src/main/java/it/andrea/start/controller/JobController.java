@@ -16,7 +16,7 @@ import java.util.Collection;
 @PreAuthorize("hasRole('ADMIN')")
 public class JobController {
 
-    private JobInfoService jobInfoService;
+    private final JobInfoService jobInfoService;
 
     public JobController(JobInfoService jobInfoService) {
         super();

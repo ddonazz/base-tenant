@@ -5,10 +5,13 @@ import it.andrea.start.constants.DocumentType;
 import it.andrea.start.constants.Gender;
 import it.andrea.start.constants.TypeRegistry;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
 public class CustomerDTO implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 5337726298398860174L;
 
     private Long id;

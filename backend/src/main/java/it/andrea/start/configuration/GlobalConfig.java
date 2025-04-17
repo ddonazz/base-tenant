@@ -1,22 +1,20 @@
 package it.andrea.start.configuration;
 
 import it.andrea.start.constants.AuditLevel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class GlobalConfig {
 
-    private final AuditLevel auditLevel;
-    private final int auditSavedDay;
+    @Value("${app.audit.level}")
+    private AuditLevel auditLevel;
 
-    public GlobalConfig(Environment environment) {
-        auditLevel = AuditLevel.valueOf(environment.getProperty("app.audit.level"));
-        auditSavedDay = Integer.valueOf(environment.getProperty("app.audit.day"));
-    }
+    @Value("${app.audit.day}")
+    private int auditSavedDay;
 
     public AuditLevel getAuditLevel() {
         return auditLevel;

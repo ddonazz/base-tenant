@@ -1,9 +1,12 @@
 package it.andrea.start.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 
 public abstract class ListBaseDTO<T> implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 5530464188458934192L;
 
     private Collection<T> items;
@@ -19,10 +22,6 @@ public abstract class ListBaseDTO<T> implements Serializable {
 
     public Collection<T> getItems() {
         return items;
-    }
-
-    public void setItems(Collection<T> items) {
-        this.items = items;
     }
 
     @Override
