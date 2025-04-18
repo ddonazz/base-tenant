@@ -3,14 +3,11 @@ package it.andrea.start.configuration;
 import it.andrea.start.annotation.Audit;
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditLevel;
-import it.andrea.start.models.BaseEntityLong;
-import it.andrea.start.models.BaseEntityString;
 import it.andrea.start.models.audit.AuditTrace;
 import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.service.audit.AuditTraceService;
 import it.andrea.start.utils.HelperAudit;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -87,8 +84,7 @@ public class AuditAspect {
             auditTrace.setRequestUri("N/A");
         }
 
-        Object result = null;
-        Throwable exception = null;
+        Object result;
 
         try {
             result = joinPoint.proceed();
@@ -108,14 +104,11 @@ public class AuditAspect {
             long duration = System.currentTimeMillis() - startTime;
             auditTrace.setDurationMs(duration);
 
-            if (auditTrace.getSuccess()) {
-                auditTrace.setResourceId(extractResourceId(result));
-            }
-
             if (shouldLog(currentLevel, auditTrace.getSuccess())) {
                 auditTraceService.saveLog(auditTrace);
             }
         }
+
         return result;
     }
 
@@ -134,17 +127,4 @@ public class AuditAspect {
         return (attributes != null) ? attributes.getRequest() : null;
     }
 
-    private HttpServletResponse getCurrentHttpResponse() {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        return (attributes != null) ? attributes.getResponse() : null;
-    }
-
-    private String extractResourceId(Object result) {
-        if (result instanceof BaseEntityLong baseEntityLong) {
-            return baseEntityLong.getId() != null ? baseEntityLong.getId().toString() : null;
-        } else if (result instanceof BaseEntityString baseEntityString) {
-            return baseEntityString.getId();
-        }
-        return null;
-    }
 }

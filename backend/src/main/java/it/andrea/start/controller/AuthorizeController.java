@@ -58,7 +58,7 @@ public class AuthorizeController {
             description = "Information current user",
             summary = "Information current user"
     )
-    @GetMapping("/whoami")
+    @GetMapping("/who-am-i")
     public ResponseEntity<UserDTO> whoami() throws UserException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();

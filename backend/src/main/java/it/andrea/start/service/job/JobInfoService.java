@@ -1,29 +1,27 @@
 package it.andrea.start.service.job;
 
 import it.andrea.start.dto.JobInfoDTO;
-import it.andrea.start.error.exception.mapping.MappingToDtoException;
+import it.andrea.start.error.exception.mapping.MappingToDtoException; // Assicurati che questa esista o rimuovi 'throws'
 
-import java.text.ParseException;
 import java.util.Collection;
+
 
 public interface JobInfoService {
 
     Collection<JobInfoDTO> listJobs() throws MappingToDtoException;
 
-    void startAllSchedulers();
+    void scheduleNewJob(String jobName, String jobGroup);
 
-    void scheduleNewJob(String jobName) throws ParseException;
+    void updateScheduleJob(String jobName, String jobGroup);
 
-    void updateScheduleJob(String jobName) throws ParseException;
+    void unScheduleJob(String jobName, String jobGroup);
 
-    void unScheduleJob(String jobName);
+    void deleteJob(String jobName, String jobGroup);
 
-    void deleteJob(String jobName);
+    void pauseJob(String jobName, String jobGroup);
 
-    void pauseJob(String jobName);
+    void resumeJob(String jobName, String jobGroup);
 
-    void resumeJob(String jobName);
-
-    void startJobNow(String jobName);
+    void startJobNow(String jobName, String jobGroup);
 
 }

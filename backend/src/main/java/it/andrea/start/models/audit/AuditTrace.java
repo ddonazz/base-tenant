@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
                 @Index(name = "IDX_AUDIT_ACTIVITY", columnList = "activity"),
                 @Index(name = "IDX_AUDIT_TYPE", columnList = "auditType"),
                 @Index(name = "IDX_AUDIT_DATE_EVENT", columnList = "dateEvent"),
-                @Index(name = "IDX_AUDIT_RESOURCE_ID", columnList = "resourceId"),
         }
 )
 public class AuditTrace {
@@ -42,17 +41,11 @@ public class AuditTrace {
     @Column()
     private String className;
 
-    // @Column()
-    // private Long userId;
-
     @Column()
     private String methodName;
 
     @Column()
     private String controllerMethod;
-
-    @Column()
-    private String resourceId;
 
     @Column()
     private String httpMethod;

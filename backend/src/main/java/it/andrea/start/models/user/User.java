@@ -1,18 +1,21 @@
 package it.andrea.start.models.user;
 
 import it.andrea.start.constants.UserStatus;
-import it.andrea.start.models.BaseEntityLong;
 import it.andrea.start.models.FirstBaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
 @Entity
 @Table(
         name = "users",
@@ -23,9 +26,12 @@ import java.util.Set;
                 @Index(name = "IDX_USER_STATUS", columnList = "username, userStatus")
         }
 )
-public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails {
+public class User extends FirstBaseEntity implements UserDetails {
+
+    @Serial
     private static final long serialVersionUID = 8219540355116099903L;
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_SEQ")
     @SequenceGenerator(name = "USER_SEQ", sequenceName = "USER_SEQUENCE", allocationSize = 1)
@@ -34,23 +40,29 @@ public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails
     @Column(nullable = false, updatable = false)
     private String username;
 
+    @Getter
     @Column(nullable = false)
     private String password;
 
+    @Getter
     @Column(nullable = false)
     private String name;
 
+    @Getter
     @Email
     @Column(nullable = false)
     private String email;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus userStatus;
 
+    @Getter
     @Column
     private String languageDefault;
 
+    @Getter
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -65,69 +77,9 @@ public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails
                 .toList();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Override
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public UserStatus getUserStatus() {
-        return userStatus;
-    }
-
-    public void setUserStatus(UserStatus userStatus) {
-        this.userStatus = userStatus;
-    }
-
-    public Set<UserRole> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<UserRole> roles) {
-        this.roles = roles;
-    }
-
-    public String getLanguageDefault() {
-        return languageDefault;
-    }
-
-    public void setLanguageDefault(String languageDefault) {
-        this.languageDefault = languageDefault;
     }
 
     @Override
@@ -138,11 +90,6 @@ public class User extends FirstBaseEntity implements BaseEntityLong, UserDetails
     @Override
     public boolean isAccountNonLocked() {
         return userStatus != UserStatus.LOCKED;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
     }
 
     @Override

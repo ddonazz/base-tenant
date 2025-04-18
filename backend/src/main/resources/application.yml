@@ -34,34 +34,22 @@ spring:
           writetimeout: 5000
         port: 587
   quartz:
-    enabled: true
     job-store-type: jdbc
     jdbc:
       initialize-schema: always
     wait-for-jobs-to-complete-on-shutdown: true
+    overwrite-existing-jobs: true
     properties:
       org:
         quartz:
           scheduler:
             instanceName: StartScheduler
             instanceId: AUTO
-          threadPool:
-            class: org.quartz.simpl.SimpleThreadPool
-            threadCount: 20
-            threadPriority: 5
-            makeThreadsDaemons: true
           jobStore:
-            misfireThreshold: 60000
-            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
             driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-            useProperties: true
-            tablePrefix: public.qrtz_
-            isClustered: true
-            clusterCheckinInterval: 1000
-          plugin:
-            shutdownHook:
-              class: org.quartz.plugins.management.ShutdownHookPlugin
-              cleanShutdown: true
+          threadPool:
+            threadCount: 10
+            threadPriority: 5
 server:
   port: 8081
   servlet:

@@ -1,13 +1,12 @@
 package it.andrea.start.models.customer;
 
 import it.andrea.start.constants.CustomerStatus;
-import it.andrea.start.models.BaseEntityLong;
 import it.andrea.start.models.Location;
 import it.andrea.start.models.Registry;
 import it.andrea.start.models.SecondBaseEntity;
 import jakarta.persistence.*;
 
-public class Customer extends SecondBaseEntity implements BaseEntityLong {
+public class Customer extends SecondBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CUSTOMER_SEQ")

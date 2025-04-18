@@ -2,16 +2,21 @@ package it.andrea.start.models.user;
 
 import it.andrea.start.constants.RoleType;
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serial;
 import java.util.Objects;
 
+@Getter
 @Entity
 @Table(
         name = "user_role",
         indexes = {@Index(name = "IDX_ROLE", columnList = "role")}
 )
 public class UserRole implements GrantedAuthority {
+
+    @Serial
     private static final long serialVersionUID = 5841586043417823821L;
 
     @Id
@@ -31,16 +36,8 @@ public class UserRole implements GrantedAuthority {
         this.role = role;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public RoleType getRole() {
-        return role;
     }
 
     public void setRole(RoleType role) {

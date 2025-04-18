@@ -11,6 +11,8 @@ import it.andrea.start.repository.user.UserRepository;
 import it.andrea.start.repository.user.UserRoleRepository;
 import it.andrea.start.security.EncrypterManager;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +36,7 @@ import java.util.Set;
 
 @Component
 @Transactional
+@RequiredArgsConstructor
 public class InitializeServiceImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(InitializeServiceImpl.class);
@@ -43,23 +46,13 @@ public class InitializeServiceImpl {
 
     private final EncrypterManager encrypterManager;
     private final DocumentBuilderFactory documentBuilderFactory;
-    
+
     private final JobInfoRepository jobInfoRepository;
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
 
     @Value("${app.initialize.file.path}")
     private String appPath;
-
-    public InitializeServiceImpl(EncrypterManager encrypterManager, JobInfoRepository jobInfoRepository, UserRepository userRepository,
-            UserRoleRepository userRoleRepository, DocumentBuilderFactory documentBuilderFactory) {
-        super();
-        this.encrypterManager = encrypterManager;
-        this.jobInfoRepository = jobInfoRepository;
-        this.userRepository = userRepository;
-        this.userRoleRepository = userRoleRepository;
-        this.documentBuilderFactory = documentBuilderFactory;
-    }
 
     @PostConstruct
     public void executeStartOperation() {
@@ -79,39 +72,51 @@ public class InitializeServiceImpl {
     private void loadJobsUsersFromXML(String filePath) {
         try {
             File file = new File(filePath);
+            if (!file.exists() || !file.canRead()) {
+                LOG.warn("File utenti non trovato o non leggibile: {}", filePath);
+                return;
+            }
             DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
             Document doc = builder.parse(file);
             doc.getDocumentElement().normalize();
 
-            NodeList nodeList = doc.getElementsByTagName("users");
+            NodeList nodeList = doc.getElementsByTagName("user");
 
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
-                    User user = createUserFromElement(element);
-                    if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
-                        user.setCreator(EntityType.SYSTEM.getValue());
-                        user.setLastModifiedBy(EntityType.SYSTEM.getValue());
-
-                        userRepository.save(user);
+                    try {
+                        User user = createUserFromElement(element);
+                        if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
+                            user.setCreator(EntityType.SYSTEM.getValue());
+                            user.setLastModifiedBy(EntityType.SYSTEM.getValue());
+                            userRepository.save(user);
+                            LOG.info("Utente '{}' creato da XML.", user.getUsername());
+                        } else {
+                            LOG.warn("Utente '{}' già presente nel database, saltato da XML.", user.getUsername());
+                        }
+                    } catch (IllegalArgumentException | NullPointerException e) {
+                        LOG.error("Errore durante la creazione di User dall'elemento XML #{}: {}", i + 1, e.getMessage(), e);
                     }
                 }
             }
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logXmlError(e);
+            logXmlError(e, filePath);
         } catch (Exception e) {
-            logUnexpectedError(e);
+            logUnexpectedError(e, "caricamento utenti da XML " + filePath);
         }
     }
 
     private User createUserFromElement(Element element) {
         User user = new User();
-        user.setUsername(getTagValue("username", element));
-        user.setName(getTagValue("name", element));
-        user.setPassword(encrypterManager.encode(getTagValue("password", element)));
-        user.setEmail(getTagValue("email", element));
-        user.setUserStatus(UserStatus.valueOf(getTagValue("userStatus", element)));
+        user.setUsername(getRequiredTagValue("username", element));
+        user.setPassword(encrypterManager.encode(getRequiredTagValue("password", element)));
+        user.setEmail(getRequiredTagValue("email", element));
+
+        user.setName(getTagValueOrNull("name", element));
+        user.setUserStatus(UserStatus.valueOf(getRequiredTagValue("userStatus", element)));
+        user.setLanguageDefault(getTagValueOrNull("languageDefault", element));
 
         Set<UserRole> userRoles = new HashSet<>();
         NodeList rolesList = element.getElementsByTagName("role");
@@ -119,94 +124,171 @@ public class InitializeServiceImpl {
             Node roleNode = rolesList.item(i);
             if (roleNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element roleElement = (Element) roleNode;
-                String roleName = getTagValue("roleName", roleElement);
-                Optional<UserRole> userRoleOpt = userRoleRepository.findByRole(RoleType.valueOf(roleName));
-                userRoleOpt.ifPresent(userRoles::add);
+                String roleName = roleElement.getTextContent();
+                if (roleName != null && !roleName.trim().isEmpty()) {
+                    try {
+                        RoleType roleType = RoleType.valueOf(roleName.trim().toUpperCase());
+                        Optional<UserRole> userRoleOpt = userRoleRepository.findByRole(roleType);
+                        userRoleOpt.ifPresentOrElse(
+                                userRoles::add,
+                                () -> LOG.warn("Ruolo '{}' specificato per l'utente '{}' non trovato nel database.", roleName.trim(), user.getUsername())
+                        );
+                    } catch (IllegalArgumentException e) {
+                        LOG.warn("Valore ruolo non valido '{}' per l'utente '{}'. Ignorato.", roleName.trim(), user.getUsername());
+                    }
+                }
             }
         }
         user.setRoles(userRoles);
 
-        user.setLanguageDefault(getTagValue("languageDefault", element));
-
         return user;
     }
 
-    private void loadJobsFromXML(String filePath) {
+    public void loadJobsFromXML(String filePath) {
         try {
             File file = new File(filePath);
+            if (!file.exists() || !file.canRead()) {
+                LOG.warn("File job non trovato o non leggibile: {}", filePath);
+                return;
+            }
+
             DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
             Document doc = builder.parse(file);
             doc.getDocumentElement().normalize();
 
             NodeList nodeList = doc.getElementsByTagName("job");
 
+            int jobsSaved = 0;
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
-                    JobInfo jobInfo = createJobInfoFromElement(element);
-
-                    jobInfoRepository.save(jobInfo);
+                    try {
+                        JobInfo jobInfo = createJobInfoFromElement(element);
+                        jobInfoRepository.save(jobInfo);
+                        jobsSaved++;
+                    } catch (IllegalArgumentException | NullPointerException e) {
+                        LOG.error("Errore durante la creazione di JobInfo dall'elemento XML #{}: {}", i + 1, e.getMessage(), e);
+                    }
                 }
             }
+
+            LOG.info("Caricamento job da XML completato. Salvati/Aggiornati {} job.", jobsSaved);
+
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logXmlError(e);
+            logXmlError(e, filePath); // Passa il path
         } catch (Exception e) {
-            logUnexpectedError(e);
+            logUnexpectedError(e, "caricamento job da XML " + filePath);
         }
     }
 
     private JobInfo createJobInfoFromElement(Element element) {
         JobInfo jobInfo = new JobInfo();
-        jobInfo.setJobName(getTagValue("name", element));
-        jobInfo.setDescription(getTagValue("description", element));
-        jobInfo.setJobGroup(getTagValue("group", element));
-        jobInfo.setJobClass(getTagValue("class", element));
-        jobInfo.setCronExpression(getTagValue("cronExpression", element));
-        jobInfo.setRepeatTime(parseLongOrDefault(getTagValue("repeatTime", element)));
-        jobInfo.setRepeatCount(parseIntOrDefault(getTagValue("repeatCount", element)));
-        jobInfo.setCronJob(parseBooleanOrDefault(getTagValue("cronJob", element)));
-        jobInfo.setIsActive(parseBooleanOrDefault(getTagValue("isActive", element)));
+
+        jobInfo.setJobName(getRequiredTagValue("name", element));
+        jobInfo.setJobGroup(getRequiredTagValue("group", element));
+        jobInfo.setJobClass(getRequiredTagValue("class", element));
+
+        jobInfo.setDescription(getTagValueOrNull("description", element));
+        jobInfo.setCronExpression(getTagValueOrNull("cronExpression", element));
+        jobInfo.setJobDataMapJson(getTagValueOrNull("jobDataMapJson", element));
+
+        jobInfo.setRepeatIntervalMillis(parseLongOrNull(getTagValueOrNull("repeatIntervalMillis", element)));
+        jobInfo.setInitialDelayMillis(parseLongOrNull(getTagValueOrNull("initialDelayMillis", element)));
+        jobInfo.setRepeatCount(parseIntOrNull(getTagValueOrNull("repeatCount", element)));
+
+        jobInfo.setCronJob(parseBooleanOrDefault(getTagValueOrNull("cronJob", element), false));
+        jobInfo.setIsActive(parseBooleanOrDefault(getTagValueOrNull("isActive", element), true));
+
+        if (Boolean.TRUE.equals(jobInfo.getCronJob())) {
+            if (jobInfo.getCronExpression() == null || jobInfo.getCronExpression().isBlank()) {
+                throw new IllegalArgumentException("Il campo <cronExpression> è obbligatorio quando <cronJob> è true per il job: " + jobInfo.getJobName());
+            }
+            jobInfo.setRepeatIntervalMillis(null);
+            jobInfo.setInitialDelayMillis(null);
+            jobInfo.setRepeatCount(null);
+        } else {
+            if (jobInfo.getRepeatIntervalMillis() == null || jobInfo.getRepeatIntervalMillis() <= 0) {
+                throw new IllegalArgumentException("Il campo <repeatIntervalMillis> (con valore > 0) è obbligatorio quando <cronJob> è false per il job: " + jobInfo.getJobName());
+            }
+
+            jobInfo.setCronExpression(null);
+        }
+
         return jobInfo;
     }
 
     private String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag);
-        return nodeList.getLength() > 0 ? nodeList.item(0).getTextContent() : null;
+        if (nodeList.getLength() > 0 && nodeList.item(0).getTextContent() != null) {
+            return nodeList.item(0).getTextContent();
+        }
+        return null;
     }
 
-    private Long parseLongOrDefault(String value) {
+    private String getRequiredTagValue(String tagName, Element parentElement) {
+        NodeList nodeList = parentElement.getElementsByTagName(tagName);
+        if (nodeList.getLength() == 0 || nodeList.item(0).getTextContent() == null || nodeList.item(0).getTextContent().trim().isEmpty()) {
+            String parentIdentifier = parentElement.getElementsByTagName("name").getLength() > 0 ?
+                    parentElement.getElementsByTagName("name").item(0).getTextContent() :
+                    (parentElement.getElementsByTagName("username").getLength() > 0 ?
+                            parentElement.getElementsByTagName("username").item(0).getTextContent() :
+                            parentElement.getNodeName());
+            throw new IllegalArgumentException("Tag obbligatorio mancante o vuoto: <" + tagName + "> nell'elemento: " + parentIdentifier);
+        }
+        return nodeList.item(0).getTextContent().trim();
+    }
+
+    private String getTagValueOrNull(String tagName, Element parentElement) {
+        NodeList nodeList = parentElement.getElementsByTagName(tagName);
+        if (nodeList.getLength() > 0 && nodeList.item(0).getTextContent() != null) {
+            String value = nodeList.item(0).getTextContent().trim();
+            return value.isEmpty() ? null : value;
+        }
+        return null;
+    }
+
+    private Long parseLongOrNull(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
         try {
-            return Long.parseLong(value);
+            return Long.parseLong(value.trim());
         } catch (NumberFormatException e) {
-            logNumberFormatError("long", value, e);
-            return 0L;
+            LOG.warn("Valore non valido per Long: '{}'. Verrà trattato come null.", value);
+            return null;
         }
     }
 
-    private Integer parseIntOrDefault(String value) {
+    private Integer parseIntOrNull(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        String trimmedValue = value.trim();
         try {
-            return Integer.parseInt(value);
+            if ("-1".equals(trimmedValue) || "REPEAT_INDEFINITELY".equalsIgnoreCase(trimmedValue)) {
+                return SimpleTrigger.REPEAT_INDEFINITELY; // Usa la costante di Quartz
+            }
+            return Integer.parseInt(trimmedValue);
         } catch (NumberFormatException e) {
-            logNumberFormatError("int", value, e);
-            return 0;
+            LOG.warn("Valore non valido per Integer: '{}'. Verrà trattato come null.", trimmedValue);
+            return null;
         }
     }
 
-    private Boolean parseBooleanOrDefault(String value) {
-        return Boolean.parseBoolean(value);
+    private Boolean parseBooleanOrDefault(String value, boolean defaultValue) {
+        if (value == null || value.trim().isEmpty()) {
+            return defaultValue;
+        }
+        return "true".equalsIgnoreCase(value.trim());
     }
 
-    private void logXmlError(Exception e) {
-        LOG.error("Error processing XML document", e);
+    private void logXmlError(Exception e, String filePath) {
+        LOG.error("Errore durante il processing del documento XML '{}': {}", filePath, e.getMessage(), e);
     }
 
-    private void logUnexpectedError(Exception e) {
-        LOG.error("Unhandled exception while loading jobs from XML", e);
-    }
-
-    private void logNumberFormatError(String type, String value, NumberFormatException e) {
-        LOG.warn("Cannot convert to {}: {}", type, value, e);
+    private void logUnexpectedError(Exception e, String operationDescription) {
+        LOG.error("Eccezione non gestita durante {}: {}", operationDescription, e.getMessage(), e);
     }
 
 }

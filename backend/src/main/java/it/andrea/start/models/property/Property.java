@@ -1,12 +1,13 @@
 package it.andrea.start.models.property;
 
-import it.andrea.start.models.BaseEntityLong;
 import it.andrea.start.models.SecondBaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "property")
-public class Property extends SecondBaseEntity implements BaseEntityLong {
+public class Property extends SecondBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PROPERTY_SEQ")
@@ -16,17 +17,8 @@ public class Property extends SecondBaseEntity implements BaseEntityLong {
     @Column
     private String denomination;
 
-    @Override
-    public Long getId() {
-        return id;
-    }
-
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getDenomination() {
-        return denomination;
     }
 
     public void setDenomination(String denomination) {

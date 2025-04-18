@@ -1,8 +1,11 @@
 package it.andrea.start.constants;
 
+import lombok.Getter;
+
 import java.util.Locale;
 import java.util.Optional;
 
+@Getter
 public enum Language {
 
     ITALIAN("it", "IT", Locale.ITALIAN), // it-IT
@@ -48,19 +51,4 @@ public enum Language {
         return ITALIAN;
     }
 
-    public String getLanguageCode() {
-        return languageCode;
-    }
-
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public String getBcp47Tag() {
-        return bcp47Tag;
-    }
 }

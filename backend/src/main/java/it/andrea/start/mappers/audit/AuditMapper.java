@@ -33,7 +33,6 @@ public class AuditMapper extends AbstractMapper<AuditTraceDTO, AuditTrace> {
         dto.setClassName(entity.getClassName());
         dto.setMethodName(entity.getMethodName());
         dto.setControllerMethod(entity.getControllerMethod());
-        dto.setResourceId(entity.getResourceId());
 
         dto.setHttpMethod(entity.getHttpMethod());
         dto.setRequestUri(entity.getRequestUri());
@@ -65,7 +64,6 @@ public class AuditMapper extends AbstractMapper<AuditTraceDTO, AuditTrace> {
         entity.setClassName(dto.getClassName());
         entity.setMethodName(dto.getMethodName());
         entity.setControllerMethod(dto.getControllerMethod());
-        entity.setResourceId(dto.getResourceId());
 
         entity.setHttpMethod(dto.getHttpMethod());
         entity.setRequestUri(dto.getRequestUri());

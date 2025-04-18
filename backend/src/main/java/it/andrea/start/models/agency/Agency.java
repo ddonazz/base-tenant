@@ -1,19 +1,20 @@
 package it.andrea.start.models.agency;
 
-import it.andrea.start.models.BaseEntityLong;
 import it.andrea.start.models.FirstBaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "agency")
-public class Agency extends FirstBaseEntity implements BaseEntityLong, Serializable {
+public class Agency extends FirstBaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -5989858160720302345L;
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AGENCY_SEQ")
     @SequenceGenerator(sequenceName = "agency_seq", initialValue = 1, allocationSize = 1, name = "AGENCY_SEQ")
@@ -54,10 +55,5 @@ public class Agency extends FirstBaseEntity implements BaseEntityLong, Serializa
 
     @Column(columnDefinition = "TEXT")
     private String notes;
-
-    @Override
-    public Long getId() {
-        return this.id;
-    }
 
 }
