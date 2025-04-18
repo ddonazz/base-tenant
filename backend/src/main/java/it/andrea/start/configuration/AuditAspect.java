@@ -30,11 +30,11 @@ import java.time.LocalDateTime;
 @Component
 public class AuditAspect {
 
-    private static final Logger log = LoggerFactory.getLogger(AuditAspect.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuditAspect.class);
 
     private final AuditTraceService auditTraceService;
     private final GlobalConfig globalConfig;
-    private final HelperAudit helperAudit;
+    private final HelperAudit helperAudit; // Assumiamo che non serva più per lo stack trace
 
     public AuditAspect(AuditTraceService auditTraceService, GlobalConfig globalConfig, HelperAudit helperAudit) {
         this.auditTraceService = auditTraceService;
@@ -50,7 +50,6 @@ public class AuditAspect {
     public Object handleAudit(ProceedingJoinPoint joinPoint, Audit auditAnnotation) throws Throwable {
         long startTime = System.currentTimeMillis();
         HttpServletRequest request = getCurrentHttpRequest();
-        HttpServletResponse response = getCurrentHttpResponse();
 
         AuditLevel currentLevel = globalConfig.getAuditLevel();
         if (currentLevel == AuditLevel.NOTHING) {
@@ -59,6 +58,7 @@ public class AuditAspect {
 
         AuditTrace auditTrace = new AuditTrace();
         auditTrace.setDateEvent(LocalDateTime.now());
+
         auditTrace.setActivity(auditAnnotation.activity());
         auditTrace.setAuditType(auditAnnotation.type());
 
@@ -82,7 +82,7 @@ public class AuditAspect {
             auditTrace.setRequestParams(helperAudit.formatParameters(request.getParameterMap()));
             auditTrace.setRequestBody(helperAudit.getSanitizedRequestBody(request, joinPoint.getArgs()));
         } else {
-            log.warn("HttpServletRequest not available for audit trace on method: {}", signature.toShortString());
+            LOG.warn("HttpServletRequest not available for audit trace on method: {}", signature.toShortString());
             auditTrace.setHttpMethod("N/A");
             auditTrace.setRequestUri("N/A");
         }
@@ -94,32 +94,40 @@ public class AuditAspect {
             result = joinPoint.proceed();
             auditTrace.setSuccess(true);
         } catch (Throwable ex) {
-            exception = ex;
+
             auditTrace.setSuccess(false);
             auditTrace.setActivity(AuditActivity.USER_OPERATION_EXCEPTION);
-            auditTrace.setExceptionTrace(helperAudit.getStackTrace(ex));
+
+            auditTrace.setExceptionType(ex.getClass().getName());
+            auditTrace.setExceptionMessage(ex.getMessage());
+
+            LOG.error("Exception caught during audited method execution [{}]:", signature.toShortString(), ex);
+
             throw ex;
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             auditTrace.setDurationMs(duration);
 
-            if (response != null) {
-                auditTrace.setHttpStatus(response.getStatus());
-                if (exception != null && response.getStatus() < 400) {
-                    auditTrace.setHttpStatus(500);
-                }
-            } else if (exception != null) {
-                auditTrace.setHttpStatus(500);
+            if (auditTrace.getSuccess()) {
+                auditTrace.setResourceId(extractResourceId(result));
             }
 
-            auditTrace.setResourceId(extractResourceId(result));
-
-            if (currentLevel == AuditLevel.ALL) {
+            if (shouldLog(currentLevel, auditTrace.getSuccess())) {
                 auditTraceService.saveLog(auditTrace);
             }
         }
         return result;
     }
+
+    private boolean shouldLog(AuditLevel level, boolean success) {
+        return switch (level) {
+            case ALL -> true;
+            case ERRORS_ONLY -> !success;
+            case SUCCESS_ONLY -> success;
+            default -> false;
+        };
+    }
+
 
     private HttpServletRequest getCurrentHttpRequest() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -133,7 +141,7 @@ public class AuditAspect {
 
     private String extractResourceId(Object result) {
         if (result instanceof BaseEntityLong baseEntityLong) {
-            return baseEntityLong.getId().toString();
+            return baseEntityLong.getId() != null ? baseEntityLong.getId().toString() : null;
         } else if (result instanceof BaseEntityString baseEntityString) {
             return baseEntityString.getId();
         }

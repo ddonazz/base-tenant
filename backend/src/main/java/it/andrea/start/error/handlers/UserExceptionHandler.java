@@ -22,12 +22,12 @@ public class UserExceptionHandler extends AbstractHandler {
     public final ResponseEntity<Object> handleUserException(UserException userException) {
         String errorMessage = messageSource.getMessage(
                 resolveMessageKey(userException).getCode(),
-                null,
-                "Generic error occurred",
+                userException.getMessageArguments(),
+                userException.getMessage(),
                 LocaleContextHolder.getLocale()
         );
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BadRequestResponse(getEntityType(), errorMessage));
+        return ResponseEntity.badRequest().body(new BadRequestResponse(getEntityType(), errorMessage));
     }
 
     @Override

@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Map;
@@ -52,8 +50,10 @@ public class HelperAudit {
             return null;
         }
         try {
-            Map<String, String> flattenedParams = parameterMap.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> String.join(",", entry.getValue())));
+            Map<String, String> flattenedParams = parameterMap.entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> String.join(",", entry.getValue())
+                    ));
             return objectMapper.writeValueAsString(flattenedParams);
         } catch (JsonProcessingException e) {
             log.error("Failed to convert parameters to JSON", e);
@@ -75,7 +75,11 @@ public class HelperAudit {
                 }
             }
         } else if (args != null) {
-            bodyContent = Arrays.stream(args).filter(Objects::nonNull).findFirst().map(this::convertObjectToJsonSafe).orElse(null);
+            bodyContent = Arrays.stream(args)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .map(this::convertObjectToJsonSafe)
+                    .orElse(null);
 
             if (bodyContent == null) {
                 log.warn("Request is not a ContentCachingRequestWrapper, consider adding the filter. Body might be missing from audit.");
@@ -110,18 +114,6 @@ public class HelperAudit {
         content = content.replaceAll("(\"pass\"\\s*:\\s*\")[^\"]*(\")", "$1********$2");
         content = content.replaceAll("(\"secret\"\\s*:\\s*\")[^\"]*(\")", "$1********$2");
         return content;
-    }
-
-    public String getStackTrace(Throwable ex) {
-        if (ex == null)
-            return null;
-        try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-            ex.printStackTrace(pw);
-            return sw.toString();
-        } catch (Exception e) {
-            log.error("Failed to capture stack trace", e);
-            return "Failed to capture stack trace: " + e.getMessage();
-        }
     }
 
 }

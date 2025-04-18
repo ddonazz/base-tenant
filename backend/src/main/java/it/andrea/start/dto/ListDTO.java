@@ -1,24 +1,15 @@
 package it.andrea.start.dto;
 
-import java.io.Serial;
-import java.util.Collection;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import java.io.Serial;
+
+@ToString
 public class ListDTO extends ListBaseDTO<ListItemDTO> {
-    
+
     @Serial
     private static final long serialVersionUID = -2960092039348176201L;
-
-    public ListDTO() {
-        super();
-    }
-
-    public ListDTO(Collection<ListItemDTO> items) {
-        super(items);
-    }
-
-    @Override
-    public String toString() {
-        return "ListDTO [items=" + getItems() + "]";
-    }
 
 }

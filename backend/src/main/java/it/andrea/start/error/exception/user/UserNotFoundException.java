@@ -7,8 +7,8 @@ public class UserNotFoundException extends UserException {
     @Serial
     private static final long serialVersionUID = 6236059369592609596L;
 
-    public UserNotFoundException(String userId) {
-        super(userId, "User " + userId + " not found");
+    public UserNotFoundException(Object userId) {
+        super("User " + userId + " not found", userId);
     }
 
 }

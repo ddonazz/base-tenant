@@ -11,6 +11,6 @@ public enum AuditTypeOperation {
     CREATE,
     UPDATE,
     DELETE,
-    EMAIL_SEND
+    EMAIL_SEND,
 
 }

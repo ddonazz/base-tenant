@@ -18,6 +18,7 @@ import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.utils.HelperAuthorization;
 import it.andrea.start.utils.PagedResult;
 import it.andrea.start.validator.user.UserValidator;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private static final String ENTITY = "User";
@@ -38,14 +40,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UserValidator userValidator;
-
-    public UserServiceImpl(EncrypterManager encrypterManager, UserRepository userRepository, UserMapper userMapper, UserValidator userValidator) {
-        super();
-        this.encrypterManager = encrypterManager;
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.userValidator = userValidator;
-    }
 
     @Override
     @Transactional(noRollbackFor = Exception.class, readOnly = true, propagation = Propagation.REQUIRED)
@@ -64,7 +58,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUser(Long id) throws UserException {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException(id.toString());
+            throw new UserNotFoundException(id);
         }
         User user = optionalUser.get();
 

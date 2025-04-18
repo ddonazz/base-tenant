@@ -23,9 +23,9 @@ public class BusinessExceptionHandler extends AbstractHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public final ResponseEntity<Object> toResponse(BusinessException businessException) {
         String errorMessage = messageSource.getMessage(
-                resolveMessageKey(businessException).getCode(),
+                businessException.getMessage(),
                 null,
-                "Generic error occurred",
+                "Generic error occurred while processing request",
                 LocaleContextHolder.getLocale()
         );
 

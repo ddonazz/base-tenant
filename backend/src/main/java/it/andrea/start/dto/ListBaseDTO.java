@@ -1,32 +1,21 @@
 package it.andrea.start.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class ListBaseDTO<T> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 5530464188458934192L;
 
     private Collection<T> items;
-
-    protected ListBaseDTO() {
-        super();
-    }
-
-    protected ListBaseDTO(Collection<T> items) {
-        super();
-        this.items = items;
-    }
-
-    public Collection<T> getItems() {
-        return items;
-    }
-
-    @Override
-    public String toString() {
-        return "ListBaseDTO [items=" + items + "]";
-    }
 
 }

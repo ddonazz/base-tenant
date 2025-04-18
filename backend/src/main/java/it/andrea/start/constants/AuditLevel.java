@@ -5,6 +5,8 @@ public enum AuditLevel {
     NOTHING,
     ALL,
     DATABASE,
-    CONTROLLER
+    ERRORS_ONLY,
+    SUCCESS_ONLY,
+    CONTROLLER,
 
 }

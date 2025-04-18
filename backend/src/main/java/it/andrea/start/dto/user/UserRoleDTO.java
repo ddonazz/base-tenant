@@ -1,41 +1,20 @@
 package it.andrea.start.dto.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRoleDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 4014378396482783842L;
 
     private String role;
-
-    public UserRoleDTO() {
-        super();
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(role);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof UserRoleDTO))
-            return false;
-        UserRoleDTO other = (UserRoleDTO) obj;
-        return Objects.equals(role, other.role);
-    }
 
 }

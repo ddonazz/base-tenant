@@ -1,5 +1,7 @@
 package it.andrea.start.controller.response;
 
+import org.springframework.lang.NonNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -8,6 +10,7 @@ public record InternalServerErrorResponse(String exceptionMessage, String messag
     @Serial
     private static final long serialVersionUID = 798539446484745762L;
 
+    @NonNull
     @Override
     public String toString() {
         return "InternalServerErrorResponse [exceptionMessage=" + exceptionMessage + ", message=" + message + "]";

@@ -7,6 +7,6 @@ public enum AuditActivity {
     USER_OPERATION,
     USER_OPERATION_EXCEPTION,
     QUARTZ_OPERATION,
-    SYSTEM_RESTART
+    SYSTEM_RESTART,
 
 }

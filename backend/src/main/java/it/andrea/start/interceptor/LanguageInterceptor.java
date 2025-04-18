@@ -4,6 +4,7 @@ import it.andrea.start.constants.Language;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -11,7 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class LanguageInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         String language = request.getHeader("Accept-Language");
         if (language == null || language.isEmpty()) {
             LocaleContextHolder.setLocale(Language.fromTag(language).orElse(Language.getDefault()).getLocale());

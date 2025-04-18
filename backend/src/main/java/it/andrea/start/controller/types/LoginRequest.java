@@ -1,32 +1,21 @@
 package it.andrea.start.controller.types;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
+@Data
 public class LoginRequest implements Serializable {
+
+    @Serial
     private static final long serialVersionUID = 3903555349152727298L;
 
-    @NotBlank(message = "L'username non può essere vuoto")
+    @NotBlank(message = "{error.user.username.null}")
     private String username;
 
-    @NotBlank(message = "La password non può essere vuota")
+    @NotBlank(message = "{error.user.password.null}")
     private String password;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
 }

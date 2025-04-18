@@ -1,27 +1,27 @@
 package it.andrea.start.error.exception;
 
+import lombok.Getter;
+
 import java.io.Serial;
 
+@Getter
 public class BusinessException extends Exception {
 
     @Serial
     private static final long serialVersionUID = 3278937856043871034L;
 
     private final String entity;
-    private final ErrorCode code;
+    private final transient Object[] messageArguments;
+
+    public BusinessException(String entity, ErrorCode errorCode, Object... args) {
+        super(errorCode.getCode());
+        this.entity = entity;
+        this.messageArguments = args;
+    }
 
     public BusinessException(String entity, ErrorCode errorCode) {
-        super();
+        super(errorCode.getCode());
         this.entity = entity;
-        this.code = errorCode;
+        this.messageArguments = null;
     }
-
-    public String getEntity() {
-        return entity;
-    }
-
-    public ErrorCode getCode() {
-        return code;
-    }
-
 }

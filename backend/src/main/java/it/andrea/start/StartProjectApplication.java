@@ -11,7 +11,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableWebMvc
 @SpringBootApplication
-@EnableAspectJAutoProxy
 public class StartProjectApplication extends SpringBootServletInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(StartProjectApplication.class);

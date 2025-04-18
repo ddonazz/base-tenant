@@ -97,6 +97,7 @@ public class UserController {
     )
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @GetMapping("/{id}")
+    @Audit(activity = AuditActivity.USER_OPERATION, type = AuditTypeOperation.GET_INFO)
     public ResponseEntity<UserDTO> infoUser(@PathVariable Long id) throws UserException {
 
         return ResponseEntity.ok(userService.getUser(id));
