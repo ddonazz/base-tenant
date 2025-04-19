@@ -1,10 +1,10 @@
 package it.andrea.start.controller.types;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 public class LoginRequest implements Serializable {

@@ -1,5 +1,14 @@
 package it.andrea.start.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.v3.oas.annotations.Operation;
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditTypeOperation;
@@ -9,10 +18,6 @@ import it.andrea.start.searchcriteria.audit.AuditTraceSearchCriteria;
 import it.andrea.start.service.audit.AuditTraceService;
 import it.andrea.start.utils.HelperDate;
 import it.andrea.start.utils.PagedResult;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/audit")
@@ -27,9 +32,9 @@ public class AuditController {
     }
 
     @Operation(
-            method = "GET",
-            description = "List audits by search criteria with timezone date",
-            summary = "List audits by search criteria with timezone date"
+        method = "GET",
+        description = "List audits by search criteria with timezone date",
+        summary = "List audits by search criteria with timezone date"
     )
     @GetMapping("/listAudits")
     public ResponseEntity<PagedResult<AuditTraceDTO>> listAudits(
@@ -59,9 +64,9 @@ public class AuditController {
     }
 
     @Operation(
-            method = "GET",
-            description = "Return information of a specific audit",
-            summary = "Return information of a specific audit"
+        method = "GET",
+        description = "Return information of a specific audit",
+        summary = "Return information of a specific audit"
     )
     @GetMapping("/{id}")
     public ResponseEntity<AuditTraceDTO> getAudit(@PathVariable Long id) throws MappingToDtoException {

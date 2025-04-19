@@ -1,6 +1,9 @@
 package it.andrea.start.models;
 
-import jakarta.persistence.*; // Usa jakarta per Spring Boot 3+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,14 +35,14 @@ public class JobInfo {
     @Column
     private Long initialDelayMillis;
 
-    @Column()
+    @Column
     private Integer repeatCount;
 
-    @Column(nullable = false)
-    private Boolean cronJob;
+    @Column
+    private boolean cronJob;
 
-    @Column(nullable = false)
-    private Boolean isActive;
+    @Column
+    private boolean isActive;
 
     @Column(columnDefinition = "TEXT")
     private String jobDataMapJson;

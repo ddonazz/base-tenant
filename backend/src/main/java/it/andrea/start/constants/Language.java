@@ -1,9 +1,9 @@
 package it.andrea.start.constants;
 
-import lombok.Getter;
-
 import java.util.Locale;
 import java.util.Optional;
+
+import lombok.Getter;
 
 @Getter
 public enum Language {
@@ -13,7 +13,7 @@ public enum Language {
     ENGLISH_UK("en", "GB", Locale.UK); // en-GB
 
     private final String languageCode; // ISO 639-1
-    private final String countryCode; // ISO 3166-1 
+    private final String countryCode; // ISO 3166-1
     private final Locale locale;
     private final String bcp47Tag;
 

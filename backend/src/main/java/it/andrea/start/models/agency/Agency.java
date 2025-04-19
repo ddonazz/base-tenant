@@ -1,11 +1,17 @@
 package it.andrea.start.models.agency;
 
-import it.andrea.start.models.FirstBaseEntity;
-import jakarta.persistence.*;
-import lombok.Getter;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import it.andrea.start.models.FirstBaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Entity
 @Table(name = "agency")
@@ -16,8 +22,16 @@ public class Agency extends FirstBaseEntity implements Serializable {
 
     @Getter
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AGENCY_SEQ")
-    @SequenceGenerator(sequenceName = "agency_seq", initialValue = 1, allocationSize = 1, name = "AGENCY_SEQ")
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "AGENCY_SEQ"
+    )
+    @SequenceGenerator(
+        sequenceName = "agency_seq",
+        initialValue = 1,
+        allocationSize = 1,
+        name = "AGENCY_SEQ"
+    )
     private Long id;
 
     @Column

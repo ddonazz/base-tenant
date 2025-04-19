@@ -1,5 +1,14 @@
 package it.andrea.start.service.user;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import it.andrea.start.constants.EntityType;
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
@@ -19,14 +28,6 @@ import it.andrea.start.utils.HelperAuthorization;
 import it.andrea.start.utils.PagedResult;
 import it.andrea.start.validator.user.UserValidator;
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,7 +43,11 @@ public class UserServiceImpl implements UserService {
     private final UserValidator userValidator;
 
     @Override
-    @Transactional(noRollbackFor = Exception.class, readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional(
+        noRollbackFor = Exception.class,
+        readOnly = true,
+        propagation = Propagation.REQUIRED
+    )
     public UserDTO getUser(String username) throws UserException {
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
@@ -54,7 +59,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional(
+        readOnly = true,
+        propagation = Propagation.REQUIRED
+    )
     public UserDTO getUser(Long id) throws UserException {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
@@ -66,7 +74,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional(
+        readOnly = true,
+        propagation = Propagation.REQUIRED
+    )
     public UserDTO whoami(JWTokenUserDetails jWTokenUserDetails) throws UserException {
         String username = jWTokenUserDetails.getUsername();
         Optional<User> optionalUser = userRepository.findByUsername(username);
@@ -79,7 +90,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Transactional(
+        rollbackFor = Exception.class,
+        propagation = Propagation.REQUIRED
+    )
     public UserDTO createUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws BusinessException, UserException {
         userValidator.validateUser(userDTO, HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN), true);
 
@@ -102,7 +116,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Transactional(
+        rollbackFor = Exception.class,
+        propagation = Propagation.REQUIRED
+    )
     public UserDTO updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws UserException, BusinessException {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
 
@@ -125,7 +142,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Transactional(
+        rollbackFor = Exception.class,
+        propagation = Propagation.REQUIRED
+    )
     public void deleteUser(Long id, JWTokenUserDetails userDetails) throws UserException, BusinessException {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
         boolean haveManagerRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_MANAGER);
@@ -150,7 +170,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class, readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional(
+        rollbackFor = Exception.class,
+        readOnly = true,
+        propagation = Propagation.REQUIRED
+    )
     public PagedResult<UserDTO> listUser(UserSearchCriteria criteria, Pageable pageable, JWTokenUserDetails userDetails) {
         final Page<User> userPage = userRepository.findAll(new UserSearchSpecification(criteria), pageable);
         final Page<UserDTO> dtoPage = userPage.map(userMapper::toDto);
@@ -165,7 +189,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    @Transactional(
+        rollbackFor = Throwable.class,
+        propagation = Propagation.REQUIRED
+    )
     public void changePassword(Long userId, String newPassword, String repeatPassword, JWTokenUserDetails userDetails) throws UserException, BusinessException {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
         boolean haveManagerRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_MANAGER);
@@ -186,7 +213,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    @Transactional(
+        rollbackFor = Throwable.class,
+        propagation = Propagation.REQUIRED
+    )
     public void changePassword(String newPassword, String repeatPassword, JWTokenUserDetails userDetails)
             throws UserException, BusinessException {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);

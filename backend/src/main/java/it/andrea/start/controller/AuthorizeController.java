@@ -1,5 +1,18 @@
 package it.andrea.start.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.v3.oas.annotations.Operation;
 import it.andrea.start.annotation.Audit;
 import it.andrea.start.constants.AuditActivity;
@@ -12,13 +25,6 @@ import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.security.jwt.JwtUtils;
 import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.service.user.UserService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/authorize")
@@ -36,11 +42,14 @@ public class AuthorizeController {
     }
 
     @Operation(
-            method = "POST",
-            description = "Login user",
-            summary = "Login user"
+        method = "POST",
+        description = "Login user",
+        summary = "Login user"
     )
-    @Audit(activity = AuditActivity.USER_OPERATION, type = AuditTypeOperation.LOGIN)
+    @Audit(
+        activity = AuditActivity.USER_OPERATION,
+        type = AuditTypeOperation.LOGIN
+    )
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> authorize(@RequestBody @Validated LoginRequest userAndPassword) {
 
@@ -54,9 +63,9 @@ public class AuthorizeController {
     }
 
     @Operation(
-            method = "GET",
-            description = "Information current user",
-            summary = "Information current user"
+        method = "GET",
+        description = "Information current user",
+        summary = "Information current user"
     )
     @GetMapping("/who-am-i")
     public ResponseEntity<UserDTO> whoami() throws UserException {
@@ -67,9 +76,9 @@ public class AuthorizeController {
     }
 
     @Operation(
-            method = "PUT",
-            description = "Update information current user",
-            summary = "Update information current user"
+        method = "PUT",
+        description = "Update information current user",
+        summary = "Update information current user"
     )
     @PutMapping("/update-profile")
     public ResponseEntity<UserDTO> updateProfile(@RequestBody UserDTO userDTO)

@@ -1,5 +1,10 @@
 package it.andrea.start.validator.user;
 
+import java.util.Collection;
+import java.util.Optional;
+
+import org.springframework.stereotype.Component;
+
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.BusinessException;
@@ -7,10 +12,6 @@ import it.andrea.start.error.exception.ErrorCode;
 import it.andrea.start.error.exception.user.UserAlreadyExistsException;
 import it.andrea.start.models.user.User;
 import it.andrea.start.repository.user.UserRepository;
-import org.springframework.stereotype.Component;
-
-import java.util.Collection;
-import java.util.Optional;
 
 @Component
 public class UserValidator {

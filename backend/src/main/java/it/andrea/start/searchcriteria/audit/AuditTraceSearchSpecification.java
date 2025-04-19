@@ -1,5 +1,14 @@
 package it.andrea.start.searchcriteria.audit;
 
+import java.io.Serial;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
+
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditTypeOperation;
 import it.andrea.start.models.audit.AuditTrace;
@@ -7,14 +16,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.lang.NonNull;
-
-import java.io.Serial;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AuditTraceSearchSpecification implements Specification<AuditTrace> {
 

@@ -23,13 +23,13 @@ public enum ErrorCode {
     AUTHORIZEUSER_PASSWORD_WRONG("authorize.user.password.wrong"),
 
     // --- User Management Errors (Logica Applicativa) ---
-    USER_ID_NULL("error.user.id.null"),                     // ID nullo passato a un metodo che lo richiede
-    USER_NOT_FOUND("error.user.id.not.found"),             // Utente non trovato per ID
-    USER_NOT_ACTIVE("error.user.id.not.active"),           // Utente trovato ma non attivo per l'operazione
-    USER_ALREADY_EXISTS("error.user.id.already.exists"),   // Conflitto ID (raro) o errore logico generico esistenza
+    USER_ID_NULL("error.user.id.null"), // ID nullo passato a un metodo che lo richiede
+    USER_NOT_FOUND("error.user.id.not.found"), // Utente non trovato per ID
+    USER_NOT_ACTIVE("error.user.id.not.active"), // Utente trovato ma non attivo per l'operazione
+    USER_ALREADY_EXISTS("error.user.id.already.exists"), // Conflitto ID (raro) o errore logico generico esistenza
     USER_USERNAME_ALREADY_USED("error.user.username.already.used"), // Username già in uso (controllo logico)
     USER_EMAIL_ALREADY_USED("error.user.email.already.used"), // Email già in uso (controllo logico)
-    USER_ROLE_NULL("error.user.role.null"),                 // Ruolo non fornito quando richiesto per logica
+    USER_ROLE_NULL("error.user.role.null"), // Ruolo non fornito quando richiesto per logica
 
     // --- User Role Business Logic Errors ---
     USER_ROLE_ADMIN_NOT_USABLE("error.user.role.admin.not.usable"),
@@ -38,7 +38,10 @@ public enum ErrorCode {
     USER_ROLE_MANAGER_NOT_DELETE("error.user.role.manager.not.delete"),
     USER_ROLE_ADMIN_NOT_CHANGE_PASSWORD("error.user.role.admin.not.change.password"),
     USER_ROLE_MANAGER_NOT_CHANGE_PASSWORD("error.user.role.manager.not.change.password"),
-    USER_REPEAT_PASSWORD_NOT_EQUAL("error.user.repeat.password.not.equal"),;
+    USER_REPEAT_PASSWORD_NOT_EQUAL("error.user.repeat.password.not.equal"),
+
+    // --- Job Logic Errors ---
+    JOB_SCHEDULING_EXCEPTION("job.scheduling.exception"),;
 
     private final String code;
 

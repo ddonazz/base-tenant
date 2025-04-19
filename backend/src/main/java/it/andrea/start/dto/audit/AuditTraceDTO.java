@@ -1,13 +1,12 @@
 package it.andrea.start.dto.audit;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditTypeOperation;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor

@@ -1,17 +1,16 @@
 package it.andrea.start.service.initialize;
 
-import it.andrea.start.constants.EntityType;
-import it.andrea.start.constants.RoleType;
-import it.andrea.start.constants.UserStatus;
-import it.andrea.start.models.JobInfo;
-import it.andrea.start.models.user.User;
-import it.andrea.start.models.user.UserRole;
-import it.andrea.start.repository.JobInfoRepository;
-import it.andrea.start.repository.user.UserRepository;
-import it.andrea.start.repository.user.UserRoleRepository;
-import it.andrea.start.security.EncrypterManager;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,15 +23,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import it.andrea.start.constants.EntityType;
+import it.andrea.start.constants.RoleType;
+import it.andrea.start.constants.UserStatus;
+import it.andrea.start.models.JobInfo;
+import it.andrea.start.models.user.User;
+import it.andrea.start.models.user.UserRole;
+import it.andrea.start.repository.JobInfoRepository;
+import it.andrea.start.repository.user.UserRepository;
+import it.andrea.start.repository.user.UserRoleRepository;
+import it.andrea.start.security.EncrypterManager;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @Transactional
@@ -131,8 +133,7 @@ public class InitializeServiceImpl {
                         Optional<UserRole> userRoleOpt = userRoleRepository.findByRole(roleType);
                         userRoleOpt.ifPresentOrElse(
                                 userRoles::add,
-                                () -> LOG.warn("Ruolo '{}' specificato per l'utente '{}' non trovato nel database.", roleName.trim(), user.getUsername())
-                        );
+                                () -> LOG.warn("Ruolo '{}' specificato per l'utente '{}' non trovato nel database.", roleName.trim(), user.getUsername()));
                     } catch (IllegalArgumentException e) {
                         LOG.warn("Valore ruolo non valido '{}' per l'utente '{}'. Ignorato.", roleName.trim(), user.getUsername());
                     }
@@ -176,7 +177,7 @@ public class InitializeServiceImpl {
             LOG.info("Caricamento job da XML completato. Salvati/Aggiornati {} job.", jobsSaved);
 
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logXmlError(e, filePath); // Passa il path
+            logXmlError(e, filePath);
         } catch (Exception e) {
             logUnexpectedError(e, "caricamento job da XML " + filePath);
         }
@@ -198,9 +199,9 @@ public class InitializeServiceImpl {
         jobInfo.setRepeatCount(parseIntOrNull(getTagValueOrNull("repeatCount", element)));
 
         jobInfo.setCronJob(parseBooleanOrDefault(getTagValueOrNull("cronJob", element), false));
-        jobInfo.setIsActive(parseBooleanOrDefault(getTagValueOrNull("isActive", element), true));
+        jobInfo.setActive(parseBooleanOrDefault(getTagValueOrNull("isActive", element), false));
 
-        if (Boolean.TRUE.equals(jobInfo.getCronJob())) {
+        if (jobInfo.isCronJob()) {
             if (jobInfo.getCronExpression() == null || jobInfo.getCronExpression().isBlank()) {
                 throw new IllegalArgumentException("Il campo <cronExpression> è obbligatorio quando <cronJob> è true per il job: " + jobInfo.getJobName());
             }
@@ -218,22 +219,12 @@ public class InitializeServiceImpl {
         return jobInfo;
     }
 
-    private String getTagValue(String tag, Element element) {
-        NodeList nodeList = element.getElementsByTagName(tag);
-        if (nodeList.getLength() > 0 && nodeList.item(0).getTextContent() != null) {
-            return nodeList.item(0).getTextContent();
-        }
-        return null;
-    }
-
     private String getRequiredTagValue(String tagName, Element parentElement) {
         NodeList nodeList = parentElement.getElementsByTagName(tagName);
         if (nodeList.getLength() == 0 || nodeList.item(0).getTextContent() == null || nodeList.item(0).getTextContent().trim().isEmpty()) {
-            String parentIdentifier = parentElement.getElementsByTagName("name").getLength() > 0 ?
-                    parentElement.getElementsByTagName("name").item(0).getTextContent() :
-                    (parentElement.getElementsByTagName("username").getLength() > 0 ?
-                            parentElement.getElementsByTagName("username").item(0).getTextContent() :
-                            parentElement.getNodeName());
+            String parentIdentifier = parentElement.getElementsByTagName("name").getLength() > 0 ? parentElement.getElementsByTagName("name").item(0).getTextContent()
+                    : (parentElement.getElementsByTagName("username").getLength() > 0 ? parentElement.getElementsByTagName("username").item(0).getTextContent()
+                            : parentElement.getNodeName());
             throw new IllegalArgumentException("Tag obbligatorio mancante o vuoto: <" + tagName + "> nell'elemento: " + parentIdentifier);
         }
         return nodeList.item(0).getTextContent().trim();
@@ -267,7 +258,7 @@ public class InitializeServiceImpl {
         String trimmedValue = value.trim();
         try {
             if ("-1".equals(trimmedValue) || "REPEAT_INDEFINITELY".equalsIgnoreCase(trimmedValue)) {
-                return SimpleTrigger.REPEAT_INDEFINITELY; // Usa la costante di Quartz
+                return SimpleTrigger.REPEAT_INDEFINITELY;
             }
             return Integer.parseInt(trimmedValue);
         } catch (NumberFormatException e) {

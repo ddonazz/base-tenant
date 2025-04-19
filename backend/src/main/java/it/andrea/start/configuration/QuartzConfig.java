@@ -1,5 +1,7 @@
 package it.andrea.start.configuration;
 
+import javax.sql.DataSource;
+
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer;
@@ -10,13 +12,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
-
 @Configuration
 public class QuartzConfig {
 
     @Bean
-    public SchedulerFactoryBeanCustomizer schedulerFactoryBeanCustomizer(DataSource dataSource, PlatformTransactionManager transactionManager) {
+    SchedulerFactoryBeanCustomizer schedulerFactoryBeanCustomizer(DataSource dataSource, PlatformTransactionManager transactionManager) {
         return schedulerFactoryBean -> {
             schedulerFactoryBean.setDataSource(dataSource);
             schedulerFactoryBean.setTransactionManager(transactionManager);
@@ -24,7 +24,7 @@ public class QuartzConfig {
     }
 
     @Bean
-    public JobFactory springBeanJobFactory(ApplicationContext applicationContext) {
+    JobFactory springBeanJobFactory(ApplicationContext applicationContext) {
         AutoWiringSpringBeanJobFactory jobFactory = new AutoWiringSpringBeanJobFactory();
         jobFactory.setApplicationContext(applicationContext);
         return jobFactory;
@@ -32,7 +32,7 @@ public class QuartzConfig {
 
     public static class AutoWiringSpringBeanJobFactory extends SpringBeanJobFactory {
 
-        private transient ApplicationContext applicationContext;
+        private ApplicationContext applicationContext;
 
         @Override
         public void setApplicationContext(@NonNull final ApplicationContext context) {

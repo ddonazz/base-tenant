@@ -1,11 +1,16 @@
 package it.andrea.start.models;
 
+import java.util.Date;
+
 import it.andrea.start.constants.DocumentType;
 import it.andrea.start.constants.Gender;
 import it.andrea.start.constants.TypeRegistry;
-import jakarta.persistence.*;
-
-import java.util.Date;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Embeddable
 public class Registry {

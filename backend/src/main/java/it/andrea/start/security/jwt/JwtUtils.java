@@ -1,9 +1,14 @@
 package it.andrea.start.security.jwt;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import it.andrea.start.security.service.JWTokenUserDetails;
-import jakarta.annotation.PostConstruct;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import javax.crypto.SecretKey;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,13 +17,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.Keys;
+import it.andrea.start.security.service.JWTokenUserDetails;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class JwtUtils {

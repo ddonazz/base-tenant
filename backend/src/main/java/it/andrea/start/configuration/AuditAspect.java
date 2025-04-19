@@ -1,13 +1,7 @@
 package it.andrea.start.configuration;
 
-import it.andrea.start.annotation.Audit;
-import it.andrea.start.constants.AuditActivity;
-import it.andrea.start.constants.AuditLevel;
-import it.andrea.start.models.audit.AuditTrace;
-import it.andrea.start.security.service.JWTokenUserDetails;
-import it.andrea.start.service.audit.AuditTraceService;
-import it.andrea.start.utils.HelperAudit;
-import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -21,7 +15,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.time.LocalDateTime;
+import it.andrea.start.annotation.Audit;
+import it.andrea.start.constants.AuditActivity;
+import it.andrea.start.constants.AuditLevel;
+import it.andrea.start.models.audit.AuditTrace;
+import it.andrea.start.security.service.JWTokenUserDetails;
+import it.andrea.start.service.audit.AuditTraceService;
+import it.andrea.start.utils.HelperAudit;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Aspect
 @Component
@@ -31,7 +32,7 @@ public class AuditAspect {
 
     private final AuditTraceService auditTraceService;
     private final GlobalConfig globalConfig;
-    private final HelperAudit helperAudit; // Assumiamo che non serva più per lo stack trace
+    private final HelperAudit helperAudit;
 
     public AuditAspect(AuditTraceService auditTraceService, GlobalConfig globalConfig, HelperAudit helperAudit) {
         this.auditTraceService = auditTraceService;
@@ -43,7 +44,10 @@ public class AuditAspect {
     public void auditPointcut(Audit auditAnnotation) {
     }
 
-    @Around(value = "auditPointcut(auditAnnotation)", argNames = "joinPoint,auditAnnotation")
+    @Around(
+        value = "auditPointcut(auditAnnotation)",
+        argNames = "joinPoint,auditAnnotation"
+    )
     public Object handleAudit(ProceedingJoinPoint joinPoint, Audit auditAnnotation) throws Throwable {
         long startTime = System.currentTimeMillis();
         HttpServletRequest request = getCurrentHttpRequest();
@@ -120,7 +124,6 @@ public class AuditAspect {
             default -> false;
         };
     }
-
 
     private HttpServletRequest getCurrentHttpRequest() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

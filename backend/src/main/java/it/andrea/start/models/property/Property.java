@@ -1,7 +1,13 @@
 package it.andrea.start.models.property;
 
 import it.andrea.start.models.SecondBaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
 @Getter
@@ -10,8 +16,15 @@ import lombok.Getter;
 public class Property extends SecondBaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PROPERTY_SEQ")
-    @SequenceGenerator(name = "PROPERTY_SEQ", sequenceName = "PROPERTY_SEQUENCE", allocationSize = 1)
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "PROPERTY_SEQ"
+    )
+    @SequenceGenerator(
+        name = "PROPERTY_SEQ",
+        sequenceName = "PROPERTY_SEQUENCE",
+        allocationSize = 1
+    )
     private Long id;
 
     @Column

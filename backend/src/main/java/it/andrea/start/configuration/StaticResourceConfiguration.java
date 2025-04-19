@@ -15,7 +15,7 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
             "classpath:/META_INF/resources/",
             "classpath:/resources/",
             "classpath:/static/",
-            "classpath:/public/"};
+            "classpath:/public/" };
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

@@ -1,8 +1,5 @@
 package it.andrea.start.error.handlers;
 
-import it.andrea.start.controller.response.InternalServerErrorResponse;
-import jakarta.persistence.PersistenceException;
-import jakarta.transaction.RollbackException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -11,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import it.andrea.start.controller.response.InternalServerErrorResponse;
+import jakarta.persistence.PersistenceException;
+import jakarta.transaction.RollbackException;
 
 @ControllerAdvice
 public class GenericExceptionHandler extends AbstractHandler {
@@ -21,20 +22,21 @@ public class GenericExceptionHandler extends AbstractHandler {
         this.messageSource = messageSource;
     }
 
-    @ExceptionHandler({
-            RollbackException.class,
-            PersistenceException.class,
-            ConstraintViolationException.class,
-            NullPointerException.class
-    })
+    @ExceptionHandler(
+        {
+                RollbackException.class,
+                PersistenceException.class,
+                ConstraintViolationException.class,
+                NullPointerException.class
+        }
+    )
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public final ResponseEntity<Object> toResponse(Exception exception) {
         String errorMessage = messageSource.getMessage(
                 resolveMessageKey(exception).getCode(),
                 null,
                 "Generic error occurred",
-                LocaleContextHolder.getLocale()
-        );
+                LocaleContextHolder.getLocale());
 
         return ResponseEntity.internalServerError().body(new InternalServerErrorResponse(exception.getMessage(), errorMessage));
     }

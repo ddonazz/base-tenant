@@ -1,15 +1,15 @@
 package it.andrea.start.dto.customer;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Date;
+
 import it.andrea.start.constants.CustomerStatus;
 import it.andrea.start.constants.DocumentType;
 import it.andrea.start.constants.Gender;
 import it.andrea.start.constants.TypeRegistry;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor

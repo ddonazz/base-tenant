@@ -4,19 +4,40 @@ import it.andrea.start.constants.CustomerStatus;
 import it.andrea.start.models.Location;
 import it.andrea.start.models.Registry;
 import it.andrea.start.models.SecondBaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.SequenceGenerator;
 
 public class Customer extends SecondBaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CUSTOMER_SEQ")
-    @SequenceGenerator(name = "CUSTOMER_SEQ", sequenceName = "CUSTOMER_SEQUENCE", allocationSize = 1)
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "CUSTOMER_SEQ"
+    )
+    @SequenceGenerator(
+        name = "CUSTOMER_SEQ",
+        sequenceName = "CUSTOMER_SEQUENCE",
+        allocationSize = 1
+    )
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(
+        nullable = false,
+        unique = true
+    )
     private String code;
 
-    @Column(nullable = false, name = "customer_status")
+    @Column(
+        nullable = false,
+        name = "customer_status"
+    )
     @Enumerated(EnumType.STRING)
     private CustomerStatus customerStatus;
 

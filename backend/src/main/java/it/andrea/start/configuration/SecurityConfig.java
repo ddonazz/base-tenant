@@ -1,10 +1,5 @@
 package it.andrea.start.configuration;
 
-import it.andrea.start.filters.CORSFilter;
-import it.andrea.start.security.jwt.AuthEntryPointJwt;
-import it.andrea.start.security.jwt.AuthTokenFilter;
-import it.andrea.start.security.jwt.JwtUtils;
-import it.andrea.start.security.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +15,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+import it.andrea.start.filters.CORSFilter;
+import it.andrea.start.security.jwt.AuthEntryPointJwt;
+import it.andrea.start.security.jwt.AuthTokenFilter;
+import it.andrea.start.security.jwt.JwtUtils;
+import it.andrea.start.security.service.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity

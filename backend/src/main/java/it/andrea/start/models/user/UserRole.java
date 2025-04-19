@@ -1,18 +1,30 @@
 package it.andrea.start.models.user;
 
-import it.andrea.start.constants.RoleType;
-import jakarta.persistence.*;
-import lombok.Getter;
-import org.springframework.security.core.GrantedAuthority;
-
 import java.io.Serial;
 import java.util.Objects;
+
+import org.springframework.security.core.GrantedAuthority;
+
+import it.andrea.start.constants.RoleType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Getter
 @Entity
 @Table(
-        name = "user_role",
-        indexes = {@Index(name = "IDX_ROLE", columnList = "role")}
+    name = "user_role",
+    indexes = { @Index(
+        name = "IDX_ROLE",
+        columnList = "role"
+    ) }
 )
 public class UserRole implements GrantedAuthority {
 
@@ -20,8 +32,15 @@ public class UserRole implements GrantedAuthority {
     private static final long serialVersionUID = 5841586043417823821L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_ROLE_SEQ")
-    @SequenceGenerator(name = "USER_ROLE_SEQ", sequenceName = "USER_ROLE_SEQUENCE", allocationSize = 1)
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "USER_ROLE_SEQ"
+    )
+    @SequenceGenerator(
+        name = "USER_ROLE_SEQ",
+        sequenceName = "USER_ROLE_SEQUENCE",
+        allocationSize = 1
+    )
     private Long id;
 
     @Enumerated(EnumType.STRING)

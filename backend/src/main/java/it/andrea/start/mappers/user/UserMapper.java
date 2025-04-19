@@ -1,5 +1,15 @@
 package it.andrea.start.mappers.user;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.mapping.MappingToDtoException;
@@ -9,11 +19,6 @@ import it.andrea.start.models.user.User;
 import it.andrea.start.models.user.UserRole;
 import it.andrea.start.repository.user.UserRoleRepository;
 import jakarta.persistence.EntityManager;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class UserMapper extends AbstractMapper<UserDTO, User> {

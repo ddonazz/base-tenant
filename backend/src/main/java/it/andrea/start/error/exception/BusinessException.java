@@ -1,8 +1,8 @@
 package it.andrea.start.error.exception;
 
-import lombok.Getter;
-
 import java.io.Serial;
+
+import lombok.Getter;
 
 @Getter
 public class BusinessException extends Exception {

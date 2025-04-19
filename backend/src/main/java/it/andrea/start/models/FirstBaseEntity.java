@@ -1,18 +1,28 @@
 package it.andrea.start.models;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Version;
 
 @MappedSuperclass
 public class FirstBaseEntity {
 
     @CreatedBy
-    @Column(nullable = false, updatable = false)
+    @Column(
+        nullable = false,
+        updatable = false
+    )
     private String creator;
 
     @LastModifiedBy
@@ -26,7 +36,10 @@ public class FirstBaseEntity {
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false, updatable = false)
+    @Column(
+        nullable = false,
+        updatable = false
+    )
     private LocalDateTime creationDate;
 
     @Version

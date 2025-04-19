@@ -1,18 +1,20 @@
 package it.andrea.start.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.ContentCachingRequestWrapper;
-
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class HelperAudit {
@@ -52,8 +54,7 @@ public class HelperAudit {
         try {
             Map<String, String> flattenedParams = parameterMap.entrySet()
                     .stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> String.join(",", entry.getValue())
-                    ));
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> String.join(",", entry.getValue())));
             return objectMapper.writeValueAsString(flattenedParams);
         } catch (JsonProcessingException e) {
             log.error("Failed to convert parameters to JSON", e);

@@ -1,15 +1,16 @@
 package it.andrea.start.mappers.job;
 
+import org.quartz.SimpleTrigger; // Necessario per REPEAT_INDEFINITELY
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import it.andrea.start.dto.JobInfoDTO;
 import it.andrea.start.error.exception.mapping.MappingToDtoException;
 import it.andrea.start.error.exception.mapping.MappingToEntityException;
 import it.andrea.start.mappers.AbstractMapper;
 import it.andrea.start.models.JobInfo;
 import jakarta.persistence.EntityManager;
-import org.quartz.SimpleTrigger; // Necessario per REPEAT_INDEFINITELY
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 @Component
 public class JobInfoMapper extends AbstractMapper<JobInfoDTO, JobInfo> {
@@ -33,8 +34,8 @@ public class JobInfoMapper extends AbstractMapper<JobInfoDTO, JobInfo> {
             dto.setDescription(entity.getDescription());
             dto.setJobClass(entity.getJobClass());
 
-            dto.setIsActive(entity.getIsActive());
-            dto.setCronJob(entity.getCronJob());
+            dto.setIsActive(entity.isActive());
+            dto.setCronJob(entity.isCronJob());
 
             dto.setCronExpression(entity.getCronExpression());
             dto.setRepeatIntervalMillis(entity.getRepeatIntervalMillis());
@@ -60,9 +61,9 @@ public class JobInfoMapper extends AbstractMapper<JobInfoDTO, JobInfo> {
 
         try {
             entity.setDescription(dto.getDescription());
-            entity.setJobClass(dto.getJobClass()); // Mappato
+            entity.setJobClass(dto.getJobClass());
 
-            entity.setIsActive(dto.getIsActive());
+            entity.setActive(dto.getIsActive());
             entity.setCronJob(dto.getCronJob());
 
             entity.setCronExpression(dto.getCronExpression());
@@ -83,5 +84,5 @@ public class JobInfoMapper extends AbstractMapper<JobInfoDTO, JobInfo> {
             throw new MappingToEntityException("Errore durante la mappatura a JobInfo", e);
         }
     }
-    
+
 }

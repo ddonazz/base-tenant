@@ -1,9 +1,10 @@
 package it.andrea.start.utils;
 
-import it.andrea.start.constants.RoleType;
+import java.util.Collection;
+
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Collection;
+import it.andrea.start.constants.RoleType;
 
 public class HelperAuthorization {
 

@@ -1,9 +1,9 @@
 package it.andrea.start.controller.response;
 
-import org.springframework.lang.NonNull;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import org.springframework.lang.NonNull;
 
 public record BadRequestResponse(String entity, String message) implements Serializable {
 

@@ -1,18 +1,19 @@
 package it.andrea.start.quartz.jobs;
 
-import it.andrea.start.configuration.GlobalConfig;
-import it.andrea.start.service.audit.AuditTraceService;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import org.quartz.*;
+import java.time.LocalDateTime;
+
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import it.andrea.start.configuration.GlobalConfig;
+import it.andrea.start.service.audit.AuditTraceService;
+import lombok.AllArgsConstructor;
 
 @Component
 @DisallowConcurrentExecution

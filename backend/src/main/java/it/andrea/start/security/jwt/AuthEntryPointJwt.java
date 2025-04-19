@@ -1,10 +1,7 @@
 package it.andrea.start.security.jwt;
 
-import it.andrea.start.controller.response.BadRequestResponse;
-import it.andrea.start.error.exception.ErrorCode;
-import it.andrea.start.utils.HelperString;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -13,7 +10,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import it.andrea.start.controller.response.BadRequestResponse;
+import it.andrea.start.error.exception.ErrorCode;
+import it.andrea.start.utils.HelperString;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
@@ -37,8 +38,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
                 ErrorCode.AUTHORIZEUSER_USERNOTFOUND.getCode(),
                 null,
                 "Errore di autenticazione predefinito",
-                LocaleContextHolder.getLocale()
-        );
+                LocaleContextHolder.getLocale());
 
         BadRequestResponse badRequestResponse = new BadRequestResponse("Unauthorized", errorMessage);
         response.getOutputStream().println(HelperString.toJson(badRequestResponse));

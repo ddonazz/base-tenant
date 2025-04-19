@@ -1,7 +1,5 @@
 package it.andrea.start.error.handlers;
 
-import it.andrea.start.controller.response.BadRequestResponse;
-import it.andrea.start.error.exception.BusinessException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -9,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import it.andrea.start.controller.response.BadRequestResponse;
+import it.andrea.start.error.exception.BusinessException;
 
 @ControllerAdvice
 public class BusinessExceptionHandler extends AbstractHandler {
@@ -26,8 +27,7 @@ public class BusinessExceptionHandler extends AbstractHandler {
                 businessException.getMessage(),
                 null,
                 "Generic error occurred while processing request",
-                LocaleContextHolder.getLocale()
-        );
+                LocaleContextHolder.getLocale());
 
         return ResponseEntity.badRequest().body(new BadRequestResponse(businessException.getEntity(), errorMessage));
     }

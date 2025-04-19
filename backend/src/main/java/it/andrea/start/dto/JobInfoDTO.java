@@ -10,7 +10,6 @@ public class JobInfoDTO {
     private String description;
     private String jobClass;
 
-    // Stato
     private Boolean isActive;
     private Boolean cronJob;
 

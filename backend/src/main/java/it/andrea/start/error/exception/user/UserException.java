@@ -1,8 +1,8 @@
 package it.andrea.start.error.exception.user;
 
-import lombok.Getter;
-
 import java.io.Serial;
+
+import lombok.Getter;
 
 @Getter
 public abstract class UserException extends Exception {

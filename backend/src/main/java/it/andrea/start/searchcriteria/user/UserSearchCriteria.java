@@ -1,13 +1,13 @@
 package it.andrea.start.searchcriteria.user;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Collection;
+
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Collection;
 
 @Getter
 @Setter

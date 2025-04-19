@@ -1,11 +1,10 @@
 package it.andrea.start.controller.types;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor

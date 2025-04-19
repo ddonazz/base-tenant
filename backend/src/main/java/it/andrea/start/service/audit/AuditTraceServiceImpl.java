@@ -1,5 +1,14 @@
 package it.andrea.start.service.audit;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import it.andrea.start.dto.audit.AuditTraceDTO;
 import it.andrea.start.mappers.audit.AuditMapper;
 import it.andrea.start.models.audit.AuditTrace;
@@ -7,14 +16,6 @@ import it.andrea.start.repository.audit.AuditTraceRepository;
 import it.andrea.start.searchcriteria.audit.AuditTraceSearchCriteria;
 import it.andrea.start.searchcriteria.audit.AuditTraceSearchSpecification;
 import it.andrea.start.utils.PagedResult;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -37,7 +38,10 @@ public class AuditTraceServiceImpl implements AuditTraceService {
     }
 
     @Override
-    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    @Transactional(
+        rollbackFor = Throwable.class,
+        propagation = Propagation.REQUIRED
+    )
     public PagedResult<AuditTraceDTO> searchAuditTrace(AuditTraceSearchCriteria criteria, Pageable pageable) {
         final Page<AuditTrace> auditPage = auditTraceRepository.findAll(new AuditTraceSearchSpecification(criteria), pageable);
         final Page<AuditTraceDTO> dtoPage = auditPage.map(auditMapper::toDto);
@@ -52,7 +56,10 @@ public class AuditTraceServiceImpl implements AuditTraceService {
     }
 
     @Override
-    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    @Transactional(
+        rollbackFor = Throwable.class,
+        propagation = Propagation.REQUIRED
+    )
     public AuditTraceDTO getAuditTrace(Long id) {
         Optional<AuditTrace> auditOpt = auditTraceRepository.findById(id);
         if (auditOpt.isEmpty()) {
@@ -65,7 +72,10 @@ public class AuditTraceServiceImpl implements AuditTraceService {
     }
 
     @Override
-    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    @Transactional(
+        rollbackFor = Throwable.class,
+        propagation = Propagation.REQUIRED
+    )
     public int deleteAuditTrace(LocalDateTime dateCompare) {
         return auditTraceRepository.deleteRows(dateCompare);
     }

@@ -1,12 +1,13 @@
 package it.andrea.start.service.user;
 
+import org.springframework.data.domain.Pageable;
+
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.BusinessException;
 import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.searchcriteria.user.UserSearchCriteria;
 import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.utils.PagedResult;
-import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 

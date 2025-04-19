@@ -1,11 +1,11 @@
 package it.andrea.start.mappers;
 
-import jakarta.persistence.EntityManager;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import jakarta.persistence.EntityManager;
 
 public abstract class AbstractMapper<T, E> implements Mapper<T, E> {
 

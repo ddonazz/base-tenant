@@ -6,6 +6,7 @@ public enum TypeRegistry {
 
     BUSINESS("BUSINESS"),
     PRIVATE("PRIVATE");
+
     private String string;
 
     TypeRegistry(String name) {

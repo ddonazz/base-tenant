@@ -1,5 +1,23 @@
 package it.andrea.start.controller;
 
+import java.util.Collection;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.v3.oas.annotations.Operation;
 import it.andrea.start.annotation.Audit;
 import it.andrea.start.constants.AuditActivity;
@@ -15,15 +33,6 @@ import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.service.user.UserService;
 import it.andrea.start.utils.PagedResult;
 import it.andrea.start.validator.OnCreate;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
 
 @RestController
 @RequestMapping("/api/user")
@@ -37,12 +46,15 @@ public class UserController {
     }
 
     @Operation(
-            method = "POST",
-            description = "Aggiungi un utente da ADMIN o MANAGER",
-            summary = "Aggiungi un utente da ADMIN o MANAGER")
+        description = "Aggiungi un utente da ADMIN o MANAGER",
+        summary = "Aggiungi un utente da ADMIN o MANAGER"
+    )
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PostMapping("")
-    @Audit(activity = AuditActivity.USER_OPERATION, type = AuditTypeOperation.CREATE)
+    @Audit(
+        activity = AuditActivity.USER_OPERATION,
+        type = AuditTypeOperation.CREATE
+    )
     public ResponseEntity<UserDTO> createUser(@RequestBody @Validated(OnCreate.class) UserDTO userDTO)
             throws BusinessException, UserException {
 
@@ -53,13 +65,16 @@ public class UserController {
     }
 
     @Operation(
-            method = "PUT",
-            description = "Aggiorna un utente da ADMIN o MANAGER",
-            summary = "Aggiorna un utente da ADMIN o MANAGER"
+        method = "PUT",
+        description = "Aggiorna un utente da ADMIN o MANAGER",
+        summary = "Aggiorna un utente da ADMIN o MANAGER"
     )
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @PutMapping("/{id}")
-    @Audit(activity = AuditActivity.USER_OPERATION, type = AuditTypeOperation.UPDATE)
+    @Audit(
+        activity = AuditActivity.USER_OPERATION,
+        type = AuditTypeOperation.UPDATE
+    )
     public ResponseEntity<UserDTO> updateUser(
             @RequestBody UserDTO userDTO,
             @PathVariable Long id)
@@ -73,13 +88,15 @@ public class UserController {
     }
 
     @Operation(
-            method = "DELETE",
-            description = "Elimina un utente da ADMIN o MANAGER",
-            summary = "Elimina un utente da ADMIN o MANAGER"
+        description = "Elimina un utente da ADMIN o MANAGER",
+        summary = "Elimina un utente da ADMIN o MANAGER"
     )
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @DeleteMapping("/{id}")
-    @Audit(activity = AuditActivity.USER_OPERATION, type = AuditTypeOperation.DELETE)
+    @Audit(
+        activity = AuditActivity.USER_OPERATION,
+        type = AuditTypeOperation.DELETE
+    )
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) throws UserException, BusinessException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -91,22 +108,23 @@ public class UserController {
     }
 
     @Operation(
-            method = "GET",
-            description = "Informazioni di un utente",
-            summary = "Informazioni di un utente"
+        description = "Informazioni di un utente",
+        summary = "Informazioni di un utente"
     )
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @GetMapping("/{id}")
-    @Audit(activity = AuditActivity.USER_OPERATION, type = AuditTypeOperation.GET_INFO)
+    @Audit(
+        activity = AuditActivity.USER_OPERATION,
+        type = AuditTypeOperation.GET_INFO
+    )
     public ResponseEntity<UserDTO> infoUser(@PathVariable Long id) throws UserException {
 
         return ResponseEntity.ok(userService.getUser(id));
     }
 
     @Operation(
-            method = "GET",
-            description = "Lista degli utenti",
-            summary = "Lista degli utenti"
+        description = "Lista degli utenti",
+        summary = "Lista degli utenti"
     )
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
     @GetMapping("/list")
@@ -136,9 +154,8 @@ public class UserController {
     }
 
     @Operation(
-            method = "PUT",
-            description = "Cambio password da ADMIN",
-            summary = "Cambio password da ADMIN"
+        description = "Cambio password da ADMIN",
+        summary = "Cambio password da ADMIN"
     )
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/change-password/{userId}")
@@ -154,10 +171,10 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
-            method = "POST",
-            description = "User self change password",
-            summary = "User self change password"
+        description = "User self change password",
+        summary = "User self change password"
     )
     @PostMapping("/change-password")
     public ResponseEntity<Void> changePassword(@RequestBody ChangePassword changePassword) throws UserException, BusinessException {

@@ -1,10 +1,8 @@
 package it.andrea.start.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
 import java.io.Serial;
+
+import lombok.ToString;
 
 @ToString
 public class ListDTO extends ListBaseDTO<ListItemDTO> {

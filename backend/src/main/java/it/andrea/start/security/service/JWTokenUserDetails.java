@@ -1,12 +1,12 @@
 package it.andrea.start.security.service;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class JWTokenUserDetails implements UserDetails {
 

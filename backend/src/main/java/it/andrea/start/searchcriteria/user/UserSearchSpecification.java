@@ -1,15 +1,20 @@
 package it.andrea.start.searchcriteria.user;
 
-import it.andrea.start.models.user.User;
-import it.andrea.start.models.user.UserRole;
-import jakarta.persistence.criteria.*;
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
+import it.andrea.start.models.user.User;
+import it.andrea.start.models.user.UserRole;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 public class UserSearchSpecification implements Specification<User> {
 

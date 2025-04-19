@@ -1,9 +1,9 @@
 package it.andrea.start.controller.response;
 
-import org.springframework.lang.NonNull;
-
 import java.io.Serial;
 import java.io.Serializable;
+
+import org.springframework.lang.NonNull;
 
 public record InternalServerErrorResponse(String exceptionMessage, String message) implements Serializable {
 
