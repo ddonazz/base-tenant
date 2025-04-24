@@ -20,8 +20,6 @@ import it.andrea.start.constants.AuditTypeOperation;
 import it.andrea.start.controller.response.TokenResponse;
 import it.andrea.start.controller.types.LoginRequest;
 import it.andrea.start.dto.user.UserDTO;
-import it.andrea.start.error.exception.BusinessException;
-import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.security.jwt.JwtUtils;
 import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.service.user.UserService;
@@ -68,7 +66,7 @@ public class AuthorizeController {
         summary = "Information current user"
     )
     @GetMapping("/who-am-i")
-    public ResponseEntity<UserDTO> whoami() throws UserException {
+    public ResponseEntity<UserDTO> whoami() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
 
@@ -81,8 +79,7 @@ public class AuthorizeController {
         summary = "Update information current user"
     )
     @PutMapping("/update-profile")
-    public ResponseEntity<UserDTO> updateProfile(@RequestBody UserDTO userDTO)
-            throws UserException, BusinessException {
+    public ResponseEntity<UserDTO> updateProfile(@RequestBody UserDTO userDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
 

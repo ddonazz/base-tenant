@@ -35,7 +35,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         String errorMessage = messageSource.getMessage(
-                ErrorCode.AUTHORIZEUSER_USERNOTFOUND.getCode(),
+                ErrorCode.AUTHORIZEUSER_USER_NOT_FOUND.getCode(),
                 null,
                 "Errore di autenticazione predefinito",
                 LocaleContextHolder.getLocale());

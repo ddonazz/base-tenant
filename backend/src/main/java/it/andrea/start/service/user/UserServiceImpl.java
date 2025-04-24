@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import it.andrea.start.constants.EntityType;
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
+import it.andrea.start.controller.types.ChangePassword;
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.BusinessException;
 import it.andrea.start.error.exception.ErrorCode;
-import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.error.exception.user.UserNotFoundException;
 import it.andrea.start.mappers.user.UserMapper;
 import it.andrea.start.models.user.User;
@@ -34,8 +34,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private static final String ENTITY = "User";
-
     private final EncrypterManager encrypterManager;
 
     private final UserRepository userRepository;
@@ -48,7 +46,7 @@ public class UserServiceImpl implements UserService {
         readOnly = true,
         propagation = Propagation.REQUIRED
     )
-    public UserDTO getUser(String username) throws UserException {
+    public UserDTO getUser(String username) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException(username);
@@ -63,7 +61,7 @@ public class UserServiceImpl implements UserService {
         readOnly = true,
         propagation = Propagation.REQUIRED
     )
-    public UserDTO getUser(Long id) throws UserException {
+    public UserDTO getUser(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException(id);
@@ -78,7 +76,7 @@ public class UserServiceImpl implements UserService {
         readOnly = true,
         propagation = Propagation.REQUIRED
     )
-    public UserDTO whoami(JWTokenUserDetails jWTokenUserDetails) throws UserException {
+    public UserDTO whoami(JWTokenUserDetails jWTokenUserDetails) {
         String username = jWTokenUserDetails.getUsername();
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
@@ -94,7 +92,7 @@ public class UserServiceImpl implements UserService {
         rollbackFor = Exception.class,
         propagation = Propagation.REQUIRED
     )
-    public UserDTO createUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws BusinessException, UserException {
+    public UserDTO createUser(UserDTO userDTO, JWTokenUserDetails userDetails) {
         userValidator.validateUser(userDTO, HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN), true);
 
         User user = new User();
@@ -120,7 +118,7 @@ public class UserServiceImpl implements UserService {
         rollbackFor = Exception.class,
         propagation = Propagation.REQUIRED
     )
-    public UserDTO updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) throws UserException, BusinessException {
+    public UserDTO updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
 
         String username = userDTO.getUsername();
@@ -146,7 +144,7 @@ public class UserServiceImpl implements UserService {
         rollbackFor = Exception.class,
         propagation = Propagation.REQUIRED
     )
-    public void deleteUser(Long id, JWTokenUserDetails userDetails) throws UserException, BusinessException {
+    public void deleteUser(Long id, JWTokenUserDetails userDetails) {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
         boolean haveManagerRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_MANAGER);
 
@@ -157,10 +155,10 @@ public class UserServiceImpl implements UserService {
         User user = optionalUser.get();
 
         if (haveAdminRole) {
-            throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_ADMIN_NOT_DELETE);
+            throw new BusinessException(ErrorCode.USER_ROLE_ADMIN_NOT_DELETE, "");
         }
         if (haveManagerRole) {
-            throw new BusinessException(ENTITY, ErrorCode.USER_ROLE_MANAGER_NOT_DELETE);
+            throw new BusinessException(ErrorCode.USER_ROLE_MANAGER_NOT_DELETE, "");
         }
 
         user.setUserStatus(UserStatus.DEACTIVATE);
@@ -193,19 +191,16 @@ public class UserServiceImpl implements UserService {
         rollbackFor = Throwable.class,
         propagation = Propagation.REQUIRED
     )
-    public void changePassword(Long userId, String newPassword, String repeatPassword, JWTokenUserDetails userDetails) throws UserException, BusinessException {
-        boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
-        boolean haveManagerRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_MANAGER);
-
+    public void changePasswordForAdmin(Long userId, ChangePassword changePassword, JWTokenUserDetails userDetails) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException(userId.toString());
         }
         User user = optionalUser.get();
 
-        UserValidator.checkPassword(newPassword, repeatPassword, haveAdminRole, haveManagerRole);
+        UserValidator.checkPassword(changePassword);
 
-        String passwordCrypt = encrypterManager.encode(newPassword);
+        String passwordCrypt = encrypterManager.encode(changePassword.getNewPassword());
         user.setPassword(passwordCrypt);
         user.setLastModifiedBy(userDetails.getUsername());
 
@@ -217,20 +212,16 @@ public class UserServiceImpl implements UserService {
         rollbackFor = Throwable.class,
         propagation = Propagation.REQUIRED
     )
-    public void changePassword(String newPassword, String repeatPassword, JWTokenUserDetails userDetails)
-            throws UserException, BusinessException {
-        boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
-        boolean haveManagerRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_MANAGER);
-
+    public void changeMyPassword(ChangePassword changePassword, JWTokenUserDetails userDetails) {
         Optional<User> optionalUser = userRepository.findByUsername(userDetails.getUsername());
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException(userDetails.getUsername());
         }
         User user = optionalUser.get();
 
-        UserValidator.checkPassword(newPassword, repeatPassword, haveAdminRole, haveManagerRole);
+        UserValidator.checkPassword(changePassword);
 
-        String passwordCrypt = encrypterManager.encode(newPassword);
+        String passwordCrypt = encrypterManager.encode(changePassword.getNewPassword());
         user.setPassword(passwordCrypt);
         user.setLastModifiedBy(userDetails.getUsername());
 

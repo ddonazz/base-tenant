@@ -1,6 +1,6 @@
 package it.andrea.start.mappers.job;
 
-import org.quartz.SimpleTrigger; // Necessario per REPEAT_INDEFINITELY
+import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -52,10 +52,12 @@ public class JobInfoMapper extends AbstractMapper<JobInfoDTO, JobInfo> {
     }
 
     @Override
-    public void toEntity(JobInfoDTO dto, JobInfo entity) throws MappingToEntityException {
+    public void toEntity(JobInfoDTO dto, JobInfo entity) {
         if (dto == null || entity == null) {
             log.warn("Tentativo di mappare da DTO a Entità con input nullo.");
-            if (dto == null) throw new MappingToEntityException("Il DTO sorgente non può essere nullo.");
+            if (dto == null) {
+                throw new MappingToEntityException("Il DTO sorgente non può essere nullo.");
+            }
             throw new MappingToEntityException("L'entità destinazione non può essere nulla.");
         }
 
@@ -79,7 +81,7 @@ public class JobInfoMapper extends AbstractMapper<JobInfoDTO, JobInfo> {
 
             entity.setJobDataMapJson(dto.getJobDataMapJson());
 
-        } catch (Exception e) {
+        } catch (MappingToEntityException e) {
             log.error("Errore durante la mappatura da JobInfoDTO a JobInfo per jobName='{}': {}", dto.getJobName(), e.getMessage(), e);
             throw new MappingToEntityException("Errore durante la mappatura a JobInfo", e);
         }

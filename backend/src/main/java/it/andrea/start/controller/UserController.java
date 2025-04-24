@@ -27,7 +27,6 @@ import it.andrea.start.constants.UserStatus;
 import it.andrea.start.controller.types.ChangePassword;
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.BusinessException;
-import it.andrea.start.error.exception.user.UserException;
 import it.andrea.start.searchcriteria.user.UserSearchCriteria;
 import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.service.user.UserService;
@@ -49,14 +48,14 @@ public class UserController {
         description = "Aggiungi un utente da ADMIN o MANAGER",
         summary = "Aggiungi un utente da ADMIN o MANAGER"
     )
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("")
     @Audit(
         activity = AuditActivity.USER_OPERATION,
         type = AuditTypeOperation.CREATE
     )
     public ResponseEntity<UserDTO> createUser(@RequestBody @Validated(OnCreate.class) UserDTO userDTO)
-            throws BusinessException, UserException {
+            throws BusinessException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
@@ -69,7 +68,7 @@ public class UserController {
         description = "Aggiorna un utente da ADMIN o MANAGER",
         summary = "Aggiorna un utente da ADMIN o MANAGER"
     )
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/{id}")
     @Audit(
         activity = AuditActivity.USER_OPERATION,
@@ -78,7 +77,7 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(
             @RequestBody UserDTO userDTO,
             @PathVariable Long id)
-            throws UserException, BusinessException {
+            throws BusinessException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
@@ -91,13 +90,13 @@ public class UserController {
         description = "Elimina un utente da ADMIN o MANAGER",
         summary = "Elimina un utente da ADMIN o MANAGER"
     )
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/{id}")
     @Audit(
         activity = AuditActivity.USER_OPERATION,
         type = AuditTypeOperation.DELETE
     )
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) throws UserException, BusinessException {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
@@ -111,13 +110,13 @@ public class UserController {
         description = "Informazioni di un utente",
         summary = "Informazioni di un utente"
     )
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/{id}")
     @Audit(
         activity = AuditActivity.USER_OPERATION,
         type = AuditTypeOperation.GET_INFO
     )
-    public ResponseEntity<UserDTO> infoUser(@PathVariable Long id) throws UserException {
+    public ResponseEntity<UserDTO> infoUser(@PathVariable Long id) {
 
         return ResponseEntity.ok(userService.getUser(id));
     }
@@ -126,7 +125,7 @@ public class UserController {
         description = "Lista degli utenti",
         summary = "Lista degli utenti"
     )
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('OPERATOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'OPERATOR')")
     @GetMapping("/list")
     public ResponseEntity<PagedResult<UserDTO>> listUser(
             @RequestParam(required = false) Long id,
@@ -161,27 +160,27 @@ public class UserController {
     @PutMapping("/change-password/{userId}")
     public ResponseEntity<Void> changePassword(
             @PathVariable Long userId,
-            @RequestBody ChangePassword changePassword) throws UserException, BusinessException {
+            @RequestBody ChangePassword changePassword) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
 
-        userService.changePassword(userId, changePassword.getNewPassword(), changePassword.getRepeatPassword(), userDetails);
+        userService.changePasswordForAdmin(userId, changePassword, userDetails);
 
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'OPERATOR')")
     @Operation(
         description = "User self change password",
         summary = "User self change password"
     )
-    @PostMapping("/change-password")
-    public ResponseEntity<Void> changePassword(@RequestBody ChangePassword changePassword) throws UserException, BusinessException {
+    @PostMapping("/change-my-password")
+    public ResponseEntity<Void> changePassword(@RequestBody ChangePassword changePassword) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JWTokenUserDetails userDetails = (JWTokenUserDetails) authentication.getPrincipal();
 
-        userService.changePassword(changePassword.getNewPassword(), changePassword.getRepeatPassword(), userDetails);
+        userService.changeMyPassword(changePassword, userDetails);
 
         return ResponseEntity.ok().build();
     }

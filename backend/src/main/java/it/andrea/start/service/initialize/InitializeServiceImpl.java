@@ -222,9 +222,7 @@ public class InitializeServiceImpl {
     private String getRequiredTagValue(String tagName, Element parentElement) {
         NodeList nodeList = parentElement.getElementsByTagName(tagName);
         if (nodeList.getLength() == 0 || nodeList.item(0).getTextContent() == null || nodeList.item(0).getTextContent().trim().isEmpty()) {
-            String parentIdentifier = parentElement.getElementsByTagName("name").getLength() > 0 ? parentElement.getElementsByTagName("name").item(0).getTextContent()
-                    : (parentElement.getElementsByTagName("username").getLength() > 0 ? parentElement.getElementsByTagName("username").item(0).getTextContent()
-                            : parentElement.getNodeName());
+            String parentIdentifier = parentElement.getElementsByTagName("name").item(0).getTextContent();
             throw new IllegalArgumentException("Tag obbligatorio mancante o vuoto: <" + tagName + "> nell'elemento: " + parentIdentifier);
         }
         return nodeList.item(0).getTextContent().trim();

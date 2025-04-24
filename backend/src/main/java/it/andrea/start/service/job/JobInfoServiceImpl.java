@@ -30,9 +30,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.andrea.start.dto.JobInfoDTO;
+import it.andrea.start.error.exception.job.JobControlException;
+import it.andrea.start.error.exception.job.JobNotFoundException;
 import it.andrea.start.error.exception.job.JobSchedulingException;
 import it.andrea.start.error.exception.mapping.MappingToDtoException;
-// import it.andrea.start.error.exception.job.JobNotFoundException; // Esempio eccezione custom
 // import it.andrea.start.error.exception.job.JobSchedulingException; // Esempio eccezione custom
 // import it.andrea.start.error.exception.job.JobControlException; // Esempio eccezione custom
 import it.andrea.start.mappers.job.JobInfoMapper;
@@ -86,11 +87,10 @@ public class JobInfoServiceImpl implements JobInfoService {
         rollbackFor = Throwable.class,
         propagation = Propagation.REQUIRED
     )
-    public void scheduleNewJob(String jobName, String jobGroup) throws JobSchedulingException {
+    public void scheduleNewJob(String jobName, String jobGroup) {
         LOG.info("Tentativo di schedulare un nuovo job: {}/{}", jobGroup, jobName);
         JobInfo jobInfo = findJobInfoOrThrow(jobName, jobGroup);
 
-        // Policy: Schedula solo se esplicitamente attivo nel DB
         if (!jobInfo.isActive()) {
             LOG.warn("Il job {}/{} è marcato come inattivo nel DB. Non verrà schedulato. Aggiornare 'isActive' a true e riprovare se necessario.", jobGroup, jobName);
             throw new IllegalStateException("Il job " + jobGroup + "/" + jobName + " è inattivo e non può essere schedulato.");
@@ -101,7 +101,7 @@ public class JobInfoServiceImpl implements JobInfoService {
             LOG.info("Job {}/{} schedulato con successo.", jobGroup, jobName);
         } catch (Exception e) {
             LOG.error("Errore durante la schedulazione del job {}/{}: {}", jobGroup, jobName, e.getMessage(), e);
-            throw new JobSchedulingException(new Object[] { jobGroup, jobName });
+            throw new JobSchedulingException(jobGroup, jobName);
         }
     }
 
@@ -110,23 +110,20 @@ public class JobInfoServiceImpl implements JobInfoService {
         rollbackFor = Throwable.class,
         propagation = Propagation.REQUIRED
     )
-    public void updateScheduleJob(String jobName, String jobGroup) throws JobSchedulingException {
+    public void updateScheduleJob(String jobName, String jobGroup) {
         LOG.info("Tentativo di aggiornare la schedulazione per il job: {}/{}", jobGroup, jobName);
         JobInfo jobInfo = findJobInfoOrThrow(jobName, jobGroup);
 
-        // Sincronizza lo stato dello scheduler con lo stato 'isActive' del DB
         if (Boolean.TRUE.equals(jobInfo.isActive())) {
-            // Se attivo nel DB, assicurati che sia schedulato/aggiornato nello scheduler
             LOG.info("Job {}/{} è attivo nel DB. Schedulazione/aggiornamento nello scheduler...", jobGroup, jobName);
             try {
                 scheduleOrUpdateJobInternal(jobInfo);
                 LOG.info("Schedulazione job {}/{} aggiornata con successo.", jobGroup, jobName);
             } catch (Exception e) {
                 LOG.error("Errore durante l'aggiornamento della schedulazione del job {}/{}: {}", jobGroup, jobName, e.getMessage(), e);
-                throw new JobSchedulingException(new Object[] { jobGroup, jobName });
+                throw new JobSchedulingException(jobGroup, jobName);
             }
         } else {
-            // Se inattivo nel DB, assicurati che sia rimosso dallo scheduler
             LOG.info("Job {}/{} è inattivo nel DB. Rimozione dallo scheduler (se esistente)...", jobGroup, jobName);
             deleteJobInternal(jobInfo.getJobName(), jobInfo.getJobGroup());
         }
@@ -140,7 +137,6 @@ public class JobInfoServiceImpl implements JobInfoService {
     public void unScheduleJob(String jobName, String jobGroup) {
         LOG.info("Tentativo di de-schedulare (rimuovere e marcare come inattivo) il job: {}/{}", jobGroup, jobName);
 
-        // 1. Aggiorna lo stato nel DB a inattivo (se trovato)
         Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobNameAndJobGroup(jobName, jobGroup);
         if (jobInfoOpt.isPresent()) {
             JobInfo jobInfo = jobInfoOpt.get();
@@ -155,7 +151,6 @@ public class JobInfoServiceImpl implements JobInfoService {
             LOG.warn("JobInfo non trovato per {}/{}. Impossibile aggiornare lo stato isActive nel DB.", jobGroup, jobName);
         }
 
-        // 2. Rimuovi dallo scheduler (indipendentemente dallo stato trovato nel DB, per pulizia)
         deleteJobInternal(jobName, jobGroup);
     }
 
@@ -167,10 +162,8 @@ public class JobInfoServiceImpl implements JobInfoService {
     public void deleteJob(String jobName, String jobGroup) {
         LOG.info("Tentativo di cancellare completamente il job: {}/{}", jobGroup, jobName);
 
-        // 1. Rimuovi dallo scheduler
         deleteJobInternal(jobName, jobGroup);
 
-        // 2. Rimuovi dal database
         Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobNameAndJobGroup(jobName, jobGroup);
         if (jobInfoOpt.isPresent()) {
             jobInfoRepository.delete(jobInfoOpt.get());
@@ -181,20 +174,19 @@ public class JobInfoServiceImpl implements JobInfoService {
     }
 
     @Override
-    public void pauseJob(String jobName, String jobGroup) {
+    public void pauseJob(String jobName, String jobGroup) throws JobControlException {
         JobKey jobKey = JobKey.jobKey(jobName, jobGroup);
         LOG.info("Tentativo di mettere in pausa il job: {}", jobKey);
         try {
             if (scheduler.checkExists(jobKey)) {
                 scheduler.pauseJob(jobKey);
                 LOG.info("Job {} messo in pausa con successo.", jobKey);
-                // Nota: Non modificare jobInfo.isActive. La pausa è uno stato di runtime dello scheduler.
             } else {
                 LOG.warn("Tentativo di mettere in pausa un job non esistente nello scheduler: {}", jobKey);
             }
         } catch (SchedulerException e) {
             LOG.error("Errore durante la pausa del job {}: {}", jobKey, e.getMessage(), e);
-            // throw new JobControlException("Errore pausa job " + jobKey, e);
+            throw new JobControlException("Errore pausa job", jobName, jobGroup);
         }
     }
 
@@ -203,39 +195,33 @@ public class JobInfoServiceImpl implements JobInfoService {
         JobKey jobKey = JobKey.jobKey(jobName, jobGroup);
         LOG.info("Tentativo di riprendere il job: {}", jobKey);
         try {
-            // Verifica cruciale: il job deve esistere nel DB ed essere considerato ATTIVO logicamente
-            // per poter essere ripreso. Non riprendere job che dovrebbero essere inattivi.
             Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobNameAndJobGroup(jobName, jobGroup);
             if (jobInfoOpt.isEmpty() || !Boolean.TRUE.equals(jobInfoOpt.get().isActive())) {
                 LOG.warn("Impossibile riprendere il job {}: non trovato nel DB o marcato come inattivo.", jobKey);
                 throw new IllegalStateException("Cannot resume job " + jobKey + " as it is not found or inactive in the database.");
             }
 
-            // Se è logicamente attivo, prova a riprenderlo nello scheduler
             if (scheduler.checkExists(jobKey)) {
                 scheduler.resumeJob(jobKey);
                 LOG.info("Job {} ripreso con successo.", jobKey);
-                // Nota: Non modificare jobInfo.isActive.
             } else {
-                LOG.warn("Tentativo di riprendere un job non esistente nello scheduler: {}. Potrebbe essere necessario rischedularlo se si desidera eseguirlo.", jobKey);
-                // Considera se rischedularlo automaticamente qui chiamando scheduleOrUpdateJobInternal(jobInfoOpt.get());
+                LOG.warn("Tentativo di riprendere un job non esistente nello scheduler: {}. Rischedulo il job.", jobKey);
+                scheduleOrUpdateJobInternal(jobInfoOpt.get());
             }
         } catch (SchedulerException e) {
             LOG.error("Errore Scheduler durante la ripresa del job {}: {}", jobKey, e.getMessage(), e);
-            // throw new JobControlException("Errore ripresa job " + jobKey, e);
-        } catch (Exception e) { // Catch per altre eccezioni (es. accesso DB)
+             throw new JobControlException("Errore ripresa job", jobName, jobGroup);
+        } catch (Exception e) { 
             LOG.error("Errore generico durante la ripresa del job {}: {}", jobKey, e.getMessage(), e);
             throw new RuntimeException("Errore generico ripresa job " + jobKey, e);
         }
     }
 
     @Override
-    // Potrebbe non necessitare di @Transactional se non modifica JobInfo, ma legge per verifica.
     public void startJobNow(String jobName, String jobGroup) {
         JobKey jobKey = JobKey.jobKey(jobName, jobGroup);
         LOG.info("Tentativo di avviare immediatamente (trigger) il job: {}", jobKey);
         try {
-            // Verifica: Il job deve esistere nel DB ed essere ATTIVO per essere triggerato manualmente.
             Optional<JobInfo> jobInfoOpt = jobInfoRepository.findByJobNameAndJobGroup(jobName, jobGroup);
             if (jobInfoOpt.isEmpty() || !Boolean.TRUE.equals(jobInfoOpt.get().isActive())) {
                 LOG.warn("Impossibile avviare il job {}: non trovato nel DB o marcato come inattivo.", jobKey);
@@ -250,20 +236,18 @@ public class JobInfoServiceImpl implements JobInfoService {
             }
         } catch (SchedulerException e) {
             LOG.error("Errore Scheduler durante l'avvio manuale del job {}: {}", jobKey, e.getMessage(), e);
-            // throw new JobControlException("Errore avvio manuale job " + jobKey, e);
-        } catch (Exception e) { // Catch per altre eccezioni (es. accesso DB)
+             throw new JobControlException("Errore avvio manuale job", jobGroup, jobName);
+        } catch (Exception e) { 
             LOG.error("Errore generico durante l'avvio manuale del job {}: {}", jobKey, e.getMessage(), e);
             throw new RuntimeException("Errore generico avvio manuale job " + jobKey, e);
         }
     }
 
-    private JobInfo findJobInfoOrThrow(String jobName, String jobGroup) {
+    private JobInfo findJobInfoOrThrow(String jobName, String jobGroup) throws JobNotFoundException {
         return jobInfoRepository.findByJobNameAndJobGroup(jobName, jobGroup)
                 .orElseThrow(() -> {
                     LOG.error("JobInfo non trovato per {}/{}", jobGroup, jobName);
-                    // Sostituisci con la tua eccezione custom se preferisci
-                    return new RuntimeException("JobInfo non trovato per " + jobGroup + "/" + jobName);
-                    // return new JobNotFoundException("JobInfo non trovato per " + jobGroup + "/" + jobName);
+                    return new JobNotFoundException(jobGroup, jobName);
                 });
     }
 
@@ -312,18 +296,14 @@ public class JobInfoServiceImpl implements JobInfoService {
                 if (deleted) {
                     LOG.info("Job {} cancellato con successo dallo scheduler.", jobKey);
                 } else {
-                    // Se checkExists è true, deleteJob dovrebbe ritornare true. Log anomalia.
                     LOG.warn("Il job {} è stato trovato nello scheduler ma deleteJob() ha restituito false.", jobKey);
                 }
             } else {
-                // È normale tentare di cancellare un job che potrebbe non essere (più) nello scheduler.
                 LOG.info("Tentativo di cancellare un job non esistente nello scheduler: {}. Nessuna azione necessaria.", jobKey);
             }
         } catch (SchedulerException e) {
-            // Logga l'errore ma non interrompere il flusso (es. durante un unSchedule o delete)
             LOG.error("Errore durante la cancellazione del job {} dallo scheduler: {}", jobKey, e.getMessage(), e);
-            // Considera se rilanciare un'eccezione personalizzata qui se la cancellazione è critica
-            // throw new JobControlException("Errore cancellazione job " + jobKey, e);
+            throw new JobControlException("Errore cancellazione job", jobGroup, jobName);
         }
     }
 
@@ -441,7 +421,6 @@ public class JobInfoServiceImpl implements JobInfoService {
 
             triggerBuilder.withSchedule(scheduleBuilder);
 
-            // Gestione Ritardo Iniziale
             if (jobInfo.getInitialDelayMillis() != null && jobInfo.getInitialDelayMillis() > 0) {
                 Date startTime = new Date(System.currentTimeMillis() + jobInfo.getInitialDelayMillis());
                 triggerBuilder.startAt(startTime);

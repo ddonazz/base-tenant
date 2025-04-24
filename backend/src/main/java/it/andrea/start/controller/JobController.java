@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import it.andrea.start.dto.JobInfoDTO;
-import it.andrea.start.error.exception.job.JobSchedulingException;
 import it.andrea.start.service.job.JobInfoService;
 import lombok.RequiredArgsConstructor;
 
@@ -41,7 +40,7 @@ public class JobController {
     @PutMapping("/schedule/{group}/{name}")
     public ResponseEntity<Void> scheduleNewJob(
             @PathVariable String group,
-            @PathVariable String name) throws JobSchedulingException {
+            @PathVariable String name) {
 
         jobInfoService.scheduleNewJob(name, group);
         return ResponseEntity.ok().build();
@@ -54,7 +53,7 @@ public class JobController {
     @PutMapping("/update/{group}/{name}")
     public ResponseEntity<Void> updateScheduleJob(
             @PathVariable String group,
-            @PathVariable String name) throws JobSchedulingException {
+            @PathVariable String name) {
 
         jobInfoService.updateScheduleJob(name, group);
         return ResponseEntity.ok().build();
