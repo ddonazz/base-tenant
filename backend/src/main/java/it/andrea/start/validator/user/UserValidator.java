@@ -27,7 +27,7 @@ public class UserValidator {
     public static void checkPassword(ChangePassword changePassword)
             throws BusinessException {
         if (!changePassword.getNewPassword().equals(changePassword.getRepeatPassword())) {
-            throw new BusinessException(ErrorCode.USER_REPEAT_PASSWORD_NOT_EQUAL, "");
+            throw new BusinessException(ErrorCode.USER_REPEAT_PASSWORD_NOT_EQUAL, "Passwords entered do not match.");
         }
     }
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import it.andrea.start.annotation.Audit;
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditTypeOperation;
@@ -24,6 +25,7 @@ import it.andrea.start.security.jwt.JwtUtils;
 import it.andrea.start.security.service.JWTokenUserDetails;
 import it.andrea.start.service.user.UserService;
 
+@Tag(name = "Authorize API")
 @RestController
 @RequestMapping("/api/authorize")
 public class AuthorizeController {

@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import it.andrea.start.dto.JobInfoDTO;
 import it.andrea.start.service.job.JobInfoService;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Job Info API", description = "API for job scheduler management")
 @RestController
 @RequestMapping("/api/job")
 @PreAuthorize("hasRole('ADMIN')")

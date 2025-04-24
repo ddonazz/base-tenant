@@ -6,46 +6,63 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import it.andrea.start.controller.response.BadRequestResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import it.andrea.start.controller.response.ApiError;
 import it.andrea.start.error.exception.ErrorCode;
-import it.andrea.start.utils.HelperString;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
     private final MessageSource messageSource;
-
-    public AuthEntryPointJwt(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
+    private final ObjectMapper objectMapper; 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         logErrorDetails(request, authException);
-
-        response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        
+        ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED; 
+        HttpStatus status = errorCode.getHttpStatus();
 
         String errorMessage = messageSource.getMessage(
-                ErrorCode.AUTHORIZEUSER_USER_NOT_FOUND.getCode(),
-                null,
-                "Errore di autenticazione predefinito",
+                errorCode.getCode(),
+                null, 
+                "Authentication failed. Please check your credentials or token.", 
                 LocaleContextHolder.getLocale());
 
-        BadRequestResponse badRequestResponse = new BadRequestResponse("Unauthorized", errorMessage);
-        response.getOutputStream().println(HelperString.toJson(badRequestResponse));
-    }
+        ApiError apiError = new ApiError(
+                status,
+                errorCode, 
+                errorMessage,
+                request.getRequestURI()); 
+
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        response.getWriter().write(objectMapper.writeValueAsString(apiError));
+        response.getWriter().flush(); 
+        }
 
     private void logErrorDetails(HttpServletRequest request, AuthenticationException authException) {
-        LOG.error("Unauthorized access attempt at [{}]: {} - {}", request.getRequestURL(), request.getRequestURI(), authException.getMessage());
+            LOG.error("Authentication Failed for request [{} {}]: Status={}, ErrorCode={}, Message='{}'",
+                      request.getMethod(),
+                      request.getRequestURI(),
+                      ErrorCode.AUTHENTICATION_FAILED.getHttpStatus().value(), 
+                      ErrorCode.AUTHENTICATION_FAILED.getCode(), 
+                      authException.getMessage()); 
+            LOG.debug("AuthenticationException details:", authException);
     }
 
 }

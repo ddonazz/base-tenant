@@ -32,7 +32,6 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-        port: 587
   quartz:
     job-store-type: jdbc
     jdbc:
@@ -67,10 +66,12 @@ springdoc:
   api-docs:
     enabled: true
   swagger-ui:
+    path: /swagger-ui.html
     enabled: true
-    path: /api-docs/documentation.html
     operationsSorter: method
-    display-request-duration: true
+    tagsSorter: alpha
+    filter: true
+    persistAuthorization: true 
 app:
   swagger:
     baseurl: http://localhost:8081/base-tenant

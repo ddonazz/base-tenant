@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import it.andrea.start.annotation.Audit;
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditTypeOperation;
@@ -33,6 +34,7 @@ import it.andrea.start.service.user.UserService;
 import it.andrea.start.utils.PagedResult;
 import it.andrea.start.validator.OnCreate;
 
+@Tag(name = "User API", description = "API for user CRUD operations")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import it.andrea.start.constants.AuditActivity;
 import it.andrea.start.constants.AuditTypeOperation;
 import it.andrea.start.dto.audit.AuditTraceDTO;
@@ -19,6 +20,7 @@ import it.andrea.start.service.audit.AuditTraceService;
 import it.andrea.start.utils.HelperDate;
 import it.andrea.start.utils.PagedResult;
 
+@Tag(name = "Audit API")
 @RestController
 @RequestMapping("/api/audit")
 @PreAuthorize("hasRole('ADMIN')")
@@ -36,7 +38,7 @@ public class AuditController {
         description = "List audits by search criteria with timezone date",
         summary = "List audits by search criteria with timezone date"
     )
-    @GetMapping("/listAudits")
+    @GetMapping("/list")
     public ResponseEntity<PagedResult<AuditTraceDTO>> listAudits(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String sessionId,

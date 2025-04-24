@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
@@ -19,7 +18,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
@@ -36,20 +34,16 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
-        try {
-            String jwt = parseJwt(wrappedRequest);
-            Optional<JWTokenUserDetails> jwtTokenUserDetailOpt = jwtUtils.validateAndParseToken(jwt);
-            if (jwtTokenUserDetailOpt.isPresent()) {
-                String username = jwtTokenUserDetailOpt.get().getUsername();
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        String jwt = parseJwt(wrappedRequest);
+        Optional<JWTokenUserDetails> jwtTokenUserDetailOpt = jwtUtils.validateAndParseToken(jwt);
+        if (jwtTokenUserDetailOpt.isPresent()) {
+            String username = jwtTokenUserDetailOpt.get().getUsername();
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(wrappedRequest));
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(wrappedRequest));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(wrappedRequest, response);

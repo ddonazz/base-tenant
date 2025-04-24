@@ -7,8 +7,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -27,8 +25,6 @@ import jakarta.servlet.http.HttpServletRequest;
 @Aspect
 @Component
 public class AuditAspect {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AuditAspect.class);
 
     private final AuditTraceService auditTraceService;
     private final GlobalConfig globalConfig;
@@ -83,7 +79,6 @@ public class AuditAspect {
             auditTrace.setRequestParams(helperAudit.formatParameters(request.getParameterMap()));
             auditTrace.setRequestBody(helperAudit.getSanitizedRequestBody(request, joinPoint.getArgs()));
         } else {
-            LOG.warn("HttpServletRequest not available for audit trace on method: {}", signature.toShortString());
             auditTrace.setHttpMethod("N/A");
             auditTrace.setRequestUri("N/A");
         }
@@ -100,8 +95,6 @@ public class AuditAspect {
 
             auditTrace.setExceptionType(ex.getClass().getName());
             auditTrace.setExceptionMessage(ex.getMessage());
-
-            LOG.error("Exception caught during audited method execution [{}]:", signature.toShortString(), ex);
 
             throw ex;
         } finally {

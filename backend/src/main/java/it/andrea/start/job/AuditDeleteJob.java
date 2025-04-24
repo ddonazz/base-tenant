@@ -1,4 +1,4 @@
-package it.andrea.start.quartz.jobs;
+package it.andrea.start.job;
 
 import java.time.LocalDateTime;
 
@@ -33,14 +33,14 @@ public class AuditDeleteJob extends QuartzJobBean {
             retentionDays = globalConfig.getAuditSavedDay();
         }
 
-        LOG.info("AuditDeleteJob start at : {}", LocalDateTime.now());
+        LOG.info("Start at : {}", LocalDateTime.now());
 
         LocalDateTime dateCompare = LocalDateTime.now().minusDays(retentionDays);
-        LOG.info("AuditDeleteJob delete audits before of : {}", dateCompare);
+        LOG.info("Delete audits before of : {}", dateCompare);
 
         int rowDeleted = auditTraceService.deleteAuditTrace(dateCompare);
-        LOG.info("AuditDeleteJob deleted audits : {}", rowDeleted);
+        LOG.info("Deleted audits : {}", rowDeleted);
 
-        LOG.info("AuditDeleteJob ending at : {}", LocalDateTime.now());
+        LOG.info("Ending at : {}", LocalDateTime.now());
     }
 }

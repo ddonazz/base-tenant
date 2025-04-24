@@ -26,6 +26,14 @@ import it.andrea.start.security.service.UserDetailsServiceImpl;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+    
+    private static final String[] SWAGGER_WHITELIST = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/webjars/**"
+    };
 
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtUtils jwtUtils;
@@ -45,11 +53,7 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/authorize/login").permitAll()
-                        .requestMatchers("/api-docs/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()
-                        .requestMatchers("/error/**").permitAll()
+                        .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(corsFilter(), SessionManagementFilter.class).build();

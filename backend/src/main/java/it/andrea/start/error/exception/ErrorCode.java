@@ -22,6 +22,7 @@ public enum ErrorCode {
     USER_AUTHORIZE_LOGIN_ACCOUNT_BLACKLIST("user.authorize.login.account.blacklist", HttpStatus.UNAUTHORIZED, "User"),
 
     // --- Authorization User/Password Errors (Logica di Auth) ---
+    AUTHENTICATION_FAILED("authentication.failed", HttpStatus.UNAUTHORIZED, "User"),
     AUTHORIZEUSER_USERNAME_NULL("authorize.user.username.null", HttpStatus.BAD_REQUEST, "User"),
     AUTHORIZEUSER_PASSWORD_NULL("authorize.user.password.null", HttpStatus.BAD_REQUEST, "User"),
     AUTHORIZEUSER_USER_NOT_FOUND("authorize.user.user.not.found", HttpStatus.UNAUTHORIZED, "User"), 
