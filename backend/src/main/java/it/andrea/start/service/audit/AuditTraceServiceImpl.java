@@ -38,17 +38,14 @@ public class AuditTraceServiceImpl implements AuditTraceService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Throwable.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(readOnly = true)
     public PagedResult<AuditTraceDTO> searchAuditTrace(AuditTraceSearchCriteria criteria, Pageable pageable) {
         final Page<AuditTrace> auditPage = auditTraceRepository.findAll(new AuditTraceSearchSpecification(criteria), pageable);
         final Page<AuditTraceDTO> dtoPage = auditPage.map(auditMapper::toDto);
 
         final PagedResult<AuditTraceDTO> result = new PagedResult<>();
         result.setItems(dtoPage.getContent());
-        result.setPageNumber(dtoPage.getNumber() + 1);
+        result.setPageNumber(dtoPage.getNumber());
         result.setPageSize(dtoPage.getSize());
         result.setTotalElements((int) dtoPage.getTotalElements());
 
@@ -56,10 +53,7 @@ public class AuditTraceServiceImpl implements AuditTraceService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Throwable.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public AuditTraceDTO getAuditTrace(Long id) {
         Optional<AuditTrace> auditOpt = auditTraceRepository.findById(id);
         if (auditOpt.isEmpty()) {
@@ -72,10 +66,7 @@ public class AuditTraceServiceImpl implements AuditTraceService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Throwable.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public int deleteAuditTrace(LocalDateTime dateCompare) {
         return auditTraceRepository.deleteRows(dateCompare);
     }

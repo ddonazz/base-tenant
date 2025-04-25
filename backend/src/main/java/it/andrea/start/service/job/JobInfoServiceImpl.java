@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -83,10 +82,7 @@ public class JobInfoServiceImpl implements JobInfoService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Throwable.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public void scheduleNewJob(String jobName, String jobGroup) {
         LOG.info("Tentativo di schedulare un nuovo job: {}/{}", jobGroup, jobName);
         JobInfo jobInfo = findJobInfoOrThrow(jobName, jobGroup);
@@ -106,10 +102,7 @@ public class JobInfoServiceImpl implements JobInfoService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Throwable.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public void updateScheduleJob(String jobName, String jobGroup) {
         LOG.info("Tentativo di aggiornare la schedulazione per il job: {}/{}", jobGroup, jobName);
         JobInfo jobInfo = findJobInfoOrThrow(jobName, jobGroup);
@@ -130,10 +123,7 @@ public class JobInfoServiceImpl implements JobInfoService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Throwable.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public void unScheduleJob(String jobName, String jobGroup) {
         LOG.info("Tentativo di de-schedulare (rimuovere e marcare come inattivo) il job: {}/{}", jobGroup, jobName);
 
@@ -155,10 +145,7 @@ public class JobInfoServiceImpl implements JobInfoService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Throwable.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public void deleteJob(String jobName, String jobGroup) {
         LOG.info("Tentativo di cancellare completamente il job: {}/{}", jobGroup, jobName);
 

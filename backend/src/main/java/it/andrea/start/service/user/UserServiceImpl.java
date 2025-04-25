@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.andrea.start.constants.EntityType;
@@ -41,11 +40,7 @@ public class UserServiceImpl implements UserService {
     private final UserValidator userValidator;
 
     @Override
-    @Transactional(
-        noRollbackFor = Exception.class,
-        readOnly = true,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(readOnly = true)
     public UserDTO getUser(String username) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
@@ -57,10 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(
-        readOnly = true,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(readOnly = true)
     public UserDTO getUser(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
@@ -72,10 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(
-        readOnly = true,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(readOnly = true)
     public UserDTO whoami(JWTokenUserDetails jWTokenUserDetails) {
         String username = jWTokenUserDetails.getUsername();
         Optional<User> optionalUser = userRepository.findByUsername(username);
@@ -88,10 +77,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Exception.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(readOnly = true)
+    public PagedResult<UserDTO> listUser(UserSearchCriteria criteria, Pageable pageable, JWTokenUserDetails userDetails) {
+        final Page<User> userPage = userRepository.findAll(new UserSearchSpecification(criteria), pageable);
+        final Page<UserDTO> dtoPage = userPage.map(userMapper::toDto);
+    
+        final PagedResult<UserDTO> result = new PagedResult<>();
+        result.setItems(dtoPage.getContent());
+        result.setPageNumber(dtoPage.getNumber() + 1);
+        result.setPageSize(dtoPage.getSize());
+        result.setTotalElements((int) dtoPage.getTotalElements());
+    
+        return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserDTO createUser(UserDTO userDTO, JWTokenUserDetails userDetails) {
         userValidator.validateUser(userDTO, HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN), true);
 
@@ -114,10 +115,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Exception.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public UserDTO updateUser(UserDTO userDTO, JWTokenUserDetails userDetails) {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
 
@@ -140,10 +138,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Exception.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long id, JWTokenUserDetails userDetails) {
         boolean haveAdminRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_ADMIN);
         boolean haveManagerRole = HelperAuthorization.hasRole(userDetails.getAuthorities(), RoleType.ROLE_MANAGER);
@@ -168,29 +163,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Exception.class,
-        readOnly = true,
-        propagation = Propagation.REQUIRED
-    )
-    public PagedResult<UserDTO> listUser(UserSearchCriteria criteria, Pageable pageable, JWTokenUserDetails userDetails) {
-        final Page<User> userPage = userRepository.findAll(new UserSearchSpecification(criteria), pageable);
-        final Page<UserDTO> dtoPage = userPage.map(userMapper::toDto);
-
-        final PagedResult<UserDTO> result = new PagedResult<>();
-        result.setItems(dtoPage.getContent());
-        result.setPageNumber(dtoPage.getNumber() + 1);
-        result.setPageSize(dtoPage.getSize());
-        result.setTotalElements((int) dtoPage.getTotalElements());
-
-        return result;
-    }
-
-    @Override
-    @Transactional(
-        rollbackFor = Throwable.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public void changePasswordForAdmin(Long userId, ChangePassword changePassword, JWTokenUserDetails userDetails) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
@@ -208,10 +181,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(
-        rollbackFor = Throwable.class,
-        propagation = Propagation.REQUIRED
-    )
+    @Transactional(rollbackFor = Exception.class)
     public void changeMyPassword(ChangePassword changePassword, JWTokenUserDetails userDetails) {
         Optional<User> optionalUser = userRepository.findByUsername(userDetails.getUsername());
         if (optionalUser.isEmpty()) {
