@@ -34,7 +34,10 @@ import it.andrea.start.service.user.UserService;
 import it.andrea.start.utils.PagedResult;
 import it.andrea.start.validator.OnCreate;
 
-@Tag(name = "User API", description = "API for user CRUD operations")
+@Tag(
+    name = "User API",
+    description = "API for user CRUD operations"
+)
 @RestController
 @RequestMapping("/api/user")
 public class UserController {

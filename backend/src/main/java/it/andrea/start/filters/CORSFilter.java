@@ -16,29 +16,28 @@ public class CORSFilter extends CorsFilter {
 
     private static UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        
+
         config.setAllowCredentials(false);
-        
+
         config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:8081"));
-        
+
         config.setAllowedHeaders(List.of(
                 "Origin",
                 "Content-Type",
                 "Accept",
-                "Authorization", 
-                "X-Requested-With", 
+                "Authorization",
+                "X-Requested-With",
                 "Access-Control-Request-Method",
                 "Access-Control-Request-Headers",
-                "Accept-Language"
-                ));
-        
+                "Accept-Language"));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
         config.setMaxAge(86400L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        
+
         return source;
     }
 

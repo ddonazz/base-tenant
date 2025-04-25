@@ -210,8 +210,8 @@ public class JobInfoServiceImpl implements JobInfoService {
             }
         } catch (SchedulerException e) {
             LOG.error("Errore Scheduler durante la ripresa del job {}: {}", jobKey, e.getMessage(), e);
-             throw new JobControlException("Errore ripresa job", jobName, jobGroup);
-        } catch (Exception e) { 
+            throw new JobControlException("Errore ripresa job", jobName, jobGroup);
+        } catch (Exception e) {
             LOG.error("Errore generico durante la ripresa del job {}: {}", jobKey, e.getMessage(), e);
             throw new RuntimeException("Errore generico ripresa job " + jobKey, e);
         }
@@ -236,8 +236,8 @@ public class JobInfoServiceImpl implements JobInfoService {
             }
         } catch (SchedulerException e) {
             LOG.error("Errore Scheduler durante l'avvio manuale del job {}: {}", jobKey, e.getMessage(), e);
-             throw new JobControlException("Errore avvio manuale job", jobGroup, jobName);
-        } catch (Exception e) { 
+            throw new JobControlException("Errore avvio manuale job", jobGroup, jobName);
+        } catch (Exception e) {
             LOG.error("Errore generico durante l'avvio manuale del job {}: {}", jobKey, e.getMessage(), e);
             throw new RuntimeException("Errore generico avvio manuale job " + jobKey, e);
         }

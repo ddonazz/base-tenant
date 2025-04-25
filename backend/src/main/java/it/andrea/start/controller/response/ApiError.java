@@ -17,17 +17,17 @@ import lombok.Data;
 public class ApiError {
     private Instant timestamp;
     private int status;
-    private String error; 
+    private String error;
     private String code;
-    private String message; 
+    private String message;
     private String path;
-    private List<String> details; 
+    private List<String> details;
 
     public ApiError(HttpStatus status, ErrorCode code, String message, String path) {
         this.timestamp = Instant.now();
         this.status = status.value();
         this.error = status.getReasonPhrase();
-        this.code = code != null ? code.getCode() : null; 
+        this.code = code != null ? code.getCode() : null;
         this.message = message;
         this.path = path;
     }

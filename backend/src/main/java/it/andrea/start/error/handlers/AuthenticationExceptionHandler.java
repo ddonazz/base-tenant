@@ -19,11 +19,11 @@ import lombok.AllArgsConstructor;
 @ControllerAdvice
 @AllArgsConstructor
 public class AuthenticationExceptionHandler {
-    
-private static final Logger LOG = LoggerFactory.getLogger(AuthenticationExceptionHandler.class);
-    
+
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationExceptionHandler.class);
+
     private final MessageSource messageSource;
-    
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleApplicationException(AuthenticationException ex, WebRequest request) {
         ErrorCode errorCode = ErrorCode.AUTHENTICATION_FAILED;
@@ -31,16 +31,16 @@ private static final Logger LOG = LoggerFactory.getLogger(AuthenticationExceptio
         String message = messageSource.getMessage(
                 errorCode.getCode(),
                 null,
-                ex.getMessage(), 
+                ex.getMessage(),
                 LocaleContextHolder.getLocale());
 
         ApiError apiError = new ApiError(
                 status,
                 errorCode,
                 message,
-                ((ServletWebRequest)request).getRequest().getRequestURI());
+                ((ServletWebRequest) request).getRequest().getRequestURI());
 
-            LOG.warn("AuthenticationException Occurred: Code={}, Status={}, Path={}, Message={}", errorCode.getCode(), status, apiError.getPath(), message); 
+        LOG.warn("AuthenticationException Occurred: Code={}, Status={}, Path={}, Message={}", errorCode.getCode(), status, apiError.getPath(), message);
 
         return new ResponseEntity<>(apiError, errorCode.getHttpStatus());
     }

@@ -17,13 +17,13 @@ import it.andrea.start.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 
 @ControllerAdvice
-@RequiredArgsConstructor 
+@RequiredArgsConstructor
 public class ApplicationExceptionHandler {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationExceptionHandler.class);
-    
+
     private final MessageSource messageSource;
-    
+
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ApiError> handleApplicationException(ApplicationException ex, WebRequest request) {
         ErrorCode errorCode = ex.getErrorCode();
@@ -31,19 +31,19 @@ public class ApplicationExceptionHandler {
         String message = messageSource.getMessage(
                 errorCode.getCode(),
                 ex.getMessageArguments(),
-                ex.getMessage(), 
+                ex.getMessage(),
                 LocaleContextHolder.getLocale());
 
         ApiError apiError = new ApiError(
                 status,
                 errorCode,
                 message,
-                ((ServletWebRequest)request).getRequest().getRequestURI());
+                ((ServletWebRequest) request).getRequest().getRequestURI());
 
         if (ex.getErrorCode().getHttpStatus().is5xxServerError()) {
             LOG.error("ApplicationException Occurred: Code={}, Status={}, Path={}, Message={}", errorCode.getCode(), status, apiError.getPath(), message, ex);
         } else {
-            LOG.warn("ApplicationException Occurred: Code={}, Status={}, Path={}, Message={}", errorCode.getCode(), status, apiError.getPath(), message); 
+            LOG.warn("ApplicationException Occurred: Code={}, Status={}, Path={}, Message={}", errorCode.getCode(), status, apiError.getPath(), message);
         }
 
         return new ResponseEntity<>(apiError, ex.getErrorCode().getHttpStatus());

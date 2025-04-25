@@ -21,6 +21,6 @@ public interface JobInfoService {
 
     void resumeJob(String jobName, String jobGroup);
 
-    void startJobNow(String jobName, String jobGroup) ;
+    void startJobNow(String jobName, String jobGroup);
 
 }

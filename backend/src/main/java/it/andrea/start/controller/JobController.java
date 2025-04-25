@@ -17,7 +17,10 @@ import it.andrea.start.dto.JobInfoDTO;
 import it.andrea.start.service.job.JobInfoService;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Job Info API", description = "API for job scheduler management")
+@Tag(
+    name = "Job Info API",
+    description = "API for job scheduler management"
+)
 @RestController
 @RequestMapping("/api/job")
 @PreAuthorize("hasRole('ADMIN')")

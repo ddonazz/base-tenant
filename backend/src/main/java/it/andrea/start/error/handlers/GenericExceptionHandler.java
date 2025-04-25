@@ -18,17 +18,17 @@ import lombok.RequiredArgsConstructor;
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GenericExceptionHandler {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(GenericExceptionHandler.class);
 
     private final MessageSource messageSource;
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception ex, WebRequest request) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         ErrorCode errorCode = ErrorCode.ERROR_INTERNAL_SERVER_ERROR;
 
-         String message = messageSource.getMessage(
+        String message = messageSource.getMessage(
                 errorCode.getCode(),
                 null,
                 "An unexpected error occurred",
@@ -38,7 +38,7 @@ public class GenericExceptionHandler {
                 status,
                 errorCode,
                 message,
-                 ((ServletWebRequest)request).getRequest().getRequestURI());
+                ((ServletWebRequest) request).getRequest().getRequestURI());
 
         LOG.error("Unhandled Exception Occurred: Path={}, Message={}", apiError.getPath(), ex.getMessage(), ex);
 
