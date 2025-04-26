@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 import it.andrea.start.constants.EntityType;
 import it.andrea.start.constants.RoleType;
 import it.andrea.start.constants.UserStatus;
+import it.andrea.start.error.exception.user.UserRoleNotFoundException;
 import it.andrea.start.models.JobInfo;
 import it.andrea.start.models.user.User;
 import it.andrea.start.models.user.UserRole;
@@ -133,7 +134,7 @@ public class InitializeServiceImpl {
                         Optional<UserRole> userRoleOpt = userRoleRepository.findByRole(roleType);
                         userRoleOpt.ifPresentOrElse(
                                 userRoles::add,
-                                () -> LOG.warn("Ruolo '{}' specificato per l'utente '{}' non trovato nel database.", roleName.trim(), user.getUsername()));
+                                () -> new UserRoleNotFoundException(roleName));
                     } catch (IllegalArgumentException e) {
                         LOG.warn("Valore ruolo non valido '{}' per l'utente '{}'. Ignorato.", roleName.trim(), user.getUsername());
                     }

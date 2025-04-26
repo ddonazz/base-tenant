@@ -14,6 +14,7 @@ import it.andrea.start.constants.RoleType;
 import it.andrea.start.dto.user.UserDTO;
 import it.andrea.start.error.exception.mapping.MappingToDtoException;
 import it.andrea.start.error.exception.mapping.MappingToEntityException;
+import it.andrea.start.error.exception.user.UserRoleNotFoundException;
 import it.andrea.start.mappers.AbstractMapper;
 import it.andrea.start.models.user.User;
 import it.andrea.start.models.user.UserRole;
@@ -78,7 +79,7 @@ public class UserMapper extends AbstractMapper<UserDTO, User> {
                 try {
                     roleTypesToFind.add(RoleType.valueOf(roleName));
                 } catch (IllegalArgumentException e) {
-                    throw new MappingToEntityException("Invalid role value provided in DTO: '" + roleName + "'", e);
+                    throw new UserRoleNotFoundException(roleName);
                 }
             }
 
